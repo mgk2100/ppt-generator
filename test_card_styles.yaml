@@ -1,0 +1,162 @@
+# 카드 스타일 테스트 파일
+# 9가지 카드 스타일 비교
+
+settings:
+  show_page_numbers: true
+  card_style: "gradient"  # 전역 기본값
+
+cover:
+  title: "9가지 카드 스타일 비교 테스트"
+  date: "2026. 01. 30"
+  author: "미래융합설계센터 알고리즘개발팀 강민규 선임"
+  report_type: "정보공유"
+
+slides:
+  # 1. Classic 스타일 (기존 백업 디자인)
+  - type: cards
+    title: "Classic 스타일 - 기존 디자인 (백업)"
+    card_style: "classic"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 2. Gradient 스타일 (새 기본값)
+  - type: cards
+    title: "Gradient 스타일 - 상단 컬러 헤더 + 사각 아이콘"
+    card_style: "gradient"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 3. Modern 스타일 (좌측 아이콘 강조)
+  - type: cards
+    title: "Modern 스타일 - 좌측 큰 원형 아이콘 + 연한 배경"
+    card_style: "modern"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 4. Solid 스타일 (전체 컬러)
+  - type: cards
+    title: "Solid 스타일 - 전체 컬러 배경 + 골드 제목"
+    card_style: "solid"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 5. Outline 스타일 (두꺼운 테두리)
+  - type: cards
+    title: "Outline 스타일 - 두꺼운 테두리 강조 + 테두리 아이콘"
+    card_style: "outline"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 6. Minimal 스타일 (미니멀)
+  - type: cards
+    title: "Minimal 스타일 - 하단 컬러 라인 + 작은 아이콘"
+    card_style: "minimal"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 7. Banner 스타일 (상단 배너)
+  - type: cards
+    title: "Banner 스타일 - 상단 배너 + 튀어나온 큰 아이콘"
+    card_style: "banner"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 8. Split 스타일 (상하 분할)
+  - type: cards
+    title: "Split 스타일 - 상단 40% 컬러 / 하단 60% 화이트"
+    card_style: "split"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 9. Accent 스타일 (좌측 악센트 바)
+  - type: cards
+    title: "Accent 스타일 - 좌측 두꺼운 악센트 바 + 큰 아이콘"
+    card_style: "accent"
+    cards:
+      - title: "데이터 수집"
+        icon: "database"
+        content: "다양한 소스에서 실시간 데이터 수집 및 정제"
+      - title: "AI 분석"
+        icon: "ai"
+        content: "머신러닝 기반 패턴 분석 및 인사이트 도출"
+      - title: "시각화"
+        icon: "chart"
+        content: "직관적인 대시보드와 리포트 자동 생성"
+
+  # 10. 전역 설정 테스트 (card_style 미지정 시 gradient 사용)
+  - type: cards
+    title: "전역 설정 적용 테스트 (Gradient 기본값)"
+    cards:
+      - title: "보안"
+        icon: "security"
+        content: "엔드투엔드 암호화 및 접근 제어"
+      - title: "확장성"
+        icon: "cloud"
+        content: "클라우드 네이티브 아키텍처로 자동 스케일링"
+      - title: "통합"
+        icon: "api"
+        content: "RESTful API로 다양한 시스템 연동"

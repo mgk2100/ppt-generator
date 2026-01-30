@@ -1,0 +1,38 @@
+{
+  "cover": {
+    "title": "LLM 프로젝트 진행 현황",
+    "date": "2025. 01. 27",
+    "author": "미래융합설계센터 알고리즘개발팀 강민규 선임",
+    "report_type": "정보공유"
+  },
+  "slides": [
+    {
+      "type": "content",
+      "title": "목차",
+      "content": [
+        "1. LLM 개요",
+        "2. 적용 사례",
+        "3. 기대 효과"
+      ]
+    },
+    {
+      "type": "content",
+      "title": "1. LLM 개요",
+      "content": [
+        "Large Language Model (대규모 언어 모델)",
+        "자연어 처리 및 생성 AI 기술",
+        "ChatGPT, Claude 등 다양한 모델 활용"
+      ]
+    },
+    {
+      "type": "table",
+      "title": "2. 적용 사례 비교",
+      "headers": ["영역", "적용 기술", "효과"],
+      "rows": [
+        ["문서 작성", "GPT-4", "생산성 40% 향상"],
+        ["코드 리뷰", "Claude", "품질 개선"],
+        ["고객 응대", "챗봇", "응답 시간 50% 단축"]
+      ]
+    }
+  ]
+}

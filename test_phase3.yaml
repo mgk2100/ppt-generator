@@ -1,0 +1,127 @@
+# Phase 3 기능 테스트 YAML
+
+settings:
+  show_page_numbers: true
+  theme_name: default  # 또는 dark, green, purple, warm
+
+cover:
+  title: "Phase 3 기능 테스트"
+  date: "2025. 01. 27"
+  author: "PPT Generator"
+  report_type: "정보공유"
+
+slides:
+  # 목차
+  - type: content
+    title: "테스트 목차"
+    content:
+      - "1. 막대 차트 (Column)"
+      - "2. 가로 막대 차트 (Bar)"
+      - "3. 선 차트 (Line)"
+      - "4. 파이 차트 (Pie)"
+      - "5. 조직도 (가로형)"
+      - "6. 조직도 (세로형)"
+
+  # 막대 차트
+  - type: chart
+    title: "월별 매출 현황"
+    chart_type: "column"
+    categories: ["1월", "2월", "3월", "4월", "5월", "6월"]
+    series:
+      - name: "2024년"
+        values: [120, 150, 180, 160, 200, 220]
+      - name: "2025년"
+        values: [140, 170, 210, 190, 240, 260]
+    chart_title: "단위: 억원"
+    show_legend: true
+    legend_position: "bottom"
+
+  # 가로 막대 차트
+  - type: chart
+    title: "부서별 인력 현황"
+    chart_type: "bar"
+    categories: ["개발팀", "기획팀", "디자인팀", "마케팅팀", "영업팀"]
+    series:
+      - name: "정규직"
+        values: [25, 12, 8, 10, 15]
+      - name: "계약직"
+        values: [5, 3, 2, 4, 3]
+    show_legend: true
+
+  # 선 차트
+  - type: chart
+    title: "일일 방문자 추이"
+    chart_type: "line_markers"
+    categories: ["월", "화", "수", "목", "금", "토", "일"]
+    series:
+      - name: "웹사이트"
+        values: [1200, 1350, 1500, 1420, 1600, 800, 600]
+      - name: "모바일 앱"
+        values: [800, 950, 1100, 1050, 1200, 1500, 1400]
+    chart_title: "단위: 명"
+
+  # 파이 차트
+  - type: chart
+    title: "시장 점유율"
+    chart_type: "pie"
+    categories: ["자사", "A사", "B사", "C사", "기타"]
+    series:
+      - name: "점유율"
+        values: [35, 25, 20, 12, 8]
+
+  # 조직도 - 가로형
+  - type: org_chart
+    title: "조직 구조 (가로형)"
+    style: "horizontal"
+    org_data:
+      name: "김대표"
+      title: "CEO"
+      children:
+        - name: "이사장"
+          title: "CTO"
+          children:
+            - name: "박팀장"
+              title: "개발1팀"
+            - name: "최팀장"
+              title: "개발2팀"
+            - name: "정팀장"
+              title: "인프라팀"
+        - name: "김사장"
+          title: "CFO"
+          children:
+            - name: "한팀장"
+              title: "재무팀"
+            - name: "오팀장"
+              title: "회계팀"
+        - name: "박이사"
+          title: "COO"
+          children:
+            - name: "강팀장"
+              title: "운영팀"
+            - name: "조팀장"
+              title: "고객지원팀"
+
+  # 조직도 - 세로형
+  - type: org_chart
+    title: "팀 구조 (세로형)"
+    style: "vertical"
+    org_data:
+      name: "개발본부"
+      title: "본부장"
+      children:
+        - name: "프론트엔드팀"
+          title: "10명"
+          children:
+            - name: "React"
+              title: "5명"
+            - name: "Vue"
+              title: "5명"
+        - name: "백엔드팀"
+          title: "12명"
+          children:
+            - name: "Python"
+              title: "7명"
+            - name: "Java"
+              title: "5명"
+        - name: "인프라팀"
+          title: "5명"

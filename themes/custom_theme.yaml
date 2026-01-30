@@ -1,0 +1,27 @@
+# 커스텀 테마 예시
+
+colors:
+  # RGB 값으로 지정
+  primary: [0, 100, 150]
+  secondary: [0, 150, 200]
+  accent: [255, 100, 50]
+
+  # HEX 값으로도 지정 가능
+  success: "#28a745"
+  warning: "#ffc107"
+  danger: "#dc3545"
+
+fonts:
+  title:
+    name: "맑은 고딕"
+    size: 32
+    bold: true
+  body:
+    name: "맑은 고딕"
+    size: 13
+    bold: false
+
+layout:
+  margin_left: 0.5
+  margin_right: 0.5
+  content_width: 9.8
