@@ -163,3 +163,96 @@ python ppt_generator.py -c [config.yaml] -o output/[output.pptx]
 - 테스트 파일: `test_phase3.yaml`
 - 아키텍처 예시: `sl_sw_document_generate_arch.yaml`
 - 카드 스타일 테스트: `test_card_styles.yaml`
+
+---
+
+## 외부 프로젝트 분석 → PPT 생성 가이드
+
+외부 프로젝트를 분석하여 PPT를 생성할 때 다음 절차를 따릅니다.
+
+### 분석 파이프라인
+
+```
+1. 구조 파악 (backend-architect)
+   ├── 디렉토리 구조
+   ├── 파일 수/LOC 메트릭스
+   └── 레이어/모듈 식별
+
+2. 상세 분석 (code-analyzer)
+   ├── 핵심 클래스/함수
+   ├── 데이터 흐름 추적
+   └── 기술 스택 적용 위치
+
+3. PPT YAML 생성
+   └── 슬라이드 타입 매핑
+```
+
+### 필수 수집 정보
+
+| 정보 | 슬라이드 타입 | 비고 |
+|------|-------------|------|
+| 프로젝트 규모 | `stats` | 파일 수, LOC, 클래스 수 |
+| 핵심 기능 | `cards` | 3-6개 카드 |
+| 디렉토리 구조 | `tree` | 주요 폴더 + 역할 |
+| 데이터 흐름 | `flowchart` | 입력 → 출력 |
+| 시스템 아키텍처 | `architecture` | 레이어 구조 |
+| 기술 스택 | `table` | 기술 + 적용 위치 |
+| 디자인 패턴 | `cards` | Pipeline, Strategy 등 |
+
+### 권장 슬라이드 순서
+
+1. `title` - 프로젝트명 + 한줄 소개
+2. `toc` - 목차 (선택)
+3. `stats` - 프로젝트 규모
+4. `cards` - 핵심 기능
+5. `tree` - 디렉토리 구조
+6. `table` - 디렉토리별 역할
+7. `flowchart` - 전체 데이터 흐름
+8. `timeline` - 상세 파이프라인
+9. `architecture` - 시스템 아키텍처
+10. `table` - 기술 스택
+11. `cards` - 기술 적용 위치
+12. `stats` - 코드 메트릭스
+13. `cards` - 디자인 패턴
+14. `cards` - 학습 포인트
+15. `closing` - Q&A
+
+### 분석 예시 (sl-sw-document-generate-python)
+
+```yaml
+# 프로젝트 규모 → stats
+- type: stats
+  stats:
+    - value: "151"
+      label: "Python 파일"
+    - value: "50,337"
+      label: "총 LOC"
+
+# 디렉토리 구조 → tree
+- type: tree
+  root: "project/"
+  items:
+    - name: "routes/"
+      description: "API 엔드포인트"
+    - name: "orchestrator/"
+      description: "파이프라인 실행"
+
+# 데이터 흐름 → flowchart
+- type: flowchart
+  nodes:
+    - id: "input"
+      label: "소스코드"
+    - id: "parse"
+      label: "코드 파싱"
+    - id: "llm"
+      label: "LLM 분석"
+    - id: "output"
+      label: "문서"
+
+# 기술 스택 → table
+- type: table
+  headers: ["기술", "적용 위치", "용도"]
+  rows:
+    - ["FastAPI", "routes/", "REST API"]
+    - ["LangChain", "agent/", "LLM 통합"]
+```
