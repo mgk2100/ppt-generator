@@ -1,5 +1,13 @@
 # 출력 파일
 output/*.pptx
+output/*.py
+
+# 중간 결과물 (분석/설계 아티팩트)
+input/*.yaml
+input/*.md
+
+# 템플릿 파일
+templates/
 
 # Python
 __pycache__/
