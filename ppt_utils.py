@@ -494,3 +494,60 @@ def set_body_anchor(shape, anchor="ctr"):
     bodyPr = shape.text_frame._txBody.find(qn("a:bodyPr"))
     if bodyPr is not None:
         bodyPr.set("anchor", anchor)
+
+
+def setup_cover(slide, title, purpose="정보공유", author="강민규 선임",
+                department="미래융합설계센터 알고리즘개발팀",
+                date=None, font_name=None, title_font_size=28,
+                title_color=None):
+    """표지 슬라이드를 표준 포맷으로 설정한다.
+
+    - 우측 상단: 의사결정/보고/정보공유 체크박스
+    - 중앙: 대주제 (PH idx=0)
+    - 중간: 날짜
+    - 하단 중앙: 부서명 + 이름
+    """
+    from datetime import date as date_cls
+
+    if date is None:
+        date = date_cls.today().strftime("%Y.%m.%d")
+    if title_color is None:
+        title_color = RGBColor(0xFF, 0xFF, 0xFF)
+
+    # PH idx=1 (부제목) 제거
+    for ph in list(slide.placeholders):
+        if ph.placeholder_format.idx == 1:
+            ph._element.getparent().remove(ph._element)
+            break
+
+    # 제목 (PH idx=0)
+    ph0 = slide.placeholders[0]
+    ph0.text = title
+    for run in ph0.text_frame.paragraphs[0].runs:
+        run.font.size = Pt(title_font_size)
+        run.font.color.rgb = title_color
+        run.font.bold = True
+        if font_name:
+            run.font.name = font_name
+
+    # 우측 상단: 체크박스
+    purposes = ["의사결정", "보고", "정보공유"]
+    parts = [f"{'☑' if p == purpose else '☐'} {p}" for p in purposes]
+    add_textbox(slide,
+        x=Inches(6.5), y=Inches(0.25), w=Inches(4.0), h=Inches(0.35),
+        text="  ".join(parts), font_name=font_name, font_size=10,
+        color=RGBColor(0xFF, 0xFF, 0xFF), align=PP_ALIGN.RIGHT)
+
+    # 날짜 (제목 아래 중간)
+    add_textbox(slide,
+        x=Inches(3.0), y=Inches(3.0), w=Inches(4.83), h=Inches(0.4),
+        text=date, font_name=font_name, font_size=14,
+        color=RGBColor(0xFF, 0xFF, 0xFF), align=PP_ALIGN.CENTER)
+
+    # 하단 중앙: 부서 + 이름
+    add_textbox(slide,
+        x=Inches(2.0), y=Inches(5.8), w=Inches(6.83), h=Inches(0.4),
+        text=f"{department} {author}", font_name=font_name, font_size=12,
+        color=RGBColor(0xFF, 0xFF, 0xFF), align=PP_ALIGN.CENTER)
+
+    return slide

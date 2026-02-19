@@ -36,8 +36,10 @@ Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 
 ### 목차/섹션 구분 판단
 
-- **목차 슬라이드**: 독립적인 그룹이 3개 이상이고 청중이 전체 맥을 먼저 파악해야 할 때만 생성. 2개 이하이거나 순차 내러티브이면 생략.
-- **섹션 구분 슬라이드**: 주제가 명확히 전환될 때만 사용. 같은 맥락이 계속되면 생략. 섹션 수 = 실제 데이터 그룹 수 (2개면 2개, 5개면 5개).
+- **목차 슬라이드**: 독립적인 그룹이 **4개 이상**이고 청중이 전체 맥을 먼저 파악해야 할 때만 생성. 3개 이하이거나 순차 내러티브이면 생략.
+- **섹션 구분 슬라이드**: 콘텐츠 슬라이드가 **10장 이상**이고 주제가 명확히 전환될 때만 사용. 같은 맥락이 계속되면 생략. 섹션 수 = 실제 데이터 그룹 수.
+- **오버헤드 비율 제한**: 비콘텐츠 슬라이드(표지+목차+섹션구분+마무리)가 전체의 **30% 이하**여야 한다. 초과 시 섹션 구분 제거 또는 내러티브형으로 전환.
+- **소규모 프레젠테이션** (총 15장 이하): 섹션 구분 슬라이드 대신 콘텐츠 슬라이드 내 시각적 색상 전환으로 섹션을 구분한다. 제목 좌측 accent 색상 바, 슬라이드 배경 색조 변화 등 활용.
 
 ### 슬라이드 병합/분할
 
@@ -136,6 +138,30 @@ from ppt_utils import CONTENT_SAFE
 - 동아시아(EA): 휴먼모음T
 - `set_title()` 에서 font_name=None이면 테마 폰트가 자동 상속됨
 
+### 표지 기본 포맷
+
+`setup_cover()` 함수로 표준 표지를 생성한다:
+
+```python
+layout = get_layout(prs, "제목 슬라이드")
+slide = prs.slides.add_slide(layout)
+setup_cover(slide, "프레젠테이션 제목")
+
+# 커스텀:
+setup_cover(slide, "제목",
+    purpose="보고",           # "의사결정" | "보고" | "정보공유"
+    author="강민규 선임",
+    department="미래융합설계센터 알고리즘개발팀",
+    date="2026.02.19",
+)
+```
+
+표지 구성:
+- **우측 상단**: ☐ 의사결정  ☐ 보고  ☑ 정보공유 (기본: 정보공유)
+- **중앙**: 대주제만 (소주제 없음, PH idx=1 자동 제거)
+- **중간**: 날짜 (기본: 오늘 YYYY.MM.DD)
+- **하단 중앙**: 부서명 + 이름
+
 ---
 
 ## 생성 스크립트 관례
@@ -160,7 +186,7 @@ from ppt_utils import (
     add_shadow, set_shape_opacity, add_gradient_stop,
     make_icon_circle, brightness_check,
     add_textbox, add_para, set_body_anchor,
-    set_title, CONTENT_SAFE,
+    set_title, setup_cover, CONTENT_SAFE,
     OUTPUT_DIR,
 )
 
@@ -177,8 +203,7 @@ PRIMARY = RGBColor(...)
 # --- 슬라이드 1: 표지 ---
 layout = get_layout(prs, "제목 슬라이드")
 slide = prs.slides.add_slide(layout)
-slide.placeholders[0].text = "프레젠테이션 제목"
-slide.placeholders[1].text = "부제목"
+setup_cover(slide, "프레젠테이션 제목")
 
 # --- 슬라이드 2: 콘텐츠 ---
 layout = get_layout(prs, "제목 및 내용")
@@ -225,6 +250,7 @@ print(f"생성 완료: {output_path}")
 | `make_icon_circle(slide, x, y, size, fill_color, text, font_size)` | 원형 아이콘/배지 |
 | `brightness_check(r, g, b)` | 밝기 판단 (True=밝음→어두운 텍스트) |
 | `set_title(slide, text, ...)` | TITLE 플레이스홀더에 텍스트 설정 (font_name, font_size, color, bold) |
+| `setup_cover(slide, title, ...)` | 표지 표준 포맷 (purpose, author, department, date) |
 | `CONTENT_SAFE` | 콘텐츠 안전 영역 (.left, .top, .width, .height, .right, .bottom) |
 
 ### 그림자 (Shadow)
@@ -323,6 +349,16 @@ add_arrowhead(connector)
 - **데이터 흐름**: 좌→우 `CHEVRON` 파이프라인
 - **의사결정 트리**: `FLOWCHART_DECISION` 분기점
 - **그룹**: `add_group_shape()`로 관련 컴포넌트 묶기
+
+### 콘텐츠 슬라이드 풍부함
+
+마스터 요소를 보호하면서 시각적 풍부함을 유지하는 기법:
+
+- **색상 영역 분할**: CONTENT_SAFE 내부를 ROUNDED_RECTANGLE로 분할하여 각 영역에 accent 색상 배경 (opacity 5-15%) 적용
+- **카드 기반 디자인**: 정보를 카드에 담고 그림자 + 상단/좌측 accent 바 적용. 카드 배경은 WHITE 또는 연한 색상
+- **시각적 앵커**: 각 슬라이드에 최소 1개 비텍스트 요소 (도형, 차트, 다이어그램, 아이콘) 포함
+- **색상 전환**: 같은 섹션 내 슬라이드도 accent 색상을 단계적으로 변화시켜 단조로움 방지
+- **데이터 밀도**: 슬라이드당 2-3개 시각 유형 혼합 (수치 카드 + 차트, 텍스트 + 다이어그램 등)
 
 ## 언어
 한국어로 작성하면 한국어로 응답할 것.
