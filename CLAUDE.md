@@ -9,7 +9,7 @@ Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 
 ## 지원 입력
 하나의 /generate-ppt 명령으로 다양한 입력을 자동 판단하여 처리한다.
-- 기존 분석 결과 폴더 (project-analyzer 결과물)
+- 기존 분석 결과 폴더 (obsidian-notes/03_학습노트/ 내 분석 결과)
 - 소스 코드 프로젝트
 - 텍스트/문서 파일 (.md, .txt, .pdf 등)
 - 기업명, 주제 등 텍스트 입력
@@ -60,6 +60,9 @@ Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 - **통계 데이터를 텍스트 숫자만으로 나열 금지**. 3개+ 수치 → 차트 활용
 - **ppt_utils에 있는 함수를 직접 재구현 금지**. import하여 사용
 - **"반드시 N섹션" 같은 고정 구조 강제 금지**. 전체 구조는 데이터 볼륨과 성격이 결정
+- **콘텐츠 슬라이드에서 마스터 요소를 덮는 전면 배경 금지**. 로고, 구분선, 푸터가 가려짐 (표지 레이아웃은 예외)
+- **제목에 `add_textbox()` 사용 금지**. `set_title(slide, "...")` 사용하여 TITLE 플레이스홀더 활용
+- **안전 영역(y=0.68"~7.02") 밖에 콘텐츠 배치 금지**. `CONTENT_SAFE` 상수 참조
 
 ## 실행 방법
 - 생성 스크립트는 `/tmp/`에 작성하고, 실행 후 삭제한다
@@ -71,6 +74,67 @@ Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 - 사용 전 fc-list 명령으로 시스템에 설치된 폰트를 확인한다
 - 설치된 폰트 중에서만 선택한다
 - 커스텀 폰트 경로: ref/fonts/
+
+## 슬라이드 마스터 템플릿
+
+`ref/표지.pptx` 슬라이드 마스터의 구조를 따른다.
+
+### 슬라이드 크기
+10.833" × 7.500" (와이드스크린 변형)
+
+### 마스터 요소 (자동 표시)
+
+| 요소 | 위치 | 비고 |
+|------|------|------|
+| 로고 (이미지) | 좌상단, y ≈ 0.09" | 모든 슬라이드에 자동 표시 |
+| 제목 구분선 | y ≈ 0.60", 슬라이드 폭 전체 | 제목 아래 수평선 |
+| 푸터 구분선 | y ≈ 7.02", 슬라이드 폭 전체 | 푸터 위 수평선 |
+| 페이지 번호 | 우하단 | "제목 및 내용" 레이아웃에서 자동 |
+| 부서명 | 좌하단 | 푸터 영역 |
+| 기밀 문구 | 우하단 | 푸터 영역 |
+
+### 레이아웃별 구조
+
+**"제목 슬라이드"** — 표지 전용
+- 플레이스홀더: idx=0 (제목), idx=1 (부제목)
+- 레이아웃 자체에 전면 배경 이미지 포함 → 마스터 요소를 덮는 것은 의도된 동작
+- 사용 패턴:
+```python
+layout = get_layout(prs, "제목 슬라이드")
+slide = prs.slides.add_slide(layout)
+slide.placeholders[0].text = "프레젠테이션 제목"
+slide.placeholders[1].text = "부제목"
+```
+
+**"제목 및 내용"** — 일반 콘텐츠 (페이지 번호 있음)
+- 플레이스홀더: idx=0 (제목, y=0.13"~0.56"), idx=1 (본문)
+- 마스터 요소(로고, 구분선, 푸터) 자동 표시
+- 사용 패턴:
+```python
+layout = get_layout(prs, "제목 및 내용")
+slide = prs.slides.add_slide(layout)
+set_title(slide, "슬라이드 제목")
+clear_placeholders(slide, keep=[0])
+```
+
+**"제목 및 내용 (페이지 번호 삭제)"** — 섹션 구분 등
+- "제목 및 내용"과 동일하나 페이지 번호 없음
+- 사용 패턴: 위와 동일, 레이아웃 이름만 변경
+
+### 콘텐츠 안전 영역
+마스터 요소(로고, 구분선, 푸터)를 침범하지 않는 영역:
+- **x**: 0.28" ~ 10.56" (너비 10.28")
+- **y**: 0.68" ~ 7.02" (높이 6.34")
+- 코드에서 `CONTENT_SAFE` 상수 사용:
+```python
+from ppt_utils import CONTENT_SAFE
+# CONTENT_SAFE.left, .top, .width, .height, .right, .bottom
+```
+
+### 테마 폰트
+- 라틴: Trebuchet MS
+- 동아시아(EA): 휴먼모음T
+- `set_title()` 에서 font_name=None이면 테마 폰트가 자동 상속됨
 
 ---
 
@@ -96,6 +160,7 @@ from ppt_utils import (
     add_shadow, set_shape_opacity, add_gradient_stop,
     make_icon_circle, brightness_check,
     add_textbox, add_para, set_body_anchor,
+    set_title, CONTENT_SAFE,
     OUTPUT_DIR,
 )
 
@@ -109,8 +174,18 @@ SLIDE_H = prs.slide_height
 # 색상 팔레트 — 이 프레젠테이션 전용
 PRIMARY = RGBColor(...)
 
-# --- 슬라이드 1: ... ---
-# (각 슬라이드 섹션에 설계 의도 주석)
+# --- 슬라이드 1: 표지 ---
+layout = get_layout(prs, "제목 슬라이드")
+slide = prs.slides.add_slide(layout)
+slide.placeholders[0].text = "프레젠테이션 제목"
+slide.placeholders[1].text = "부제목"
+
+# --- 슬라이드 2: 콘텐츠 ---
+layout = get_layout(prs, "제목 및 내용")
+slide = prs.slides.add_slide(layout)
+set_title(slide, "슬라이드 제목")
+clear_placeholders(slide, keep=[0])
+# (콘텐츠는 CONTENT_SAFE 영역 안에 배치)
 
 # 저장
 output_path = OUTPUT_DIR / "파일명.pptx"
@@ -123,7 +198,10 @@ print(f"생성 완료: {output_path}")
 - 도형에 텍스트 넣을 때 `tf.word_wrap = True` 필수
 - 한글 문자 폭 ≈ 라틴 1.5배 — 박스 너비 계산 시 반영
 - 레이아웃: `get_layout(prs, "제목 슬라이드")`, `get_layout(prs, "제목 및 내용")`, `get_layout(prs, "제목 및 내용 (페이지 번호 삭제)")`
+- 콘텐츠 슬라이드 제목: `set_title(slide, "...")` 사용 — `add_textbox()`로 제목 금지
 - 슬라이드 추가 후 `clear_placeholders(slide, keep=[0])` 으로 유령 텍스트 제거
+- 콘텐츠 배치: `CONTENT_SAFE` 영역(y=0.68"~7.02") 안에 배치
+- 마스터 요소(로고, 구분선, 푸터) 보호: 콘텐츠 슬라이드에서 전면 배경으로 덮지 말 것
 
 ---
 
@@ -146,6 +224,8 @@ print(f"생성 완료: {output_path}")
 | `add_gradient_stop(shape, position, r, g, b)` | 그라디언트 3번째+ stop 추가 |
 | `make_icon_circle(slide, x, y, size, fill_color, text, font_size)` | 원형 아이콘/배지 |
 | `brightness_check(r, g, b)` | 밝기 판단 (True=밝음→어두운 텍스트) |
+| `set_title(slide, text, ...)` | TITLE 플레이스홀더에 텍스트 설정 (font_name, font_size, color, bold) |
+| `CONTENT_SAFE` | 콘텐츠 안전 영역 (.left, .top, .width, .height, .right, .bottom) |
 
 ### 그림자 (Shadow)
 ```python
@@ -213,11 +293,10 @@ add_arrowhead(connector)
 ## 디자인 원칙
 
 ### 타이포그래피
-- 슬라이드 제목: 20-28pt, bold
-- 섹션 헤더: 14-16pt, bold
-- 본문: 11-13pt
-- 캡션: 9-10pt (최소)
-- 줄간격: 1.2-1.5
+- 폰트, 크기, 굵기는 프레젠테이션 주제에 맞게 자유 선택
+- 제목은 `set_title()` 사용 — 테마 폰트 상속 또는 직접 지정 모두 가능
+- 시각적 계층(제목 > 소제목 > 본문 > 캡션)이 명확하면 구체적 수치는 자유
+- 한글 문자 폭 ≈ 라틴 1.5배 — 박스 너비 계산 시 반영
 
 ### 색상
 - 4-6색 팔레트를 콘텐츠 분위기에 맞게 선택

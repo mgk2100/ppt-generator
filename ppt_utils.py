@@ -11,7 +11,7 @@ from pathlib import Path
 
 from lxml import etree
 from pptx import Presentation
-from pptx.util import Pt, Emu
+from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
@@ -23,6 +23,18 @@ REF_DIR = BASE_DIR / "ref"
 OUTPUT_DIR = BASE_DIR / "output"
 DEFAULT_TEMPLATE = REF_DIR / "표지.pptx"
 FONTS_DIR = REF_DIR / "fonts"
+
+from collections import namedtuple
+
+_SafeZone = namedtuple("_SafeZone", ["left", "top", "width", "height", "right", "bottom"])
+CONTENT_SAFE = _SafeZone(
+    left=Inches(0.28),
+    top=Inches(0.68),
+    width=Inches(10.28),
+    height=Inches(6.34),
+    right=Inches(10.56),
+    bottom=Inches(7.02),
+)
 
 
 def ensure_fonts():
@@ -136,6 +148,26 @@ def clear_placeholders(slide, keep=None):
 
     for shape in to_remove:
         shape._element.getparent().remove(shape._element)
+
+
+def set_title(slide, text, font_name=None, font_size=None, color=None, bold=None):
+    """TITLE 플레이스홀더(idx=0)에 텍스트를 설정한다.
+
+    None인 파라미터는 테마/마스터에서 상속.
+    """
+    ph = slide.placeholders[0]
+    ph.text = text
+    if font_name is not None or font_size is not None or color is not None or bold is not None:
+        for run in ph.text_frame.paragraphs[0].runs:
+            if font_name is not None:
+                run.font.name = font_name
+            if font_size is not None:
+                run.font.size = Pt(font_size)
+            if color is not None:
+                run.font.color.rgb = color
+            if bold is not None:
+                run.font.bold = bold
+    return ph
 
 
 def set_cell_anchor(cell, anchor="ctr"):

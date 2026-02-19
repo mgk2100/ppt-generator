@@ -93,12 +93,15 @@ slide-plan.md를 읽고 완전한 python-pptx 스크립트를 작성한다.
 9. 다이어그램에 의미 도형 사용 (CAN, CLOUD, CUBE, GEAR_6, CHEVRON 등)
 10. 이모지를 시각 지표로 사용 금지 — 색상 도형/`make_icon_circle()` 사용
 11. ppt_utils의 헬퍼 함수 활용 (add_textbox, add_para, set_body_anchor 등) — 직접 재구현 금지
+12. `set_title(slide, "...")` 으로 제목 설정 — add_textbox()로 제목 금지
+13. 콘텐츠는 CONTENT_SAFE 영역 안에 배치
+14. 콘텐츠 슬라이드에서 전면 배경으로 마스터 요소 덮지 말 것
 
-저장: output/{name}.py
+저장: /tmp/{name}_generate.py
 
 ## Step 4: 실행 및 검증
 
-python output/{name}.py
+python /tmp/{name}_generate.py
 
 검증:
 - [ ] 에러 없이 실행되는가?
@@ -111,5 +114,8 @@ python output/{name}.py
 - [ ] 가짜 그림자(오프셋 사각형) 없는가?
 - [ ] 그라디언트가 적절히 활용되었는가?
 - [ ] ppt_utils 헬퍼를 직접 재구현하지 않았는가?
+- [ ] 제목이 set_title()로 플레이스홀더를 사용하는가?
+- [ ] 콘텐츠가 안전 영역(0.68"~7.02") 안에 있는가?
+- [ ] 콘텐츠 슬라이드에서 마스터 요소가 가려지지 않는가?
 
 실패 시 스크립트 수정 후 재실행.
