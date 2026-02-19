@@ -62,7 +62,9 @@ Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 - **"반드시 N섹션" 같은 고정 구조 강제 금지**. 전체 구조는 데이터 볼륨과 성격이 결정
 
 ## 실행 방법
-python output/{script_name}.py
+- 생성 스크립트는 `/tmp/`에 작성하고, 실행 후 삭제한다
+- output/ 디렉토리에는 .pptx 파일만 남긴다 (.py 파일 금지)
+- 테스트용 파일(test_*.pptx 등)은 검증 완료 후 즉시 삭제한다
 
 ## 폰트
 - 주제와 분위기에 맞는 폰트를 자유롭게 선택한다
@@ -159,10 +161,11 @@ shape.fill.gradient_stops[0].color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
 shape.fill.gradient_stops[0].position = 0.0
 shape.fill.gradient_stops[1].color.rgb = RGBColor(0x16, 0x21, 0x3E)
 shape.fill.gradient_stops[1].position = 1.0
-shape.fill.gradient_angle = 270000  # 위→아래 (단위: 1/60000도)
+shape.fill.gradient_angle = 270.0  # 위→아래
 add_gradient_stop(shape, position=0.5, r=0x20, g=0x30, b=0x50)  # 3-stop
 ```
-- gradient_angle 단위: 1/60000도 (270° = 16200000)
+- **gradient_angle 단위: 도(degrees)**. 0=좌→우, 90=하→상, 180=우→좌, 270=상→하
+- **절대 1/60000도 단위(16200000 등)를 쓰지 말 것** — 파일 손상됨
 
 ### 투명도 (Opacity)
 ```python
