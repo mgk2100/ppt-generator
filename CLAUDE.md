@@ -158,8 +158,8 @@ setup_cover(slide, "제목",
 
 표지 구성:
 - **우측 상단**: ☐ 의사결정  ☐ 보고  ☑ 정보공유 (기본: 정보공유)
-- **중앙**: 대주제만 (소주제 없음, PH idx=1 자동 제거)
-- **중간**: 날짜 (기본: 오늘 YYYY.MM.DD)
+- **중앙**: 대주제 (PH idx=0, 폰트 상속 — 48pt bold white 현대하모니 M)
+- **중간**: 날짜 (PH idx=1 활용, 폰트 상속 — 24pt white 현대하모니 L)
 - **하단 중앙**: 부서명 + 이름
 
 ---
@@ -187,6 +187,8 @@ from ppt_utils import (
     make_icon_circle, brightness_check,
     add_textbox, add_para, set_body_anchor,
     set_title, setup_cover, CONTENT_SAFE,
+    estimate_text_size, set_text_inset, calc_grid,
+    calc_connector, add_smart_connector,
     OUTPUT_DIR,
 )
 
@@ -252,6 +254,11 @@ print(f"생성 완료: {output_path}")
 | `set_title(slide, text, ...)` | TITLE 플레이스홀더에 텍스트 설정 (font_name, font_size, color, bold) |
 | `setup_cover(slide, title, ...)` | 표지 표준 포맷 (purpose, author, department, date) |
 | `CONTENT_SAFE` | 콘텐츠 안전 영역 (.left, .top, .width, .height, .right, .bottom) |
+| `estimate_text_size(text, font_size_pt, ...)` | 텍스트 크기 추정 (한글/라틴 혼합, 줄바꿈 고려) |
+| `set_text_inset(shape, ...)` | 도형 텍스트 내부 여백 설정 (한글 친화적 기본값) |
+| `calc_grid(rows, cols, ...)` | 그리드 셀 좌표 계산 (균등/비율 분할) |
+| `calc_connector(shape_a, shape_b, ...)` | 두 도형 간 커넥터 좌표/cxn 인덱스 계산 |
+| `add_smart_connector(slide, shape_a, shape_b, ...)` | 스마트 커넥터 생성 (방향/타입 자동) |
 
 ### 그림자 (Shadow)
 ```python
@@ -307,6 +314,56 @@ connector = slide.shapes.add_connector(MSO_CONNECTOR.ELBOW, x1, y1, x2, y2)
 add_arrowhead(connector)
 ```
 - `STRAIGHT`: 직선, `ELBOW`: 꺾인선 (아키텍처용), `CURVE`: 곡선
+
+### 레이아웃 계산 헬퍼
+
+#### 텍스트 크기 추정
+```python
+size = estimate_text_size("한글 텍스트", font_size_pt=14)
+# size.width, size.height (Emu)
+
+# 줄바꿈 고려
+size = estimate_text_size("긴 텍스트...", 12, max_width=Inches(3))
+# → 3인치 안에서 줄바꿈된 높이 반환
+```
+
+#### 도형 텍스트 여백
+```python
+shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ...)
+set_text_inset(shape)  # 한글 친화적 기본값 (0.12"/0.06")
+set_text_inset(shape, left=Inches(0.2), right=Inches(0.2))  # 커스텀
+```
+
+#### 그리드 레이아웃
+```python
+# CONTENT_SAFE를 2×3 균등 분할
+grid = calc_grid(2, 3)
+for cell in grid.flat:
+    shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+        cell.left, cell.top, cell.width, cell.height)
+    set_text_inset(shape)
+
+# 비율 분할 + 커스텀 영역
+grid = calc_grid(1, 3, col_widths=[1, 2, 1], gap=Inches(0.2))
+sidebar = grid[0][0]   # 좁은 좌측
+main = grid[0][1]      # 넓은 중앙
+```
+
+#### 스마트 커넥터
+```python
+# 방향/타입 자동 감지
+add_smart_connector(slide, shape_a, shape_b)
+
+# 명시적 방향 지정
+add_smart_connector(slide, shape_a, shape_b, direction='TB')
+
+# 화살표 없이
+add_smart_connector(slide, shape_a, shape_b, arrow=False)
+
+# 좌표만 계산 (커넥터 직접 생성 시)
+pts = calc_connector(shape_a, shape_b, direction='LR')
+# pts.begin_x, pts.begin_y, pts.end_x, pts.end_y, pts.begin_cxn_idx, pts.end_cxn_idx
+```
 
 ### 기타 기능
 - **그룹 도형**: `slide.shapes.add_group_shape()` — 관련 컴포넌트 묶기
