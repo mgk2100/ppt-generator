@@ -1,127 +1,314 @@
 대상: $ARGUMENTS
 출력 경로: /home/ubuntu/Share/ppt-generator/output/
 
+# Harness-Based PPT Generation (v2)
+
+이 명령은 Anthropic 하네스 엔지니어링 원칙을 적용한 6-역할 파이프라인으로 PPT를 생성한다.
+
+**격리의 실제 구현**: Generator / Evaluator / Refiner 는 **메인 세션이 아니라 `Agent` tool로 dispatch된 subagent**에서 실행된다. 각 subagent는 fresh context — 부모 대화 히스토리 없음. 명시적으로 prompt와 파일 경로만 받는다.
+
+**고정** (절대 변경 금지):
+- 첫 페이지 표지 레이아웃
+- 페이지별 마스터 요소 (회사 로고, 페이지 번호, "SL Corporation Confidential", "연구개발본부", 상/하 divider)
+
+**자유** (LLM 주도):
+- CONTENT_SAFE 영역 내 모든 콘텐츠
+
+## 역할별 실행 주체
+
+| 역할 | 실행 주체 | 이유 |
+|------|----------|------|
+| Planner | 메인 Claude | Human gate (사용자 승인) 필요 |
+| **Generator** | **Agent subagent** | Fresh context — 이전 슬라이드 코드 미노출 |
+| Validator | Bash (deterministic) | LLM 아님 |
+| **Evaluator** | **Agent subagent** | **코드 미노출 격리 — 자기 과대평가 편향 방지** |
+| **Refiner** | **Agent subagent** | Fresh context — attempt 히스토리 배제 |
+| Assembler | Bash (deterministic) | LLM 아님 |
+
 ## Step 0: 입력 유형 판단
 
-대상 경로/내용을 확인하여 유형을 판단한다:
+대상 경로/텍스트를 확인해 유형 판단:
+- A) 분석 결과 폴더 (.analysis-meta.json 등)
+- B) 소스 코드 프로젝트
+- C) 텍스트/문서 파일 (.md, .txt, .pdf, .html)
+- D) 기업명 / 주제 등 텍스트
 
-A) 분석 결과 폴더 (아래 파일 중 하나 이상 존재)
-   - phase0-raw-facts.md
-   - phase1-architecture.md
-   - phase2-data-flow.md
-   - phase3-tech-stack.md
-   - phase4-maintenance-guide.md
-   - project-overview.md
-   → 존재하는 파일들을 모두 읽어서 바로 Step 2로
-B) 소스 코드 프로젝트 (*.py, package.json 등 존재)
-   → 코드를 직접 분석하여 Step 1 수행
-C) 텍스트/문서 파일 (.md, .txt, .pdf 등)
-   → 문서 내용을 분석하여 Step 1 수행
-D) 대상이 경로가 아닌 텍스트 (기업명, 주제 등)
-   → 주어진 정보와 웹 검색으로 Step 1 수행
+프로젝트 식별자 `{name}` 결정 (예: `ai-coding-exec-summary`).
 
-대상에서 프로젝트 식별자 `{name}`을 결정한다 (예: `sl-coding-assistant`, `company-intro`).
-판단 결과를 사용자에게 안내한다:
+사용자에게 보고:
 "입력 유형: [A/B/C/D]로 판단했습니다. 프로젝트명: `{name}`. 진행할까요?"
 
-## Step 1: 데이터 수집 및 분석
-(유형 A는 이 단계 생략)
+## Step 1: 분석 및 인벤토리 수집
 
-대상에서 PPT에 담을 데이터를 수집한다.
-- fc-list로 시스템 폰트 목록을 확인하고, 주제에 어울리는 폰트를 선택한다
-- 실제로 존재하는 데이터 항목만 나열 (없는 건 절대 포함 금지)
-- 각 항목의 데이터 성격 판단:
-  - 특징/가치 나열 → cards
-  - 숫자/비교 → table
-  - 순차 흐름 → flowchart
-  - 계층 구조 → architecture
-  - 디렉토리 → tree
-  - 대비 → comparison
-  - 설명 → content_boxed
-  - 비율/비중 수치 → chart (pie/doughnut)
-  - 비교 수치 → chart (bar/column)
-  - 추세 수치 → chart (line)
-  - 서비스 연결 관계 → architecture_diagram (의미 도형 사용)
-  - 파이프라인/순차 단계 → pipeline (chevron)
-  - 의사결정 분기 → decision_flow (flowchart shapes)
-- 각 항목의 풍부도 (sparse/moderate/rich)
-- 각 항목의 실제 개수 기록
+원본 자료를 읽고 `input/{name}/analysis.yaml` 생성 (v1과 동일 — 섹션·테이블·수치·다이어그램 인벤토리).
 
-저장: `input/{name}_analysis.yaml`
+## Step 2: PLANNER (메인 Claude)
 
-## Step 2: 슬라이드 설계
+Planner는 사용자와 상호작용(Human gate)이 필요하므로 **메인 Claude가 직접 수행**.
 
-analysis.yaml (또는 기존 분석 파일들)을 읽고 **시각적 설계**를 한다.
+### 2a. 덱 설계
+- 총 슬라이드 수 결정 (표지 포함)
+- 표지는 항상 `slide_01`, layout=`제목 슬라이드`
+- 각 슬라이드 layout 결정:
+  - `제목 슬라이드` — 표지만
+  - `제목 및 내용 (페이지 번호 삭제)` — 섹션 구분 또는 5장 이하 콤팩트 덱
+  - `제목 및 내용` — 기본
 
-각 슬라이드별로 계획:
-- 시각적 컨셉 (레이아웃 패턴, 시각적 비유)
-- 색상 팔레트 (이 프레젠테이션 전용 RGB 값)
-- 공간 배치 (대략적 비율)
-- 타이포그래피 선택
-- 인접 슬라이드와 시각적으로 구분되는 요소
-- 사용할 MSO_SHAPE 도형 종류 (의미 도형: CAN, CLOUD, CUBE, GEAR_6 등)
-- 차트 슬라이드: 차트 타입(DOUGHNUT/COLUMN_CLUSTERED/LINE 등) + 데이터→시리즈 매핑
-- 다이어그램 슬라이드: 노드 도형 종류 + 연결 토폴로지 (ELBOW/CURVE/STRAIGHT)
-- 그림자/그라디언트 적용 대상 요소
+### 2b. plan.yaml 작성
 
-설계 규칙:
-- CLAUDE.md "적응형 슬라이드 구조"에 따라 전체 구조 패턴(섹션 분할형/내러티브형/컴팩트형/본문+부록형)을 먼저 결정
-- 목차/섹션 구분 슬라이드의 필요성을 데이터 그룹 수와 내러티브 성격으로 판단 (불필요하면 생략)
-- 카드 수 = 실제 데이터 항목 수
-- 풍부한 데이터(5개+)는 별도 슬라이드로 분리
-- 데이터 없는 슬라이드는 설계에 포함 금지
-- 오버헤드 비율 체크: 비콘텐츠(표지+목차+섹션구분+마무리)가 전체의 30% 이하인지 확인
-- 총 15장 이하 프레젠테이션에서 섹션 구분 슬라이드는 지양 → 색상 전환으로 대체
+`input/{name}/plan.yaml`:
+```yaml
+project_name: "{name}"
+total_slides: N
+sources: ["sources/{name}/..."]
+narrative: "..."
+slides: [1, 2, 3, ..., N]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents: ["#4F81BD", "#9BBB59", "#C0504D", "#4BACC6"]
+```
 
-색상: 섹션마다 다른 accent 색상 사용, 단일 색상 반복 금지
+### 2c. slide_NN.spec.yaml 작성
 
-저장: `input/{name}_slide-plan.md` (Markdown — 설계는 창의적 문서)
+각 슬라이드마다 `input/{name}/slides/slide_NN.spec.yaml`:
+```yaml
+idx: N
+layout: "제목 및 내용"
+title: "..."
+pattern: "cards"    # cover / section_divider / cards / table / chart / chevron / diagram / code
+accent_color: "#4F81BD"
+key_message: "..."
+content_blocks:
+  - kind: card
+    title: "..."
+    body: "..."
+data_refs: ["analysis.yaml > Section X"]
+constraints:
+  max_shapes: 25
+  min_nontext_elements: 1
+```
 
-**사용자에게 슬라이드 설계를 보여주고 확인을 받는다.** 승인 후 Step 3 진행.
+### 2d. ▶ Human Gate
 
-## Step 3: python-pptx 스크립트 작성
+생성한 plan·specs을 사용자에게 요약해서 보여주고 승인 대기. 사용자 승인 없이 Step 3 진행 금지.
 
-slide-plan.md를 읽고 완전한 python-pptx 스크립트를 작성한다.
+## Step 3: 슬라이드별 루프
 
-스크립트 요구사항:
-1. ppt_utils 임포트 (ensure_fonts, load_template, clear_placeholders, add_shadow, set_shape_opacity, add_gradient_stop, make_icon_circle, brightness_check, add_textbox, add_para, set_body_anchor 등)
-2. ref/표지.pptx 템플릿 사용
-3. 각 슬라이드 섹션에 설계 의도 주석
-4. 독립 실행 가능 (python script.py)
-5. output/{name}.pptx에 저장
-6. `add_shadow()` 사용 — 오프셋 사각형으로 가짜 그림자 금지
-7. 그라디언트 적극 활용 (최소 표지/섹션 구분 슬라이드)
-8. 수치 데이터 → `add_chart()` API 사용
-9. 다이어그램에 의미 도형 사용 (CAN, CLOUD, CUBE, GEAR_6, CHEVRON 등)
-10. 이모지를 시각 지표로 사용 금지 — 색상 도형/`make_icon_circle()` 사용
-11. ppt_utils의 헬퍼 함수 활용 (add_textbox, add_para, set_body_anchor 등) — 직접 재구현 금지
-12. `set_title(slide, "...")` 으로 제목 설정 — add_textbox()로 제목 금지
-13. 콘텐츠는 CONTENT_SAFE 영역 안에 배치
-14. 콘텐츠 슬라이드에서 전면 배경으로 마스터 요소 덮지 말 것
-15. 표지는 `setup_cover(slide, title)` 사용 — 수동 placeholder 텍스트 설정 금지
+각 슬라이드 `N = 1..total_slides`에 대해:
 
-저장: /tmp/{name}_generate.py
+### 3a. GENERATOR — **Agent subagent**
 
-## Step 4: 실행 및 검증
+```
+Agent(
+  description="Generate slide NN code",
+  subagent_type="general-purpose",
+  prompt="""
+당신은 PPT 슬라이드 Generator다. Fresh context — 이전 대화 없음.
 
-python /tmp/{name}_generate.py
+## 읽어야 할 파일
+1. /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
+2. /home/ubuntu/Share/ppt-generator/harness/prompts/generator.md  (엄격한 제약)
+3. /home/ubuntu/Share/ppt-generator/template_contract.py  (CONTENT_SAFE, LAYOUT 상수)
+4. /home/ubuntu/Share/ppt-generator/ppt_utils.py  (사용 가능한 헬퍼 시그니처 — 읽고 참조)
 
-검증:
-- [ ] 에러 없이 실행되는가?
-- [ ] 빈 슬라이드 없는가?
-- [ ] 카드 수 = 실제 데이터 항목 수인가?
-- [ ] 섹션별 시각적 변화가 있는가?
-- [ ] 이모지가 시각 지표로 사용되지 않았는가?
-- [ ] 수치 데이터에 차트가 활용되었는가?
-- [ ] 다이어그램에 의미 도형이 사용되었는가?
-- [ ] 가짜 그림자(오프셋 사각형) 없는가?
-- [ ] 그라디언트가 적절히 활용되었는가?
-- [ ] ppt_utils 헬퍼를 직접 재구현하지 않았는가?
-- [ ] 제목이 set_title()로 플레이스홀더를 사용하는가?
-- [ ] 콘텐츠가 안전 영역(0.68"~7.02") 안에 있는가?
-- [ ] 콘텐츠 슬라이드에서 마스터 요소가 가려지지 않는가?
-- [ ] 표지가 setup_cover()로 생성되었는가? (체크박스, 날짜, 저자 포함)
-- [ ] 오버헤드 비율이 30% 이하인가? (비콘텐츠 ÷ 전체)
-- [ ] 각 콘텐츠 슬라이드에 최소 1개 비텍스트 시각 요소가 있는가?
+## 작업
+1. spec.yaml 읽기
+2. generator.md 제약 준수하며 build_slide_NN(slide) 함수 작성:
+   - import whitelist 안에서만
+   - CONTENT_SAFE 영역 안에 shape 배치
+   - set_title(slide, ...) + clear_placeholders(slide, keep=[0])
+   - spec.content_blocks 각 항목 반영
+3. Write tool 로 아래 경로에 저장:
+   /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.code.py
+4. 저장 완료 후 "Saved: <경로>" 만 짧게 보고. 코드 요약·설명 불필요.
+"""
+)
+```
 
-실패 시 스크립트 수정 후 재실행.
+### 3b. VALIDATOR — Bash (결정적)
+
+```bash
+Bash: python3 -m harness.loop {name} --action validate --slide N
+```
+
+내부적으로 `harness.validator.validate_slide_code()` 실행.
+결과: `input/{name}/slides/slide_NN.validation.json`
+
+판정: 메인 Claude가 JSON 읽고 `checks` 전부 true 인지 확인.
+
+### 3c. PNG 렌더 (Validator 통과 && Evaluator 필요 시)
+
+`spec.pattern ∈ {cover, section_divider}` 이면 Evaluator 생략 → 3d로 직행.
+
+그 외:
+```bash
+Bash: python3 -c "
+import sys; sys.path.insert(0, '/home/ubuntu/Share/ppt-generator')
+from harness.render import render_single_slide
+from harness.schemas import SlideSpec
+from pathlib import Path
+spec = SlideSpec.load(Path('/home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml'))
+render_single_slide(
+    code_path=Path('/home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.code.py'),
+    layout_name=spec.layout,
+    output_png=Path('/home/ubuntu/Share/ppt-generator/input/{name}/renders/slide_NN.png'),
+)
+"
+```
+
+### 3d. EVALUATOR — **Agent subagent (코드 미노출 격리!)**
+
+**CRITICAL**: prompt에 `slide_NN.code.py` 경로를 적지 마라. Subagent가 유혹받지 않도록 코드 경로는 **의도적으로 배제**한다.
+
+```
+Agent(
+  description="Evaluate slide NN rendering",
+  subagent_type="general-purpose",
+  prompt="""
+당신은 PPT 슬라이드 Evaluator다. Fresh context — Generator 대화 히스토리 없음.
+
+## 읽어야 할 것만
+1. /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
+2. /home/ubuntu/Share/ppt-generator/input/{name}/renders/slide_NN.png  (Read tool로 이미지 인식)
+3. /home/ubuntu/Share/ppt-generator/harness/prompts/evaluator.md  (rubric 정의)
+
+## 금지
+- slide_NN.code.py 파일은 절대 읽지 마라. 있어도 무시.
+- 생성된 Python 코드 분석 금지. 오직 렌더된 이미지와 spec만으로 평가.
+
+## 작업
+1. spec과 PNG 비교
+2. evaluator.md 의 5-차원 rubric 각 0~5 채점
+3. score = round(mean(rubric.values())), passed = score >= 4
+4. Write tool 로 저장:
+   /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.evaluation.json
+
+JSON 스키마:
+{
+  "slide_idx": N,
+  "score": 0-5,
+  "rubric": {"spec_adherence":N, "visual_hierarchy":N, "density":N, "color_consistency":N, "readability":N},
+  "actionable_feedback": ["...", "..."],
+  "passed": true/false
+}
+
+5. 저장 후 "Saved evaluation. score=N, passed=bool" 만 보고.
+"""
+)
+```
+
+### 3e. 판정 (메인 Claude)
+
+메인 Claude가 validation.json + evaluation.json 읽고:
+
+```
+v_ok = validation.passed
+e_ok = (spec.pattern in skip_eval) OR evaluation.passed
+
+if v_ok and e_ok:
+    → 다음 슬라이드 (3a)로
+elif attempts < MAX_REFINE_ATTEMPTS (=3):
+    → REFINER (3f)
+else:
+    → flag_for_human: "slide N 검증 실패. attempts={...}. 수동 확인 요청."
+```
+
+### 3f. REFINER — **Agent subagent (fresh context)**
+
+```
+Agent(
+  description="Refine slide NN code",
+  subagent_type="general-purpose",
+  prompt="""
+당신은 PPT 슬라이드 Refiner다. Fresh context — 이전 시도 히스토리 없음.
+
+## 읽어야 할 4개 파일
+1. input/{name}/slides/slide_NN.spec.yaml    (원본 요구사항)
+2. input/{name}/slides/slide_NN.code.py      (기존 Generator 출력)
+3. input/{name}/slides/slide_NN.validation.json  (Validator 실패)
+4. input/{name}/slides/slide_NN.evaluation.json  (Evaluator 피드백 — 있으면)
+5. /home/ubuntu/Share/ppt-generator/harness/prompts/refiner.md  (원칙)
+
+## 작업
+1. 네 파일 읽고 실패 원인 파악
+2. refiner.md 원칙 준수:
+   - 핀포인트 수정 (전체 재작성 금지)
+   - 제약 유지 (import whitelist, CONTENT_SAFE, 함수 시그니처)
+3. Write tool 로 기존 code.py 덮어쓰기:
+   input/{name}/slides/slide_NN.code.py
+4. 저장 후 "Refined. changed: [간단 bullet]" 보고.
+"""
+)
+```
+
+Refine attempt trace 저장 (메인 Claude가 기록):
+```bash
+Bash: python3 -c "
+import json
+from pathlib import Path
+trace = {'attempt': ATTEMPT, 'spec_path': '...', 'validation': {...}, 'evaluation': {...}}
+p = Path('/home/ubuntu/Share/ppt-generator/input/{name}/traces/slide_NN_attempt_MM.json')
+p.parent.mkdir(parents=True, exist_ok=True)
+p.write_text(json.dumps(trace, ensure_ascii=False, indent=2))
+"
+```
+
+Refine 후 3b(Validator)부터 다시.
+
+## Step 4: ASSEMBLE — Bash (결정적)
+
+모든 슬라이드가 검증 통과하면:
+
+```bash
+Bash: python3 -m harness.loop {name} --action assemble
+```
+
+내부 동작:
+1. `plan.yaml`의 `slides` 순서대로 `code.py`들 import·실행
+2. `TemplateGuard`로 감싸 마스터 무결성 감사
+3. `output/{name}.pptx` 저장
+4. `validate_full_deck` 실행 (마스터 XML 해시 + 전 슬라이드 safe_zone)
+
+실패 시 어느 슬라이드가 원인인지 추적해 3a로 돌아가 재생성.
+
+## Step 5: 최종 검증 체크리스트
+
+- [ ] `output/{name}.pptx` 생성됨
+- [ ] 슬라이드 수 == `plan.total_slides`
+- [ ] 마스터 XML 해시가 `ref/표지.pptx`와 동일 (validate_full_deck 통과)
+- [ ] 모든 custom shape bbox ⊂ CONTENT_SAFE
+- [ ] 표지(slide 1) — setup_cover 사용, 배경 Picture 변경 없음
+- [ ] 각 content 슬라이드 비텍스트 시각 요소 1+
+- [ ] `input/{name}/traces/`에 refine attempt 기록
+
+## Step 6: 최종 보고
+
+사용자에게:
+```
+✓ output/{name}.pptx  (N 슬라이드)
+  · Generator Agent 호출: N회
+  · Evaluator Agent 호출: M회 (cover/section_divider 제외)
+  · Refiner Agent 호출: K회
+  · Audit: passed
+  · Refine 필요 슬라이드: [...]
+```
+
+---
+
+## 격리 검증 체크리스트
+
+v2 구현이 진짜로 격리되었는지 확인:
+
+- [ ] Generator prompt에 **다른 슬라이드의 code.py 경로 미포함**
+- [ ] Evaluator prompt에 **자기 슬라이드의 code.py 경로조차 미포함** (spec + PNG만)
+- [ ] Refiner prompt에 **이전 attempt의 trace 미포함** (현재 시점의 4개 파일만)
+- [ ] 각 Agent 호출은 `subagent_type="general-purpose"` — main과 별도 컨텍스트
+- [ ] Agent 리턴 메시지는 파일 저장 확인 정도만. 코드 덤프 금지.
+
+## Notes
+
+- **Planner는 메인 Claude** (사용자 interaction 필요). Generator/Evaluator/Refiner만 subagent.
+- **Validator/Assembler는 Bash** (deterministic, LLM 불필요).
+- **Agent 호출 비용**: 슬라이드당 평균 1.5~3회 (Gen 1 + 선택 Eval 1 + 선택 Refine 0~2). 25장 덱 기준 40~75회.
+- **부분 재생성**: 특정 slide_NN.code.py만 바꾸고 `--action assemble` 재실행하면 결정적.
+- **v1 호환**: 기존 `sources/*/generate.py`는 완성된 .pptx를 `validate_full_deck`으로 감사하면 v2 체계에 통합 가능.

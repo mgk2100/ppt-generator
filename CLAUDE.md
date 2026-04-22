@@ -252,6 +252,17 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 
 고정 구조 금지. 전체 구조도 데이터가 결정한다.
 
+### 적응형 디자인 철학
+
+슬라이드 디자인은 콘텐츠가 결정한다. 정해진 시각 패턴 목록을 순차 적용하는 것이 아니라, 데이터의 성격과 관계에 맞는 최적의 표현을 자유롭게 구성한다.
+
+원칙:
+1. **시각 패턴 카탈로그는 도구 상자** — 선택지이지 체크리스트가 아님
+2. 카탈로그에 없는 새로운 배치도 콘텐츠가 요구하면 허용
+3. 같은 콘텐츠 유형이라도 맥락에 따라 다른 패턴 적용 가능
+4. 도형 종류, 색상 조합, 이모지 활용, 배치 방식에 제한 없음 (마스터 요소 보호만 준수)
+5. 슬라이드당 도형 30-40개도 허용 — 밀도 높은 정보 전달이 목적이면 자유롭게 구성
+
 ### 구조 패턴 선택
 
 데이터의 성격과 볼륨으로 전체 구조 패턴을 결정한다:
@@ -306,7 +317,6 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 ---
 
 ## 금지 사항
-- **이모지를 시각 지표로 사용 금지** (🔴🟠🟡 등). 색상 도형(`OVAL` 또는 `make_icon_circle()`) 사용
 - **가짜 그림자(오프셋 사각형) 금지**. `add_shadow()` 사용
 - **모든 다이어그램에서 사각형만 사용 금지**. 의미 도형 활용 (CAN, CLOUD, CUBE, GEAR_6 등)
 - **통계 데이터를 텍스트 숫자만으로 나열 금지**. 3개+ 수치 → 차트 활용
@@ -439,10 +449,10 @@ from pptx.oxml.ns import qn
 from ppt_utils import (
     load_template, get_layout, clear_placeholders,
     ensure_fonts, set_cell_anchor, add_arrowhead,
-    add_shadow, set_shape_opacity, add_gradient_stop,
-    make_icon_circle, brightness_check,
+    add_shadow, add_accent_bar, set_shape_opacity, add_gradient_stop,
+    make_icon_circle, make_icon_badge, brightness_check,
     add_textbox, add_para, add_rich_text,
-    add_bullet_list, set_body_anchor,
+    add_bullet_list, add_footnote, set_body_anchor,
     set_title, setup_cover, add_section_divider,
     CONTENT_SAFE,
     estimate_text_size, set_text_inset, calc_grid,
@@ -550,6 +560,8 @@ print(f"생성 완료: {output_path}")
 | `set_shape_opacity(shape, opacity_pct)` | 도형 채우기 투명도 |
 | `add_gradient_stop(shape, position, r, g, b)` | 그라디언트 3번째+ stop 추가 |
 | `make_icon_circle(slide, x, y, size, fill_color, text, font_size)` | 원형 아이콘/배지 |
+| `make_icon_badge(slide, x, y, w, h, text, fill_color, ...)` | 사각형 아이콘/배지 (ROUNDED_RECTANGLE, 이모지/텍스트/번호) |
+| `add_accent_bar(slide, x, y, w, h, color)` | 얇은 색상 바 (카드 accent, 칼럼 구분선 등) |
 | `brightness_check(r, g, b)` | 밝기 판단 (True=밝음→어두운 텍스트) |
 | `set_title(slide, text, ...)` | TITLE 플레이스홀더에 텍스트 설정 (font_name, font_size, color, bold) |
 | `setup_cover(slide, title, ...)` | 표지 표준 포맷 (purpose, author, department, date) |
@@ -570,6 +582,7 @@ print(f"생성 완료: {output_path}")
 | `add_state_machine(slide, states, transitions, ...)` | 상태 머신 다이어그램 (자동 그리드 + 커넥터 + 라벨) |
 | `auto_shrink_text(shape)` | 도형 텍스트 자동 축소 (normAutofit 설정) |
 | `add_routed_connector(slide, waypoints, ...)` | 다중 경유점 라우팅 커넥터 (freeform path, 중간 도형 우회) |
+| `add_footnote(slide, text, ...)` | 슬라이드 하단 각주 (CONTENT_SAFE 하단 자동 배치, ※ 접두어) |
 | `OUTPUT_DIR` | 출력 디렉토리 경로 (`output/`) |
 
 ### 그림자 (Shadow)
@@ -807,11 +820,134 @@ DANGER    = RGBColor(...)   # 리스크, 에러 전용
 
 ### 시각적 인코딩 원칙
 - **숫자/통계** → 차트. 3개+ 수치 → 반드시 차트 고려
-- **우선순위/심각도** → 색상 채운 작은 원(`OVAL`). 이모지 금지
-- **프로세스 흐름** → 플로차트 도형
+- **우선순위/심각도** → 색상 도형(`OVAL`/`make_icon_circle()`) 또는 이모지 배지(`make_icon_badge()`)
+- **프로세스 흐름** → 플로차트 도형 또는 이모지 플로우 (아래 참조)
 - **아키텍처** → 의미 도형: DB=`CAN`, 클라우드=`CLOUD`, 서버=`CUBE`, 서비스=`GEAR_6`
-- **파이프라인** → `CHEVRON` 도형 연결
+- **파이프라인** → `CHEVRON` 도형 연결 또는 이모지+화살표 플로우
 - **계층/단계** → 크기와 위치로 중요도 표현
+- **비교/변화** → Before/After 비교 패턴 (❌/✅ + 색상 배경)
+
+### 이모지 활용 가이드
+
+이모지는 시각적 앵커로 사용할 수 있다. 단, 남용 금지.
+
+**허용 패턴:**
+- **이모지 배지**: `make_icon_badge()` 안에 이모지 1개 + 배경색 (예: ⏱📊🌐⚠🤖⚙📄)
+- **플로우 라벨**: 단계 박스 내 이모지+텍스트 조합 (예: `👨‍🔬 연구원` → `🤖 AI`)
+- **Before/After 마커**: ❌ / ✅ 를 비교 영역 항목에 사용
+- **카드 헤더**: 이모지 1개 + 텍스트 (예: `📊 분석 결과`)
+
+**금지:**
+- 이모지**만으로** 상태/심각도 구분 (🔴🟠🟡) — 프로젝터에서 구분 불가. 색상 도형 병행 필수
+- 슬라이드당 이모지 종류 5개 초과 — 시각적 잡음
+- 본문 텍스트 내 이모지 장식 — 배지/헤더/라벨 위치에만 허용
+- 코드 블록 내 이모지
+
+### 시각 패턴 카탈로그
+
+도구 상자 — 선택지이지 체크리스트가 아님. 콘텐츠에 맞는 최적의 표현을 자유롭게 선택한다.
+
+#### 이모지 배지
+
+소형 ROUNDED_RECT + 배경색 + 이모지. 카드 내 항목의 시각적 앵커.
+
+```python
+make_icon_badge(slide, x, y, Inches(0.36), Inches(0.36),
+    "⏱", RGBColor(0x00, 0x34, 0x78), font_size=16)
+```
+
+#### 이모지 플로우
+
+단계별 박스(ROUNDED_RECT + 파스텔 배경) + ➡ 텍스트로 연결.
+HFlow로 수평 배치, 각 박스 내 이모지+텍스트 2줄.
+
+```python
+# 레시피 (HFlow + make_icon_badge 조합)
+flow = HFlow(y=y, h=Inches(0.75), x_start=x, gap=Inches(0.1))
+steps = [("👨‍🔬", "연구원\n명령 입력", "#E8F4FD"),
+         ("🤖", "AI\n실험 설계", "#FCE4EC"),
+         ("⚙", "장비\n자동 실행", "#E8F4FD")]
+for emoji, label, bg in steps:
+    rect = flow.reserve(Inches(1.1))
+    # ROUNDED_RECT + 파스텔 배경 + 이모지+텍스트
+    # 박스 사이에 ➡ 텍스트박스 삽입
+```
+
+#### Before/After 비교
+
+`calc_grid(1, 2)` 분할 + 좌측=부정색(#FFF5F5), 우측=긍정색(#F0FFF4).
+항목에 ❌/✅ 접두어.
+
+```python
+grid = calc_grid(1, 2, gap=Inches(0.5))
+# 좌측: ROUNDED_RECT fill=#FFF5F5, 헤더="BEFORE (기존)"
+# 우측: ROUNDED_RECT fill=#F0FFF4, 헤더="AFTER (현재)"
+# 중앙: RIGHT_ARROW 도형 (fill=#AAAAAA)
+# 항목: "❌ 수동 작업" / "✅ AI 자동화"
+```
+
+#### 칼럼 헤더 카드
+
+브랜드색 ROUNDED_RECT + 흰색 텍스트. 비교/분류의 열 헤더.
+
+```python
+# 3열 헤더: 각 열에 브랜드색 카드
+colors = [RGBColor(0xA5, 0x00, 0x34),  # 빨강
+          RGBColor(0x14, 0x28, 0xA0),  # 파랑
+          RGBColor(0xF7, 0xB5, 0x00)]  # 금색
+for i, (cell, color) in enumerate(zip(grid[0], colors)):
+    make_icon_badge(slide, cell.left, cell.top, cell.width, Inches(0.35),
+        names[i], color, font_size=13)
+```
+
+#### 그리드 비교표
+
+좌측 라벨 배지(배경색) + 우측 다열 콘텐츠 카드(#FAFAFA).
+열 구분은 `add_accent_bar()` (w=Inches(0.01)).
+
+```python
+# 좌측 라벨 (세로 배지)
+make_icon_badge(slide, x, y, Inches(0.8), h, "핵심\n성과",
+    RGBColor(0x00, 0x34, 0x78), font_size=14)
+# 우측 카드 + 칼럼 구분선
+add_accent_bar(slide, divider_x, y+Inches(0.1), Inches(0.01), h-Inches(0.2),
+    RGBColor(0xAA, 0xAA, 0xAA))
+```
+
+#### 각주
+
+슬라이드 하단 ※ 보조 정보. 자동 배치.
+
+```python
+add_footnote(slide, "에이전틱 AI: 사람의 지시 없이도 스스로 판단·실행하는 AI")
+# 또는 접두어 변경
+add_footnote(slide, "출처: 2026 산업 보고서", prefix="")
+```
+
+### 확장 파스텔 팔레트 (선택 옵션)
+
+프레젠테이션 색상 팔레트 수립 시 참고할 수 있는 파스텔 배경색 세트.
+
+| 용도 | 색상코드 | 계열 |
+|------|---------|------|
+| 카드 배경 | #FAFAFA | 중립 회색 |
+| 정보 영역 | #F5F8FC, #E8F4FD | 파랑 |
+| 보라 영역 | #E8EAF6 | 인디고 |
+| 경고 영역 | #FFF8E1 | 노랑 |
+| 긍정/성과 | #E8F5E9, #F0FFF4 | 초록 |
+| 부정/위험 | #FFF5F5, #FCE4EC | 빨강/핑크 |
+| 비활성 | #F0F0F0 | 회색 |
+
+감정색 매핑:
+- **부정/Before** → #FFF5F5 + ❌
+- **긍정/After** → #F0FFF4 + ✅
+
+### 글머리 기호 옵션
+
+`add_bullet_list()` 의 `bullet_char` 파라미터로 선택:
+- `"•"` (기본) — 일반 리스트
+- `"▸"` — 경량 포인터, 밀도 높은 슬라이드에 적합
+- `""` (빈 문자열) — 들여쓰기만, 기호 없음
 
 ### 다이어그램 패턴
 - **서비스 토폴로지**: 계층 배치 + `MSO_CONNECTOR.ELBOW` 커넥터

@@ -1,0 +1,135 @@
+# Template Locked Registry
+# ref/표지.pptx 의 불변 요소 레지스트리.
+# Layer 1 Template Contract에서 로드되어 런타임 검증 기준으로 사용.
+#
+# 자동 생성 기준: ref/표지.pptx 를 python-pptx로 스캔
+# 재생성: python -m harness.scan_template  (미래 유틸)
+
+schema_version: 1
+template_file: ref/표지.pptx
+
+slide_dimensions:
+  width_in: 10.833
+  height_in: 7.500
+
+# 콘텐츠 영역 — CONTENT_SAFE.
+# Layout 1("제목 및 내용")의 body placeholder(ph_idx=10)와 정확히 일치.
+# 이 영역 안에 shape를 배치하면 마스터 요소들과 겹치지 않는다.
+safe_zone:
+  left_in:   0.28
+  top_in:    0.68
+  width_in: 10.28
+  height_in: 6.34
+  # 허용 오차: 1pt (9525 EMU). 라인 두께·반올림 마진.
+  tolerance_emu: 9525
+
+# 레이아웃 3종.
+layouts:
+  - name: "제목 슬라이드"
+    purpose: cover
+    allow_in_scripts: true
+    keep_placeholders: [0, 1]   # title + subtitle(date)
+    notes: "전체 배경 이미지(Picture 91)가 마스터를 덮음 — 의도."
+  - name: "제목 및 내용"
+    purpose: content
+    allow_in_scripts: true
+    keep_placeholders: [0]       # title only
+    notes: "페이지 번호 자동 표시(마스터 상속)."
+  - name: "제목 및 내용 (페이지 번호 삭제)"
+    purpose: section_divider_or_no_pagenum
+    allow_in_scripts: true
+    keep_placeholders: [0]
+    notes: "직사각형 3이 페이지 번호 영역을 덮어 숨김."
+
+# 마스터 불변 요소 (layouts='*' = 모든 레이아웃에서 렌더링).
+# bbox 단위: inches. 검증 시 tolerance_emu 적용.
+master_locked_shapes:
+  - id: logo
+    source_name: "Picture 18"
+    layout: "*"
+    kind: picture
+    bbox_in: [10.00, 0.25, 0.54, 0.33]
+    notes: "우상단 SL 로고."
+    cover_exception: true   # Layout 0에서는 Picture 91 배경이 덮음
+
+  - id: page_number
+    source_name: "슬라이드 번호 개체 틀 5"
+    layout: "*"
+    kind: textbox
+    bbox_in: [5.83, 7.17, 1.28, 0.28]
+    fixed_text_pattern: "‹#› / 00"
+    cover_exception: true
+    hidden_in_layouts: ["제목 및 내용 (페이지 번호 삭제)"]
+
+  - id: footer_confidential
+    source_name: "바닥글 개체 틀 4"   # 좌하
+    layout: "*"
+    kind: textbox
+    bbox_in: [0.28, 7.15, 5.51, 0.31]
+    fixed_text_prefix: "SL Corporation Confidential"
+    cover_exception: true
+
+  - id: footer_department
+    source_name: "바닥글 개체 틀 4"   # 우하 (동일 이름 다른 인스턴스)
+    layout: "*"
+    kind: textbox
+    bbox_in: [7.99, 7.17, 2.56, 0.28]
+    fixed_text_pattern: "연구개발본부"
+    cover_exception: true
+
+  - id: divider_top
+    source_name: "직선 연결선 9"
+    layout: "*"
+    kind: line
+    bbox_in: [0.28, 0.67, 10.28, 0.00]
+    cover_exception: true
+
+  - id: divider_bottom
+    source_name: "직선 연결선 10"
+    layout: "*"
+    kind: line
+    bbox_in: [0.30, 7.13, 10.24, 0.00]
+    cover_exception: true
+
+# 생성 금지 (Generator가 하면 안 되는 것)
+forbidden_operations:
+  - op: "prs.slide_masters[*] 의 shape 추가/수정/삭제"
+    reason: "마스터는 모든 슬라이드에 상속되는 불변 영역"
+  - op: "prs.slide_layouts[*] 의 shape 추가/수정/삭제"
+    reason: "레이아웃 3종은 고정"
+  - op: "Layout 0(표지) 배경 Picture 교체"
+    reason: "표지 배경은 고정. setup_cover()의 title/date/author 변경만 허용"
+  - op: "shape bbox가 safe_zone을 벗어남"
+    reason: "마스터 요소(로고·푸터·divider) 가림"
+  - op: "CONTENT_SAFE 밖에 custom shape 직접 배치"
+    reason: "tolerance_emu 초과 시 fail"
+
+# LLM이 build_slide 코드에서 import 허용된 모듈만.
+# stdlib 중 안전한 일부와 프로젝트 모듈만 포함.
+# 금지: subprocess, socket, urllib, requests, http, ftplib 등 네트워크/프로세스.
+import_whitelist:
+  # project modules
+  - "ppt_utils"
+  - "template_contract"
+  # python-pptx
+  - "pptx"
+  - "pptx.util"
+  - "pptx.dml.color"
+  - "pptx.enum.text"
+  - "pptx.enum.shapes"
+  - "pptx.chart.data"
+  # safe stdlib
+  - "sys"
+  - "os"
+  - "re"
+  - "json"
+  - "math"
+  - "pathlib"
+  - "dataclasses"
+  - "typing"
+  - "collections"
+  - "functools"
+  - "itertools"
+  - "enum"
+  - "textwrap"
+  - "copy"
