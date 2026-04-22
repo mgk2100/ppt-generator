@@ -1,0 +1,43 @@
+project_name: ai-coding-exec-summary-v8
+total_slides: 4
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  v7 대비 3가지 개선:
+  1. 각주 스타일 통일 — 모든 슬라이드 9pt / #666666 / "※ " prefix /
+     line_spacing 1.15. (기존: S3 가 8pt · C_BLUE prefix, S4 가 #999999 이었던
+     차이를 해소)
+  2. S2 "품질검증 부담 증가" 카드 마지막 줄 문구 교체:
+     "(가장 자주 누락되는 투자)" → "보강 누락 시 AI 도입 효과 상쇄".
+     의미가 더 직관적이고 원인-결과 구조.
+  3. S4 신호등 테이블에 "산정 베이스 / 제약 계수" 메모 블록 추가 + 각 행의
+     interp 끝에 영역별 보정 계수 병기.
+     예: "선행 R&D · 도구 · 테스트 자동화 · +20~35% ·
+          즉시 도입 후보 (IT 벤치 × 0.6~0.8)"
+
+  S1 (표지) → S2 (핵심 요약)
+  → S3 (경쟁사 코딩 도입 상세) → S4 (영역별 효과 + 산정 방식 + 증가 사유)
+slides: [1, 2, 3, 4]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+  footnote:
+    font_size_pt: 9
+    color_hex: "#666666"
+    prefix: "※ "
+    line_spacing: 1.15
+    align: left
+constraints:
+  no_cost_speculation: true
+  no_internal_prediction: true
+  no_approval_section: true
+  cite_tool_and_measurement: true
+  footnote_glossary: true
+  footnote_no_duplicate: true
+  footnote_unified_style: true
+  show_estimation_basis: true
