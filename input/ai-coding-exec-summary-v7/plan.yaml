@@ -1,0 +1,31 @@
+project_name: ai-coding-exec-summary-v7
+total_slides: 4
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  v6 대비 2가지 변화:
+  1. S5 "자동차 업계 LLM/AI 활용 확장" 제거 — 덱 주제 (AI 코딩 에이전트 도입
+     영향 분석) 와 거리가 있어 제외. 덱은 4 장 (표지 + 본문 3) 으로 축소.
+  2. S4 Faros AI 카드에 "리뷰 시간 +91% · PR 수 +98% 증가 사유" 해설 추가.
+     - AI 코드량 급증 → PR 수 2배
+     - 코드 중복 4배 (GitClear 2025) → MISRA C:2025 중복 규칙 검증 부담
+     - 자동차 양산: ASPICE · ISO 26262 규정 준수는 사람 몫
+
+  S1 (표지) → S2 (핵심 요약 + 각주)
+  → S3 (경쟁사 코딩 도입 상세) → S4 (영역별 효과 + 리뷰 부담 증가 사유)
+slides: [1, 2, 3, 4]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+constraints:
+  no_cost_speculation: true
+  no_internal_prediction: true
+  no_approval_section: true
+  cite_tool_and_measurement: true
+  footnote_glossary: true
+  footnote_no_duplicate: true   # 한번 해설한 용어는 다른 슬라이드에서 각주 생략
