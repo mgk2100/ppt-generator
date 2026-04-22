@@ -1,0 +1,22 @@
+project_name: ai-coding-exec-summary-v3
+total_slides: 5
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  표지 + 본문 4장. 자사 예측·추정 절감액 일절 배제하고 외부 OEM/Tier-1 공식 출처만 인용.
+
+  S1 (표지) → S2 (핵심 요약) → S3 (왜 지금 · 경쟁사 현황)
+  → S4 (영역별 효과 · 외부 공식 수치) → S5 (실행 로드맵 · 승인)
+slides: [1, 2, 3, 4, 5]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+constraints:
+  no_cost_speculation: true     # 자사 비용 산출 금지
+  no_internal_prediction: true  # 자사 효과 예측 금지
+  sources_required: true        # 수치는 반드시 출처 명시

@@ -1,0 +1,21 @@
+project_name: ai-coding-exec-summary-v2
+total_slides: 4
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  자동차 OEM · Tier-1 벤더사에서 AI 코딩 어시스턴트 도입 시
+  영역별 생산성 향상·절감 효과와 실행 계획을 4페이지에 압축.
+
+  P1 (한 눈에 요약)  → P2 (왜 지금인가 · 경쟁사 현황)
+  → P3 (영역별 효과 · ROI 정량) → P4 (실행 로드맵 · 승인 요청)
+
+  표지 없음. 각 슬라이드가 독립적 완결된 메시지.
+slides: [1, 2, 3, 4]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"   # blue — 정보·타임라인
+    - "#2E8B57"   # green — 긍정·효과
+    - "#D4A017"   # yellow — 주의
+    - "#C0504D"   # red — 위험
+    - "#2C7F94"   # teal — 실행

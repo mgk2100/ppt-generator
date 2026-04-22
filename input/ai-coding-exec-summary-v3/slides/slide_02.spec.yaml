@@ -1,0 +1,66 @@
+idx: 2
+layout: "제목 및 내용"
+title: "핵심 요약"
+pattern: "cards"
+accent_color: "#1F497D"
+key_message: "영역별 차등 적용 필수 · 경쟁사는 이미 도입 단계"
+content_blocks:
+  - kind: card_grid
+    layout: "1x3"
+    cards:
+      - accent: "#2E8B57"
+        icon: "✓"
+        title: "경쟁사 이미 도입 중"
+        lines:
+          - label: "Mercedes"
+            value: "5,000명+ 개발자 (공식)"
+          - label: "BMW"
+            value: "사내 파일럿 · AMCIS 2024"
+          - label: "Bosch · 현대모비스 · 현대오토에버"
+            value: ""
+          - label: "2027.08"
+            value: "EU AI Act 자동차 D-Day"
+      - accent: "#4F81BD"
+        icon: "△"
+        title: "영역별 효과 차이 (업계 일반)"
+        lines:
+          - label: "선행 R&D · 도구"
+            value: "+20~35%"
+          - label: "양산 일반 SW"
+            value: "+10~20%"
+          - label: "양산 안전 코드"
+            value: "±5% (본전)"
+          - label: "→ 선별 적용이 핵심"
+            value: ""
+      - accent: "#C0504D"
+        icon: "⚠"
+        title: "품질검증 부담 증가"
+        lines:
+          - label: "코드 리뷰 시간"
+            value: "+91% (Faros 2025)"
+          - label: "코드 리뷰 요청"
+            value: "+98% (Faros 2025)"
+          - label: "→ 인력·도구 동시 보강 필수"
+            value: ""
+          - label: "(가장 자주 누락되는 투자)"
+            value: ""
+  - kind: approval_box
+    title: "▶ 즉시 결정 요청 사항"
+    accent: "#1F497D"
+    items:
+      - "선행 · 테스트 자동화 영역  도입 검토 착수"
+      - "자사 시범 사업 추진  (규모·예산 별도 산정)"
+      - "품질검증 인력 보강 계획  수립"
+      - "사내 AI 사용 가이드라인  제정"
+data_refs:
+  - "analysis.yaml > s0 (핵심 요약)"
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s5 (영역별 효과)"
+constraints:
+  max_shapes: 35
+  min_nontext_elements: 3
+  no_internal_prediction: true
+notes: |
+  자사 절감액·ROI 예측 완전 배제. Key Message에서 "연 15억 절감" 제거.
+  승인 요청 항목에서 "3천만원" 등 예산 수치 제거 — "별도 산정" 표기.
+  카드 수치는 모두 외부 공식 출처 병기 (Faros 2025 등).

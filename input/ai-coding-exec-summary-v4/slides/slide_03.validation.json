@@ -1,0 +1,15 @@
+{
+  "slide_idx": 3,
+  "code_path": "input/ai-coding-exec-summary-v4/slides/slide_03.code.py",
+  "checks": {
+    "imports_whitelisted": true,
+    "no_direct_master_edit": true,
+    "import_succeeds": true,
+    "has_build_function": true,
+    "layout_allowed": true,
+    "master_and_safe_zone_intact": true,
+    "placeholder_idx_respected": true
+  },
+  "failures": [],
+  "passed": true
+}

@@ -1,0 +1,75 @@
+idx: 3
+layout: "제목 및 내용"
+title: "경쟁사 상세  ·  도구 · 규모 · 측정"
+pattern: "competitor_detail"
+accent_color: "#4F81BD"
+key_message: "주요 OEM·Tier-1 6사 도입 현황 (공식 공표 기준) · 2027.08 EU AI Act 자동차 D-Day"
+content_blocks:
+  - kind: competitor_detail_grid
+    layout: "2x3"
+    cards:
+      - name: "Mercedes-Benz"
+        badge: "2023.07~"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot"
+        scale: "5,000명+ · 115k repos"
+        measurement: "개발자 자체 설문 + 흐름 상태 보고"
+        result: "주당 30분+ 절감 · 누적 200만 라인 수락"
+        source: "GitHub 공식 case study"
+      - name: "BMW Group"
+        badge: "2024"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot (사내 파일럿)"
+        scale: "사내 파일럿"
+        measurement: "SPACE 프레임워크 5축"
+        result: "5축 전항목 개선 · 결함 감소"
+        source: "AMCIS 2024 논문"
+      - name: "Bosch"
+        badge: "진행 중"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot (bosch-copilot org)"
+        scale: "사내 org 운영"
+        measurement: "비공개"
+        result: "단계적 확산 중"
+        source: "GitHub 공식 org 페이지"
+      - name: "현대모비스"
+        badge: "2025.09"
+        badge_color: "#2C7F94"
+        tool: "Mobis Development Studio"
+        scale: "Wind River 협업 · SDV 개발환경"
+        measurement: "CI/CD/CT 자동화 지표"
+        result: "차세대 개발시스템 확장"
+        source: "Wind River 보도자료"
+      - name: "현대오토에버"
+        badge: "2024~"
+        badge_color: "#2C7F94"
+        tool: "H-Chat (Azure/Gemini/Claude 프록시)"
+        scale: "그룹사 전사 배포"
+        measurement: "비공개"
+        result: "코드 보조·문서 작성 지원"
+        source: "현대오토에버 공식 페이지"
+      - name: "Geely Auto"
+        badge: "2025.07"
+        badge_color: "#2C7F94"
+        tool: "AI 안전 프로세스 (코딩 도구 아님)"
+        scale: "차량 기능 AI 전반"
+        measurement: "ISO/PAS 8800 인증 심사"
+        result: "세계 최초 AI 안전 인증"
+        source: "SGS 보도자료"
+  - kind: footnote_glossary
+    entries:
+      - "※ SPACE (Satisfaction·Performance·Activity·Communication·Efficiency): BMW 사내 측정에 사용된 개발자 생산성 5축"
+      - "※ AMCIS 2024: Americas Conference on Information Systems (미국정보시스템학회) — BMW 측정 논문 공개"
+      - "※ SDV (Software Defined Vehicle): SW 업데이트로 차량 기능을 확장·변경하는 차세대 차량 아키텍처"
+      - "※ ISO/PAS 8800:2024: AI 시스템의 차량 안전 표준 (2024.12 신규 발행). Geely 세계 최초 인증"
+data_refs:
+  - "analysis.yaml > s3 (경쟁사)"
+constraints:
+  max_shapes: 60
+  min_nontext_elements: 6
+  cite_tool_and_measurement: true
+  footnote_glossary: true
+notes: |
+  2x3 경쟁사 카드 그리드. 각 카드 5행 (도구·규모·측정·결과·출처).
+  **본문 영역 y=0.68~6.55**. 하단 **각주 영역 y=6.60~7.00**.
+  각주는 4개 용어이므로 2줄로 "·" 구분 가능 (9pt gray).

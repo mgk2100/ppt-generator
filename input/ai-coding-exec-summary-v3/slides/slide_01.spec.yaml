@@ -1,0 +1,20 @@
+idx: 1
+layout: "제목 슬라이드"
+title: "AI 코딩 어시스턴트 도입 영향 분석"
+pattern: "cover"
+accent_color: "#1F497D"
+key_message: ""
+content_blocks:
+  - kind: cover
+    subtitle_or_date: "2026.04.21"
+    purpose: "정보공유"
+    # author/department는 setup_cover() 기본값 사용
+    # (기본값: 강민규 책임 · 미래융합설계센터 알고리즘개발팀)
+    notes: "ref/표지.pptx 의 '제목 슬라이드' 레이아웃. Picture 91 배경 + Picture 57 로고 유지."
+data_refs: []
+constraints:
+  max_shapes: 6
+  min_nontext_elements: 0
+notes: |
+  build_slide_1(slide) 는 오직 setup_cover(slide, title, purpose, date) 만 호출.
+  커스텀 shape 추가 금지. 표지 레이아웃 배경·로고가 이미 템플릿에 있음.

@@ -1,0 +1,19 @@
+{
+  "slide_idx": 2,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 4,
+    "color_consistency": 4,
+    "readability": 3
+  },
+  "actionable_feedback": [
+    "경쟁사 카드 우상단 배지(Mercedes '2023.07', 현대모비스 '2025.09', Geely '2025.07')에서 날짜가 '2023.0\\n7' 형태로 줄바꿈되어 잘림 — 배지 shape 너비를 +20px 늘리거나 font_size를 10pt로 축소, 또는 word_wrap=False 설정.",
+    "상단 Key Message Bar의 'KEY MESSAGE' 라벨이 'KEY MES-\\nSAGE'로 하이픈 분리됨 — 라벨 셀 너비를 최소 90px 이상으로 확보하거나 'KEY MSG' 축약 사용.",
+    "chevron 타임라인과 하단 카드 그리드 사이 여백이 다소 넓어 상단 타임라인이 위로 쏠려 보임 — 타임라인 y-offset을 +20~30px 내려 상하 균형 조정.",
+    "accent_color(#4F81BD)가 제목 바와 카드 배지(#1F497D) 사이에서 계조가 비슷해 강조가 약함 — 상단 타이틀만 #4F81BD, OEM 배지는 명도 차이를 더 준 톤으로 분리 고려.",
+    "하단 좌측 '1 / 00' 페이지 인디케이터 분모가 '00'으로 placeholder 상태 — 실제 total slide count로 치환 필요."
+  ],
+  "passed": true
+}

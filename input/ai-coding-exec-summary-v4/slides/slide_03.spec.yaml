@@ -1,0 +1,68 @@
+idx: 3
+layout: "제목 및 내용"
+title: "경쟁사 상세  ·  도구 · 규모 · 측정"
+pattern: "competitor_detail"
+accent_color: "#4F81BD"
+key_message: "주요 OEM·Tier-1 6사 도입 현황 (공식 공표 기준) · 2027.08 EU AI Act 자동차 D-Day"
+content_blocks:
+  - kind: competitor_detail_grid
+    layout: "2x3"
+    cards:
+      - name: "Mercedes-Benz"
+        badge: "2023.07~"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot"
+        scale: "5,000명+ · 115k repos · 4,300 Enterprise orgs"
+        measurement: "개발자 자체 설문 + 흐름 상태 보고"
+        result: "주당 30분+ 절감 · 누적 200만 라인 수락"
+        source: "GitHub 공식 case study"
+      - name: "BMW Group"
+        badge: "2024"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot (사내 파일럿)"
+        scale: "사내 파일럿 (규모 비공개)"
+        measurement: "SPACE 프레임워크 5축 (S·P·A·C·E)"
+        result: "5축 전항목 개선 · 결함 감소 (정량치 비공개)"
+        source: "AMCIS 2024 논문 (Pielmeier·Eidelloth)"
+      - name: "Bosch"
+        badge: "진행 중"
+        badge_color: "#1F497D"
+        tool: "GitHub Copilot (`bosch-copilot` org)"
+        scale: "사내 org 운영 (액세스 관리)"
+        measurement: "비공개"
+        result: "단계적 확산 중"
+        source: "GitHub 공식 org 페이지"
+      - name: "현대모비스"
+        badge: "2025.09"
+        badge_color: "#2C7F94"
+        tool: "Mobis Development Studio (Wind River 협업)"
+        scale: "웹 기반 통합 SDV 개발환경"
+        measurement: "CI/CD/CT 자동화 지표"
+        result: "차세대 개발시스템 확장 · shift-left 테스팅"
+        source: "Wind River 보도자료 (2025.09)"
+      - name: "현대오토에버"
+        badge: "2024~"
+        badge_color: "#2C7F94"
+        tool: "H-Chat (Azure OpenAI / Gemini / Claude 프록시)"
+        scale: "그룹사 전사 배포"
+        measurement: "비공개 (정량 미공개)"
+        result: "코드 보조 · 문서 작성 지원"
+        source: "현대오토에버 공식 페이지"
+      - name: "Geely Auto"
+        badge: "2025.07"
+        badge_color: "#2C7F94"
+        tool: "AI 안전 프로세스 (코딩 도구 아님)"
+        scale: "차량 기능 AI 전반"
+        measurement: "ISO/PAS 8800 인증 심사 (SGS-TÜV Saar)"
+        result: "세계 최초 AI 안전 인증 취득"
+        source: "SGS 보도자료 (2025.08)"
+data_refs:
+  - "analysis.yaml > s3 (경쟁사)"
+constraints:
+  max_shapes: 55
+  min_nontext_elements: 6
+  cite_tool_and_measurement: true
+notes: |
+  v3의 경쟁사 카드를 상세화 — 각 카드에 **도구 · 규모 · 측정 · 결과 · 출처** 5행.
+  "주당 30분 절감" 같은 단편 수치가 "어떻게?" 의문을 만들지 않도록 맥락 동반.
+  카드 안 정보가 많으므로 폰트 10pt, 2줄 허용.

@@ -1,0 +1,36 @@
+{
+  "slide_idx": 2,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 5,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "compliance_check": {
+    "no_approval_section": true,
+    "no_approval_text_found": true,
+    "no_checkbox_found": true,
+    "takeaway_bar_present": true,
+    "takeaway_title_matches": "▶ 업계 주요 시사점",
+    "takeaway_bullets_count": 3,
+    "faros_citation_present": true,
+    "penalty_applied": 0
+  },
+  "actionable_feedback": [
+    "카드1 'Mercedes' 줄: '5,000 명 + Copilot 전사 사용' 공백이 어색함 — value를 '5,000명+ Copilot 전사 사용' 한 덩어리로 렌더되도록 자간·공백 처리 검토 (공백 자동삽입 줄 말이 원인 가능).",
+    "카드2 제목 '영역별 효과 차이 ( 업계 일반 )' 괄호 내부 공백이 과다 — 괄호 앞뒤 공백 1칸으로 축소.",
+    "카드2 마지막 줄 '→ 선별 적용이 핵심'과 카드3의 '→ 인력·도구 동시 보강 필수' / '(가장 자주 누락되는 투자)'는 label만 있고 value가 빈 문자열 — 렌더 정렬이 다른 line과 달라 약간 도드라짐. 요약 line은 별도 스타일(이탤릭 또는 색상 변화)로 시각적 구분 권장.",
+    "takeaway_bar 3개 bullet의 '·' 구분자 앞뒤 공백이 일관되지 않음 (예: 'GitHub Copilot · Azure OpenAI · Claude · 사내 LLM 프록시') — 전 bullet 동일 규칙으로 통일.",
+    "카드 상단 accent 띠와 카드 테두리 사이 미세한 여백 일치 여부 점검 — 카드3 띠가 카드1·2 대비 살짝 두껍게 보일 여지 있음 (렌더상 1~2px)."
+  ],
+  "strengths": [
+    "no_approval_section 준수 완벽 — 승인/결정/체크박스 텍스트 전무.",
+    "takeaway_bar가 spec 그대로 '▶ 업계 주요 시사점' + 3 bullet 구현.",
+    "+91% / +98% 수치에 (Faros 2025) 출처 명시 — no_internal_prediction 원칙 준수.",
+    "카드별 semantic color (#2E8B57 긍정 / #4F81BD 중립 / #C0504D 경고) + 아이콘(✓/△/⚠) 조합이 의미 전달에 기여.",
+    "accent #1F497D가 Key Message 좌측 stripe와 takeaway_bar 좌측 stripe·▶ 마커에 일관 적용."
+  ],
+  "passed": true
+}

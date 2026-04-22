@@ -1,0 +1,68 @@
+idx: 3
+layout: "제목 및 내용"
+title: "왜 지금 검토가 필요한가  ·  산업 동향 및 경쟁사 현황"
+pattern: "timeline_grid"
+accent_color: "#4F81BD"
+key_message: "주요 OEM은 2023~2025년 이미 도입 완료 · 2027.08 EU AI Act 자동차 D-Day"
+content_blocks:
+  - kind: chevron_timeline
+    title: "① 산업 흐름 타임라인"
+    steps:
+      - period: "2023.07"
+        label: "Mercedes 도입"
+        color: "#2E8B57"
+      - period: "2024"
+        label: "BMW 파일럿"
+        color: "#2E8B57"
+      - period: "2025.09"
+        label: "현대모비스"
+        color: "#2E8B57"
+      - period: "2026.08"
+        label: "EU AI Act 일반"
+        color: "#D4A017"
+      - period: "2027.08"
+        label: "자동차 완전 적용"
+        color: "#C0504D"
+  - kind: competitor_grid
+    title: "② 경쟁사 도입 현황"
+    layout: "2x3"
+    cards:
+      - name: "Mercedes-Benz"
+        badge: "2023.07"
+        badge_color: "#1F497D"
+        highlight: "5,000명+ 개발자"
+        body: "주당 30분+ 절감\n누적 200만 라인 수락"
+      - name: "BMW Group"
+        badge: "2024"
+        badge_color: "#1F497D"
+        highlight: "SPACE 5축 전항목 개선"
+        body: "결함 감소 보고\nAMCIS 2024 공개"
+      - name: "Bosch"
+        badge: "진행 중"
+        badge_color: "#1F497D"
+        highlight: "bosch-copilot 사내 org"
+        body: "액세스 관리\n단계적 확산"
+      - name: "현대모비스"
+        badge: "2025.09"
+        badge_color: "#2C7F94"
+        highlight: "Mobis Development Studio"
+        body: "Wind River 협업\nSW 중심 차량 개발환경"
+      - name: "현대오토에버"
+        badge: "2024~"
+        badge_color: "#2C7F94"
+        highlight: "H-Chat 그룹사 전사"
+        body: "Azure/Gemini/Claude\n사내 LLM 프록시"
+      - name: "Geely"
+        badge: "2025.07"
+        badge_color: "#2C7F94"
+        highlight: "세계 최초 AI 안전 인증"
+        body: "ISO/PAS 8800:2024\nSGS-TÜV Saar 발행"
+data_refs:
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s8 (EU AI Act 타임라인)"
+constraints:
+  max_shapes: 50
+  min_nontext_elements: 11
+notes: |
+  전부 외부 공식 출처(공식 발표·보도자료·학회 논문). v2와 동일 유지.
+  배지 텍스트가 "2023.07" 한 줄에 들어가도록 배지 폭 넉넉히 (최소 Inches(1.0)).

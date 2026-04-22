@@ -1,0 +1,51 @@
+idx: 6
+layout: "제목 및 내용 (페이지 번호 삭제)"
+title: "부록  ·  전문용어 해설"
+pattern: "appendix_glossary"
+accent_color: "#1F497D"
+key_message: "본문에 등장한 자동차 SW·AI 안전 관련 표준·약어 해설"
+content_blocks:
+  - kind: glossary_table
+    columns: ["용어 / 약어", "분류", "설명"]
+    rows:
+      - term: "ASPICE CL2 / CL3"
+        category: "프로세스 품질"
+        desc: "자동차 SW 개발 프로세스 품질 표준. OEM이 Tier-1 에 거의 예외 없이 요구하는 인증 수준. 모든 변경에 '요구→설계→코드→테스트' 추적성 필요."
+      - term: "ISO 26262 (ASIL A~D)"
+        category: "기능안전"
+        desc: "차량 기능안전 표준. ASIL(Automotive Safety Integrity Level)은 안전등급 (A 낮음 → D 최고). 안전 관련 항목은 검증·증거 자료 추가 요구."
+      - term: "ISO 21448 (SOTIF)"
+        category: "의도된 기능 안전"
+        desc: "Safety Of The Intended Functionality. ADAS·자율주행처럼 '오작동 아니지만 의도 벗어남' 리스크에 적용."
+      - term: "ISO/PAS 8800:2024"
+        category: "AI 차량 안전"
+        desc: "AI 시스템의 차량 안전 표준 (2024.12 신규 발행). AI 생성 코드 검증 프로세스의 참조 기준. Geely 가 2025.07 세계 최초 인증."
+      - term: "MISRA C:2025"
+        category: "코딩 가이드"
+        desc: "자동차 임베디드 C 언어 코딩 가이드라인. 2025년 개정에서 'AI 생성 코드도 수기 코드와 동일 규칙 준수' 명문화."
+      - term: "AUTOSAR / BSW / MCAL"
+        category: "SW 아키텍처"
+        desc: "차량 제어 기반 SW 아키텍처. BSW = Basic Software, MCAL = Microcontroller Abstraction Layer. Tier-1 벤더 라이선스 코드라 공개 OSS 거의 없음."
+      - term: "SPACE 프레임워크"
+        category: "개발 생산성 측정"
+        desc: "Satisfaction · Performance · Activity · Communication · Efficiency 5축. GitHub · ACM이 제안. BMW 사내 측정에 사용."
+      - term: "EU AI Act"
+        category: "법규"
+        desc: "EU 인공지능 규제법. 2024.08 발효, 2026.08 일반 high-risk AI 적용, **2027.08 자동차 등 embedded high-risk AI 완전 준수 D-Day**."
+      - term: "SDV"
+        category: "차량 아키텍처"
+        desc: "Software Defined Vehicle. 차량 기능을 SW 업데이트로 확장·변경하는 차세대 아키텍처. 현대모비스 Mobis Development Studio 대상."
+      - term: "RAG / 파인튜닝"
+        category: "AI 학습 기법"
+        desc: "RAG = Retrieval-Augmented Generation (외부 데이터 기반 응답 증강). 파인튜닝 = 특정 도메인 데이터로 모델 재학습. 사내 BSW 코드로 적용 시 양산 효과 +5~15% 추가 가능."
+data_refs:
+  - "analysis.yaml > s2 (규정 준수 요건)"
+  - "analysis.yaml > s8 (EU AI Act)"
+constraints:
+  max_shapes: 40
+  min_nontext_elements: 1
+notes: |
+  표 형식 glossary. add_styled_table 사용 권장.
+  본문 슬라이드에서 언급된 모든 전문 용어 포함.
+  페이지 번호 삭제 레이아웃 사용 — 부록이므로.
+  이모지 금지.

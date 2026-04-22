@@ -1,0 +1,63 @@
+idx: 4
+layout: "제목 및 내용"
+title: "실행 로드맵 및 승인 요청 사항"
+pattern: "roadmap_approval"
+accent_color: "#2C7F94"
+key_message: "3단계 도입 + 4개월 시범 사업으로 리스크 최소화 · 선행 영역 즉시 착수"
+content_blocks:
+  - kind: chevron_roadmap
+    title: "① 3단계 도입 로드맵"
+    phases:
+      - title: "Phase 1  ·  0~3개월"
+        body: "도구 · 테스트 자동화 파일럿\n위험 낮음 · 효과 큼"
+        color: "#2E8B57"
+      - title: "Phase 2  ·  3~9개월"
+        body: "선행 R&D · 응용SW 확대\n사내 AI 학습 · 자동 검사 통합"
+        color: "#4F81BD"
+      - title: "Phase 3  ·  9~18개월"
+        body: "양산 비안전 영역 단계 적용\n양산 안전은 시범 측정 후"
+        color: "#1F497D"
+  - kind: split_bottom
+    layout: "1x2"
+    left:
+      kind: info_card
+      accent: "#4F81BD"
+      bg: "#E7F0FA"
+      title: "② 4개월 시범 사업 제안"
+      items:
+        - key: "대상"
+          value: "SW 모듈 4개  (선행 1 · 양산 일반 1 · 양산 안전 1 · 검증 자동화 1)"
+        - key: "투입"
+          value: "20명 × 4개월  (숙련도·경력 균형 배정)"
+        - key: "예산"
+          value: "약 3천만원  (연간 절감가치의 2%)"
+        - key: "측정"
+          value: "공수 · 결함밀도 · 코드 리뷰 부담"
+        - key: "목적"
+          value: "양산 안전 영역 효과 실증  (가장 불확실한 영역)"
+    right:
+      kind: approval_card
+      accent: "#2C7F94"
+      bg: "#E3F2F7"
+      title: "③ 승인 요청 사항"
+      items:
+        - num: "①"
+          label: "선행 · 테스트 자동화 영역 즉시 도입"
+          note: "추정 ROI 11배"
+        - num: "②"
+          label: "4개월 시범 사업 예산  3천만원 승인"
+          note: "의사결정 근거 확보"
+        - num: "③"
+          label: "품질검증 인력 보강 계획 수립"
+          note: "도입 효과 유지"
+        - num: "④"
+          label: "사내 AI 사용 가이드라인 제정 착수"
+          note: "EU AI Act 대응"
+data_refs:
+  - "analysis.yaml > s10 (권고·로드맵)"
+constraints:
+  max_shapes: 40
+  min_nontext_elements: 5
+notes: |
+  상단 Key Message → 가로 CHEVRON 3단계 로드맵 → 하단 2열 분할
+  (좌: 시범사업 정보 카드, 우: 승인 요청 번호 리스트).

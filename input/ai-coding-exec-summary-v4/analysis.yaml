@@ -1,0 +1,148 @@
+# Source Inventory — ai-coding-exec-summary-v2
+# 원본: sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+# 10개 섹션 · 468줄 · 2026-04-17 작성
+
+project:
+  name: "ai-coding-exec-summary-v2"
+  summary: "AI 코딩 어시스턴트의 자동차 OEM/Tier-1 생산성 영향 분석 — 임원용 4페이지 요약"
+  target_audience: "팀장 (우선) > 실장 > 센터장"
+  scope: "자동차 OEM · Tier-1 벤더사 (일반 IT 제외)"
+  analyzed_date: "2026-04-21"
+
+sources:
+  - file: "AI_Coding_Assistant_Automotive_Impact_Analysis.md"
+    size_lines: 468
+    h2_sections: 11   # §0~§10 + 부록 A
+
+sections:
+  - id: s0
+    title: "§0. 핵심 요약"
+    density: rich
+    key_data:
+      - "자동차 SW 양산에서 AI 공수 절감은 일반 IT 30~55%의 1/3~1/2"
+      - "영역별 순공수 영향: 선행 R&D +20~35%, 양산 일반 +10~20%, 양산 안전 -5~+10%, 검증 -15~-30%"
+
+  - id: s2
+    title: "§2. 자동차 SW 특수 제약 (6가지)"
+    density: moderate
+    key_data:
+      - "학습 데이터 부족 (AUTOSAR OSS <15%)"
+      - "중첩된 규정 준수 요건 (ASPICE + ISO 26262 + MISRA C:2025 + AUTOSAR C++14)"
+      - "Target HW 제약 (ROM 64KB~4MB)"
+      - "폐쇄망 빌드 환경"
+      - "추적성·회귀검증 부담"
+      - "도메인 지식 의존"
+
+  - id: s3
+    title: "§3. 경쟁사 도입 현황"
+    density: rich
+    competitors:
+      - name: "Mercedes-Benz"
+        adoption: "2023.07~"
+        highlight: "5,000명+ 개발자"
+        detail: "주당 30분+ 절감, 누적 200만 라인 수락"
+      - name: "BMW Group"
+        adoption: "2024"
+        highlight: "SPACE 5축 전항목 개선"
+        detail: "결함 감소 보고, AMCIS 2024 공개"
+      - name: "Bosch"
+        adoption: "진행 중"
+        highlight: "bosch-copilot 사내 org"
+        detail: "액세스 관리, 단계적 확산"
+      - name: "현대모비스"
+        adoption: "2025.09"
+        highlight: "Mobis Development Studio"
+        detail: "Wind River 협업, SW 중심 차량 개발환경"
+      - name: "현대오토에버"
+        adoption: "2024~"
+        highlight: "H-Chat 그룹사 전사"
+        detail: "Azure/Gemini/Claude 사내 LLM 프록시"
+      - name: "Geely"
+        adoption: "2025.07"
+        highlight: "세계 최초 AI 안전 인증"
+        detail: "ISO/PAS 8800:2024, SGS-TÜV Saar 발행"
+
+  - id: s5
+    title: "§5. 영역별 효과 매트릭스"
+    density: rich
+    stoplight_table:
+      - area: "선행 R&D · 도구 · 테스트 자동화"
+        effect_range: "+20 ~ +35%"
+        light: green
+        interpretation: "즉시 도입 권장 (위험 낮음 · 효과 큼)"
+      - area: "양산 일반 SW (비안전)"
+        effect_range: "+10 ~ +20%"
+        light: green
+        interpretation: "코드 검사 도구 통합 후 도입"
+      - area: "양산 안전 코드 (차량 안전등급 높음↑)"
+        effect_range: "-5 ~ +10%"
+        light: yellow
+        interpretation: "본전 영역 · 시범 측정 필요"
+      - area: "품질검증 단계 (인력 관점)"
+        effect_range: "-15 ~ -30%"
+        light: red
+        interpretation: "코드 리뷰 부담 증가 · 인력 보강 필수"
+
+  - id: s7
+    title: "§7. ROI 정량 모델 (100명 기준)"
+    density: rich
+    roi_metrics:
+      annual_saving_krw: "약 15억 원"
+      annual_saving_hours: 21060
+      hourly_loaded_cost_krw: 72000
+      initial_investment_krw: "약 1.2억 원"
+      tool_cost_krw: "31,000,000"   # Copilot Business 100인
+      operation_cost_krw: "62~93M"  # 교육·정적분석·RAG
+      bep_months: "1~2"
+      bep_conservative: "2~3"
+      roi_multiplier: "11.8배 (보수 6~8배)"
+
+  - id: s8
+    title: "§8. EU AI Act 타임라인"
+    density: moderate
+    key_dates:
+      - date: "2024.08.01"
+        event: "EU AI Act 발효"
+      - date: "2025.08.02"
+        event: "GPAI 모델 의무"
+      - date: "2026.08.02"
+        event: "High-risk AI 일반 적용"
+      - date: "2027.08.02"
+        event: "자동차 등 embedded high-risk AI 완전 준수 D-Day"
+
+  - id: s10
+    title: "§10. 권고·로드맵"
+    density: rich
+    roadmap:
+      - phase: "Phase 1"
+        period: "0~3개월"
+        action: "도구·테스트 자동화 파일럿"
+        risk: "낮음"
+      - phase: "Phase 2"
+        period: "3~9개월"
+        action: "선행 R&D·응용SW 확대 · 사내 AI 학습 · 자동 검사 통합"
+        risk: "중간"
+      - phase: "Phase 3"
+        period: "9~18개월"
+        action: "양산 비안전 단계 적용. 양산 안전은 시범 측정 후"
+        risk: "높음"
+    pilot_proposal:
+      duration_months: 4
+      modules: 4       # 선행 1 / 양산 일반 1 / 양산 안전 1 / 검증 자동화 1
+      headcount: 20
+      budget_krw: "약 3천만원"
+      measurement: "공수 · 결함밀도 · 코드 리뷰 부담"
+
+key_risks:
+  - "품질검증 인력 부담 -15~-30% 증가 (가장 자주 놓치는 투자)"
+  - "사내 RAG/파인튜닝 없으면 양산 BSW 효과 0에 수렴"
+  - "2027.08 EU AI Act D-Day — 준비 시간 18개월 남음"
+
+terminology_normalization:
+  # 임원용으로 순화 완료 (원본은 이미 순화됨)
+  "V&V": "품질검증"
+  "PR": "코드 리뷰 요청"
+  "컴플라이언스": "규정 준수"
+  "ASPICE/MISRA": "자동차 SW 품질 표준"
+  "ISO 26262/ASIL B+": "차량 안전 등급 높음↑"
+  "BSW/MCAL/AUTOSAR": "차량 제어 기반 SW"

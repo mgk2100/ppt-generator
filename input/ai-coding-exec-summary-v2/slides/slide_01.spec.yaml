@@ -1,0 +1,64 @@
+idx: 1
+layout: "제목 및 내용"
+title: "AI 코딩 어시스턴트 도입 영향 분석  ·  핵심 요약"
+pattern: "cards"
+accent_color: "#1F497D"
+key_message: "영역별 차등 적용 시 6개월 내 투자 회수 · 100명 기준 연 15억 원 절감 가능"
+content_blocks:
+  - kind: card_grid
+    layout: "1x3"
+    cards:
+      - accent: "#2E8B57"
+        icon: "✓"
+        title: "경쟁사 이미 도입 중"
+        lines:
+          - label: "Mercedes"
+            value: "5,000명+ 개발자"
+          - label: "BMW"
+            value: "사내 파일럿 (SPACE 개선)"
+          - label: "Bosch · 현대모비스 · 현대오토에버"
+            value: ""
+          - label: "2027.08"
+            value: "EU AI Act D-Day"
+      - accent: "#4F81BD"
+        icon: "△"
+        title: "영역별 효과 3~5배 차이"
+        lines:
+          - label: "선행 R&D · 도구"
+            value: "+20~35%"
+          - label: "양산 일반 SW"
+            value: "+10~20%"
+          - label: "양산 안전 코드"
+            value: "±5% (본전)"
+          - label: "→ 선별 적용이 핵심"
+            value: ""
+      - accent: "#C0504D"
+        icon: "⚠"
+        title: "품질검증 부담 증가"
+        lines:
+          - label: "코드 리뷰 시간"
+            value: "+91%"
+          - label: "코드 리뷰 요청"
+            value: "+98%"
+          - label: "→ 인력·도구 동시 보강 필수"
+            value: ""
+          - label: "(가장 자주 누락되는 투자)"
+            value: ""
+  - kind: approval_box
+    title: "▶ 즉시 결정 요청 사항"
+    accent: "#1F497D"
+    items:
+      - "선행 · 테스트 자동화 영역  즉시 도입 승인"
+      - "4개월 시범 사업 예산 승인 (약 3천만원)"
+      - "품질검증 인력 보강 계획  착수"
+      - "사내 AI 사용 가이드라인  제정"
+data_refs:
+  - "analysis.yaml > s0 (핵심 요약)"
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s5 (영역별 효과)"
+constraints:
+  max_shapes: 35
+  min_nontext_elements: 3
+notes: |
+  상단 Key Message Bar → 3장 메시지 카드 (1x3) → 하단 승인 요청 박스 (2x2 체크박스).
+  각 카드는 상단 컬러 바 + 원형 아이콘 + bold 제목 + label:value 리스트.

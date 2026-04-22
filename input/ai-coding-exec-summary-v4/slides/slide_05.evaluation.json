@@ -1,0 +1,18 @@
+{
+  "slide_idx": 5,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "우측 카드 note(경쟁사 모두 이 영역부터 착수 / 양산 안전 영역은 공개 데이터 부재 등) 텍스트 색상 대비가 다소 낮음 — 회색 톤을 한 단계 진하게(예: #555 → #333) 조정 권장",
+    "좌측 '② 자사 시범 사업' 카드에서 5개 항목 간 세로 간격이 다소 여유로움 — 카드 높이를 우측(④개 항목)과 맞추려다 빈 공간이 생김. key-value 행 간격을 약간 좁혀 균형 개선",
+    "Phase 1/2/3 셰브론의 본문 2줄이 각각 중앙 정렬인데, 긴 문자열('양산 비안전 영역 단계 적용')에서 좌우 여백이 타이트함 — 폰트를 1pt 낮추거나 chevron 폭을 늘려 여유 확보 권장",
+    "no_approval_section 및 no_internal_prediction 제약 모두 준수 확인: '승인 요청' 문구 없음, '추정 ROI 11배' 등 자사 예측 수치 없음, Phase 기간은 '단기/중기/장기'로 구체 개월 수 미표기"
+  ],
+  "passed": true
+}

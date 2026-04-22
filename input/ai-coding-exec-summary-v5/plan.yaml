@@ -1,0 +1,25 @@
+project_name: ai-coding-exec-summary-v5
+total_slides: 5
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  부록 슬라이드 제거. 각 페이지 하단에 등장 용어만 각주로 해설.
+
+  S1 (표지) → S2 (핵심 요약 + 각주)
+  → S3 (경쟁사 상세 + 각주) → S4 (영역별 효과 + 각주)
+  → S5 (로드맵 + 각주)
+slides: [1, 2, 3, 4, 5]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+constraints:
+  no_cost_speculation: true
+  no_internal_prediction: true
+  no_approval_section: true
+  cite_tool_and_measurement: true
+  footnote_glossary: true     # 부록 아닌 페이지 각주 방식

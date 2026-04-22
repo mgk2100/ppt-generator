@@ -1,0 +1,66 @@
+idx: 5
+layout: "제목 및 내용"
+title: "실행 로드맵 및 승인 요청 사항"
+pattern: "roadmap_approval"
+accent_color: "#2C7F94"
+key_message: "단계적 도입 + 자사 시범 사업으로 실측 · 선행 영역 우선 착수"
+content_blocks:
+  - kind: chevron_roadmap
+    title: "① 단계적 도입 로드맵 (업계 일반 권고)"
+    phases:
+      - title: "Phase 1  ·  단기"
+        body: "도구 · 테스트 자동화 파일럿\n위험 낮음 · 효과 큼"
+        color: "#2E8B57"
+      - title: "Phase 2  ·  중기"
+        body: "선행 R&D · 응용SW 확대\n사내 AI 학습 · 자동 검사 통합"
+        color: "#4F81BD"
+      - title: "Phase 3  ·  장기"
+        body: "양산 비안전 영역 단계 적용\n양산 안전은 시범 측정 후"
+        color: "#1F497D"
+  - kind: split_bottom
+    layout: "1x2"
+    left:
+      kind: info_card
+      accent: "#4F81BD"
+      bg: "#E7F0FA"
+      title: "② 자사 시범 사업 (실측 프로토콜)"
+      items:
+        - key: "대상"
+          value: "영역별 대표 SW 모듈 (선행 / 양산 일반 / 양산 안전 / 검증 자동화)"
+        - key: "기간"
+          value: "별도 산정"
+        - key: "규모·예산"
+          value: "별도 산정 (파일럿 계획 수립 단계)"
+        - key: "측정 지표"
+          value: "공수 · 결함밀도 · 코드 리뷰 부담"
+        - key: "목적"
+          value: "자사 환경에서 영역별 실효성 실측"
+    right:
+      kind: approval_card
+      accent: "#2C7F94"
+      bg: "#E3F2F7"
+      title: "③ 승인 요청 사항"
+      items:
+        - num: "①"
+          label: "선행 · 테스트 자동화 영역 도입 검토 착수"
+          note: "효과 입증된 영역"
+        - num: "②"
+          label: "자사 시범 사업 추진 승인"
+          note: "규모·예산 별도 산정"
+        - num: "③"
+          label: "품질검증 인력 보강 계획 수립"
+          note: "코드 리뷰 부담 증가 대응"
+        - num: "④"
+          label: "사내 AI 사용 가이드라인 제정 착수"
+          note: "EU AI Act 2027.08 대응"
+data_refs:
+  - "analysis.yaml > s10 (권고·로드맵)"
+constraints:
+  max_shapes: 40
+  min_nontext_elements: 5
+  no_internal_prediction: true
+notes: |
+  v2에서 제거: "4개월", "20명", "3천만원", "ROI 11배" (자사 수치 예측 전부 배제).
+  대체: "별도 산정", "파일럿 계획 수립 단계" 표기.
+  Phase 기간도 "0~3개월" 같은 구체 기간 대신 "단기/중기/장기" 표현.
+  측정 지표·목적 항목은 프로세스 설계이므로 유지.

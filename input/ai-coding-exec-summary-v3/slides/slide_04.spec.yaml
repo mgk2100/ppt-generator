@@ -1,0 +1,70 @@
+idx: 4
+layout: "제목 및 내용"
+title: "영역별 예상 효과  ·  외부 공식 벤치마크"
+pattern: "table_metrics"
+accent_color: "#1F497D"
+key_message: "영역별 효과는 3~5배 차이 · 선행·도구 영역이 즉시 도입 후보"
+content_blocks:
+  - kind: stoplight_table
+    title: "① 영역별 효과 (업계 일반 보정 추정)"
+    columns: ["영역", "효과", "해석"]
+    rows:
+      - dot_color: "#2E8B57"
+        bg_color: "#E8F5EC"
+        area: "선행 R&D · 도구 · 테스트 자동화"
+        effect: "+20 ~ +35%"
+        effect_color: "#2E8B57"
+        interpretation: "즉시 도입 후보 (위험 낮음 · 효과 큼)"
+      - dot_color: "#2E8B57"
+        bg_color: "#E8F5EC"
+        area: "양산 일반 SW (비안전)"
+        effect: "+10 ~ +20%"
+        effect_color: "#2E8B57"
+        interpretation: "코드 검사 도구 통합 후 도입"
+      - dot_color: "#D4A017"
+        bg_color: "#FFF7D9"
+        area: "양산 안전 코드 (차량 안전등급 높음↑)"
+        effect: "-5 ~ +10%"
+        effect_color: "#D4A017"
+        interpretation: "본전 영역 · 자사 시범 측정 필요"
+      - dot_color: "#C0504D"
+        bg_color: "#FCE8E6"
+        area: "품질검증 단계 (인력 관점)"
+        effect: "-15 ~ -30%"
+        effect_color: "#C0504D"
+        interpretation: "코드 리뷰 부담 증가 · 인력 보강 필수"
+  - kind: source_cards
+    title: "② 외부 공식 벤치마크"
+    layout: "1x3"
+    cards:
+      - source: "Mercedes-Benz"
+        source_sub: "GitHub 공식 case study (2023~)"
+        value: "주당 30분+ 절감"
+        detail: "5,000명+ 개발자 · 누적 200만 라인 수락"
+        accent: "#1F497D"
+      - source: "BMW Group"
+        source_sub: "AMCIS 2024 논문"
+        value: "SPACE 5축 전항목 개선"
+        detail: "결함 감소 보고 (정량치 비공개)"
+        accent: "#1F497D"
+      - source: "Faros AI (2025)"
+        source_sub: "다수 엔터프라이즈 분석"
+        value: "리뷰 시간 +91% · 요청 +98%"
+        detail: "AI 생성 코드의 검증 부담 증가 근거"
+        accent: "#4F81BD"
+data_refs:
+  - "analysis.yaml > s5 (영역별 효과 매트릭스)"
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s4 (일반 IT 데이터)"
+constraints:
+  max_shapes: 40
+  min_nontext_elements: 7
+  no_internal_prediction: true
+notes: |
+  v2에서 제거: "100명 기준 연 15억 원 절감", "초기 투자 1.2억", "손익분기 1~2개월"
+  (자사 예측 숫자 완전 배제).
+
+  대체: 외부 공식 출처(Mercedes, BMW, Faros) 3개를 source_cards로 표시.
+  각 카드: 상단 출처명 + 출처 유형(sub) + 큰 값(14~16pt) + 상세 설명.
+
+  이모지 사용 금지 (렌더 안 됨) — OVAL shape로 색상 dot.

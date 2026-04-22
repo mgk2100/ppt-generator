@@ -1,0 +1,69 @@
+idx: 2
+layout: "제목 및 내용"
+title: "핵심 요약"
+pattern: "cards"
+accent_color: "#1F497D"
+key_message: "경쟁사는 이미 도입 단계 · 영역별 효과 차이 크므로 선별 적용 필수"
+content_blocks:
+  - kind: card_grid
+    layout: "1x3"
+    cards:
+      - accent: "#2E8B57"
+        icon: "✓"
+        title: "경쟁사 이미 도입 중"
+        lines:
+          - label: "Mercedes"
+            value: "5,000명+ Copilot 전사 사용"
+          - label: "BMW"
+            value: "사내 파일럿 · SPACE 5축 개선"
+          - label: "현대모비스"
+            value: "Mobis Development Studio"
+          - label: "현대오토에버"
+            value: "H-Chat 그룹사 전사"
+      - accent: "#4F81BD"
+        icon: "△"
+        title: "영역별 효과 차이 (업계 일반)"
+        lines:
+          - label: "선행 R&D · 도구"
+            value: "+20~35%"
+          - label: "양산 일반 SW"
+            value: "+10~20%"
+          - label: "양산 안전 코드"
+            value: "±5% (본전)"
+          - label: "→ 선별 적용이 핵심"
+            value: ""
+      - accent: "#C0504D"
+        icon: "⚠"
+        title: "품질검증 부담 증가"
+        lines:
+          - label: "코드 리뷰 시간"
+            value: "+91% (Faros 2025)"
+          - label: "코드 리뷰 요청"
+            value: "+98% (Faros 2025)"
+          - label: "→ 인력·도구 동시 보강 필수"
+            value: ""
+          - label: "(가장 자주 누락되는 투자)"
+            value: ""
+  - kind: takeaway_bar
+    accent: "#1F497D"
+    title: "▶ 업계 주요 시사점"
+    items:
+      - "도구: GitHub Copilot · Azure OpenAI · Claude · 사내 LLM 프록시 (H-Chat) 4 가지 패턴"
+      - "측정: SPACE 5축 · 자체 설문 · Git 로그 분석 등 다각도 조합"
+      - "2027.08 EU AI Act 자동차 완전 적용 D-Day → 준비 시점"
+  - kind: footnote_glossary
+    entries:
+      - "※ SPACE (Satisfaction·Performance·Activity·Communication·Efficiency): 개발자 생산성 측정 5축"
+      - "※ Faros AI (2025): AI 도구 다수 엔터프라이즈 분석 리포트"
+      - "※ EU AI Act: EU 인공지능 규제법. 2024.08 발효 / 2027.08 자동차 등 embedded high-risk AI 완전 적용"
+data_refs:
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s5 (영역별 효과)"
+constraints:
+  max_shapes: 40
+  min_nontext_elements: 3
+  no_approval_section: true
+  footnote_glossary: true
+notes: |
+  v4와 동일 구조이나 하단 takeaway_bar 아래에 **각주 영역(y=6.60~7.00)** 추가.
+  본문 영역은 y=0.68~6.55 로 축소.

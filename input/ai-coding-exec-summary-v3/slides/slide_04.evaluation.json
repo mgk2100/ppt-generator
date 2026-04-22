@@ -1,0 +1,20 @@
+{
+  "slide_idx": 4,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 5,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "no_internal_prediction 준수 확인: '15억 절감', '1.2억 투자', '1~2개월' 등 자사 ROI 수치 전무 — 통과.",
+    "외부 3카드 출처 인용 완비: Mercedes-Benz(GitHub case study 2023~), BMW Group(AMCIS 2024 논문), Faros AI(2025 다수 엔터프라이즈 분석) — 각 카드 상단에 출처명 + source_sub 명시.",
+    "신호등 4행 테이블: 녹/녹/황/적 dot + 배경 톤 일치, 효과 수치 +20~+35% / +10~+20% / -5~+10% / -15~-30% 모두 spec 그대로 반영.",
+    "Key Message 바가 accent #1F497D 좌측 테두리로 강조되어 시각계층이 즉시 인지됨.",
+    "개선 여지(경미): 우하단 페이지 번호가 '1 / 00' 으로 플레이스홀더 상태 — 최종 배포 전 총 페이지 수 치환 필요(시각 품질에는 영향 없음).",
+    "개선 여지(경미): 제목 중간의 불릿 '·' 좌우 공백이 넓어 보이나 가독성에는 문제 없음 — 필요 시 타이틀 공백을 half-width로 축소 가능."
+  ],
+  "passed": true
+}

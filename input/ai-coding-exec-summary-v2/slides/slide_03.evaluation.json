@@ -1,0 +1,20 @@
+{
+  "slide_idx": 3,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 5,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "OVAL dot은 이모지가 아닌 실제 shape로 정상 렌더됨 (녹/녹/황/적) — spec 요구 충족.",
+    "큰 숫자 카드 3개 값(약 15억 원 / 약 1.2억 원 / 1~2개월)이 28pt급으로 명확, 상단 라벨 및 하단 부연과 겹침 없음.",
+    "Key Message Bar에 accent_color #1F497D가 좌측 세로 바 및 'Key Message' 텍스트로 반영됨 — accent 일관성 OK.",
+    "신호등 테이블 4행 모두 spec 매핑 1:1 일치 (dot 색 · 행 배경 · 효과% 색 · 해석문 전부 일치).",
+    "하단 푸터 페이지 번호가 '1 / 00'으로 렌더됨 — 전체 페이지 수 치환 누락 가능성, '1 / N' 형태로 보정 권장 (슬라이드 내용 자체 문제는 아님).",
+    "테이블 헤더 '영역/효과/해석' 짙은 남색 바가 accent와 잘 어울리며 행 배경(연녹/연황/연적)과 시각적으로 분리됨 — 계층 양호."
+  ],
+  "passed": true
+}

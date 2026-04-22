@@ -1,0 +1,15 @@
+idx: 1
+layout: "제목 슬라이드"
+title: "AI 코딩 어시스턴트 도입 영향 분석"
+pattern: "cover"
+accent_color: "#1F497D"
+key_message: ""
+content_blocks:
+  - kind: cover
+    date_text: "2026.04.21"
+data_refs: []
+constraints:
+  max_shapes: 6
+notes: |
+  build_slide_1(slide) = setup_cover(slide, title, date="2026.04.21").
+  각주 없음 (표지에는 용어 안 나옴).

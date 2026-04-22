@@ -1,0 +1,19 @@
+{
+  "slide_idx": 2,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "no_internal_prediction 준수 확인: '연 X억 절감', '100명 기준', 'ROI N배', '3천만원' 등 자사 예측/예산 수치 없음. 승인 박스에 '규모·예산 별도 산정' 표기되어 제약 완전 충족.",
+    "외부 수치 출처 표기 양호: '+91% (Faros 2025)', '+98% (Faros 2025)', 'AMCIS 2024', '2027.08 EU AI Act' 모두 출처/시점 병기.",
+    "카드 하단 여백: 3개 카드 모두 bullet 이후 약 40% 수직 공간이 비어있음. 밀도상 약간 여유로움 — 향후 각 카드에 한 줄 보충 설명이나 출처 각주를 추가하면 균형 개선 가능. 단 현 상태도 허용 범위 내.",
+    "중앙 카드 '→ 선별 적용이 핵심' 우측 카드 '→ 인력·도구 동시 보강 필수'가 결론 bullet 역할 — 본문 bullet과 동일한 서식이라 결론임을 시각적으로 약하게 구분. bold 또는 accent 색 배경 pill로 강조 권장.",
+    "Key Message 바의 'KEY MESSAGE' 라벨과 본문 간격 적절, accent #1F497D와 흰 라벨 대비 충분. 헤더 타이포그래피 계층 명확."
+  ],
+  "passed": true
+}

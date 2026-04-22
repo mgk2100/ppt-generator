@@ -1,0 +1,18 @@
+{
+  "slide_idx": 3,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 4,
+    "visual_hierarchy": 5,
+    "density": 5,
+    "color_consistency": 5,
+    "readability": 3
+  },
+  "actionable_feedback": [
+    "Mercedes-Benz 카드(좌상단)와 Geely 카드(우하단)의 배지 텍스트 '2023.07', '2025.07'이 '2023.0 / 7', '2025.0 / 7'로 2줄 줄바꿈 발생 — spec notes가 '최소 Inches(1.0)' 배지 폭을 요구함. 해당 배지의 width를 Inches(1.1~1.2)로 확대하거나 font size를 1~2pt 축소할 것.",
+    "Key Message 배너의 'KEY MES-SAGE' 라벨이 하이픈 기호로 2줄 강제 분할됨 — 라벨 shape width를 약 0.1 inch 늘리거나 'KEY MESSAGE'를 한 단어 처리하여 자연스러운 1줄 표시가 되도록 조정.",
+    "타임라인 상단 우측 범례(긍정/임박/D-Day) 텍스트가 chevron 색상과 직접 매핑된 색상 칩 없이 회색 톤으로만 표시됨 — 각 라벨 앞에 3~4px 컬러 도트(#2E8B57, #D4A017, #C0504D)를 추가하면 범례-chevron 연결이 즉시 인지됨.",
+    "2x3 카드 간 수직/수평 gutter가 비교적 균일하나, 1행 카드 하단(본문 영역)에 여백이 많아 카드 높이 대비 정보 밀도 불균형 — 카드 height를 약 0.3 inch 축소하거나 본문 라인 간격을 1.1 → 1.2로 확장해 시각적 균형 개선 가능."
+  ],
+  "passed": true
+}

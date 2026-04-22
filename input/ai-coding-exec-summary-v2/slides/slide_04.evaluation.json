@@ -1,0 +1,19 @@
+{
+  "slide_idx": 4,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 5,
+    "color_consistency": 4,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "Key Message bar: 'Key Message' 라벨과 본문 사이 간격이 다소 붙어 있음 — 라벨 우측 패딩 +8px 또는 두 컬럼의 세로 정렬 간격을 넓혀 가독성 향상 권장.",
+    "좌측 시범사업 카드: 각 key 태그(대상·투입·예산·측정·목적)의 accent 색이 #4F81BD(파랑)로 우측 카드 teal과 대비되어 팔레트 분할감이 있음 — 의도된 구분이지만, 카드 제목 ②의 색을 좌측 카드 accent와 통일(현재 동일 파랑)하여 좌/우 톤 일관성 유지되고 있으므로 유지 가능.",
+    "우측 승인 요청 카드: 번호원 내부 숫자 대비가 흰색 배경 기준 teal 채움으로 충분하나, ①~④ 항목 사이 수직 간격이 균일해 스캔성 양호 — 개선 필요 없음.",
+    "CHEVRON 로드맵: Phase 텍스트 2단(제목/본문) 줄간격이 본문 2줄 케이스(Phase 2/3)에서 다소 빽빽 — body line-height 1.25 → 1.35 상향 권장.",
+    "하단 좌/우 카드 상단 가이드라인(accent 수평선): 좌측은 파랑, 우측은 teal로 구분되어 spec 의도와 일치 — 유지."
+  ],
+  "passed": true
+}

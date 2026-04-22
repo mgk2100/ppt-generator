@@ -1,0 +1,76 @@
+idx: 4
+layout: "제목 및 내용"
+title: "영역별 예상 효과  ·  외부 공식 벤치마크"
+pattern: "table_metrics"
+accent_color: "#1F497D"
+key_message: "영역별 효과 3~5배 차이 · 선행·도구 영역이 즉시 도입 후보"
+content_blocks:
+  - kind: stoplight_table
+    title: "① 영역별 효과 (업계 일반 보정 추정)"
+    columns: ["영역", "효과", "해석"]
+    rows:
+      - dot_color: "#2E8B57"
+        bg_color: "#E8F5EC"
+        area: "선행 R&D · 도구 · 테스트 자동화"
+        effect: "+20 ~ +35%"
+        effect_color: "#2E8B57"
+        interpretation: "즉시 도입 후보 (위험 낮음 · 효과 큼)"
+      - dot_color: "#2E8B57"
+        bg_color: "#E8F5EC"
+        area: "양산 일반 SW (비안전)"
+        effect: "+10 ~ +20%"
+        effect_color: "#2E8B57"
+        interpretation: "코드 검사 도구 통합 후 도입"
+      - dot_color: "#D4A017"
+        bg_color: "#FFF7D9"
+        area: "양산 안전 코드 (차량 안전등급 높음↑)"
+        effect: "-5 ~ +10%"
+        effect_color: "#D4A017"
+        interpretation: "본전 영역 · 자사 시범 측정 필요"
+      - dot_color: "#C0504D"
+        bg_color: "#FCE8E6"
+        area: "품질검증 단계 (인력 관점)"
+        effect: "-15 ~ -30%"
+        effect_color: "#C0504D"
+        interpretation: "코드 리뷰 부담 증가 · 인력 보강 필수"
+  - kind: benchmark_detail_cards
+    title: "② 외부 공식 벤치마크 (상세)"
+    layout: "1x3"
+    cards:
+      - source: "Mercedes-Benz"
+        source_sub: "GitHub 공식 case study (2023.07~)"
+        tool: "GitHub Copilot"
+        scale: "5,000명+ 개발자 · 115k repos"
+        measurement: "개발자 자체 설문"
+        headline: "주당 30분+ 절감"
+        detail: "누적 200만 라인 수락 · 흐름 상태 유지 향상"
+        accent: "#1F497D"
+      - source: "BMW Group"
+        source_sub: "AMCIS 2024 논문"
+        tool: "GitHub Copilot (사내 파일럿)"
+        scale: "사내 파일럿"
+        measurement: "SPACE 프레임워크 5축"
+        headline: "5축 전항목 개선"
+        detail: "결함 감소 (정량치 비공개) · Pielmeier·Eidelloth"
+        accent: "#1F497D"
+      - source: "Faros AI (2025)"
+        source_sub: "다수 엔터프라이즈 분석"
+        tool: "Copilot / Cursor 등 혼합"
+        scale: "다수 엔터프라이즈 (규모 비공개)"
+        measurement: "Git 로그·리뷰 메트릭 분석"
+        headline: "리뷰 시간 +91% · 요청 +98%"
+        detail: "작업 처리량 +21% · AI 코드량 증가가 검증 부담으로 직결"
+        accent: "#4F81BD"
+data_refs:
+  - "analysis.yaml > s5 (영역별 효과)"
+  - "analysis.yaml > s3 (경쟁사)"
+  - "analysis.yaml > s4 (일반 IT 데이터)"
+constraints:
+  max_shapes: 45
+  min_nontext_elements: 7
+  cite_tool_and_measurement: true
+notes: |
+  하단 3 벤치마크 카드를 **6행 구조**로 확장:
+  출처 · 공개매체 · 도구 · 규모 · 측정 · 핵심 수치 · 상세
+  "주당 30분 절감" 만 적지 말고 도구·측정 방식 함께.
+  이모지 금지 — OVAL shape로 색상 dot.

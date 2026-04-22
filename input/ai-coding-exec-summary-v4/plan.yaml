@@ -1,0 +1,27 @@
+project_name: ai-coding-exec-summary-v4
+total_slides: 6
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  경쟁사·자동차 업계 동향 중심. 승인 요청 제거.
+  공식 수치는 도구·측정방식·규모를 함께 표기.
+  전문용어(ISO/PAS 8800, ASPICE 등)는 부록 glossary 로 해설.
+
+  S1 (표지) → S2 (핵심 요약) → S3 (경쟁사 상세 · 도구·측정 명시)
+  → S4 (외부 공식 벤치마크 상세) → S5 (로드맵 · 권고 사항)
+  → S6 (부록 · 전문용어 해설)
+slides: [1, 2, 3, 4, 5, 6]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+constraints:
+  no_cost_speculation: true
+  no_internal_prediction: true
+  no_approval_section: true
+  cite_tool_and_measurement: true
+  appendix_glossary: true

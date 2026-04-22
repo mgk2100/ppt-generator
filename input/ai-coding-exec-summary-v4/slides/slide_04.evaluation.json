@@ -1,0 +1,25 @@
+{
+  "slide_idx": 4,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 3,
+    "color_consistency": 5,
+    "readability": 3
+  },
+  "actionable_feedback": [
+    "하단 벤치마크 카드 3개: 6행(출처/공개매체/도구/규모/측정/핵심수치/상세)이 모두 포함되었으나 카드 내부 본문 텍스트가 9~10pt 수준으로 보임 — 카드 본문을 11pt로 확대하거나 detail 줄을 1줄로 압축해 수직 여백 확보 권장.",
+    "① 영역별 효과 표: 4행·3열 스톱라이트 배경/도트 모두 정확히 반영. 단, '해석' 열 셀 내부 텍스트가 한 줄에 길게 들어가 우측 패딩이 좁아 보임 — 해석 열 폭을 5~8% 확대하거나 letter-spacing 축소 권장.",
+    "Faros AI 카드 accent(#4F81BD)가 Mercedes/BMW(#1F497D)와 달라 spec대로 구현되었으나, 시각적으로 전체 accent 톤을 해칠 수 있음 — 수치 강조 bar만 다른 색으로 유지하고 카드 헤더는 #1F497D로 통일해 팔레트 일관성 강화 권장.",
+    "Key Message 바와 본문 표/카드 간 수직 간격이 좁아 계층 분리가 약함 — Key Message 바 하단 여백을 +6~8pt 추가해 '제목 > Key Message > 본문' 계층 체감 강화.",
+    "카드 내 '핵심 수치'(headline) 행이 bold/큰 폰트로 나와 있으나 '주당 30분+ 절감', '5축 전항목 개선', '리뷰 시간 +91%' 중 Faros만 2줄 처리되어 높이 불균형 — 3 카드 headline 영역 높이를 동일 고정(약 44pt) 후 내용 자동 축소 처리 권장."
+  ],
+  "passed": true,
+  "notes": {
+    "stoplight_table": "4행 모두 반영 (녹·녹·노·적). dot_color/bg_color/effect_color 일치.",
+    "benchmark_cards": "3 카드(Mercedes/BMW/Faros) 각 6행 구조 충족 — '주당 30분' 단편만 있지 않고 도구(Copilot)·규모(5,000명+)·측정(설문/SPACE/Git메트릭)·상세 모두 병기됨.",
+    "accent": "#1F497D 제목·Key Message·카드 accent에 일관 적용. Faros AI만 #4F81BD로 spec 명시대로 변주.",
+    "cite_tool_and_measurement": "충족 — 각 카드 tool+measurement 라인 명시."
+  }
+}

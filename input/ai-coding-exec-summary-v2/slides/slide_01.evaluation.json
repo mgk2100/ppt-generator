@@ -1,0 +1,19 @@
+{
+  "slide_idx": 1,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 3,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "카드 3개 하단 공백 과다 — lines 4개만 배치되고 카드 세로 절반 이상이 비어있음. 카드 높이를 컨텐츠에 맞춰 축소하거나 lines 내부 vertical 간격을 키워 균형 개선",
+    "아이콘 원의 '△'(2번째 카드)가 '✓/⚠'보다 시각 무게감이 약함 — 굵은 삼각형 문자(▲) 또는 '!'로 교체해 경고성 가시성 강화",
+    "하단 approval_box 2x2 체크박스 좌우 컬럼 간 간격이 넓어 오른쪽 항목이 외따로 떨어져 보임 — 좌우 컬럼 gap을 현재의 약 60%로 축소 권장",
+    "Key Message Bar 좌측 세로 accent 바(#1F497D)가 너무 얇음 — 두께 6~8px로 키워 강조 계층 부각",
+    "페이지 번호 '1 / 00'의 '00' 오탈자 — 전체 슬라이드 수로 치환 필요"
+  ],
+  "passed": true
+}

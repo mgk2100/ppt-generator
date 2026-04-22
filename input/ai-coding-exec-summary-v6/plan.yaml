@@ -1,0 +1,30 @@
+project_name: ai-coding-exec-summary-v6
+total_slides: 5
+sources:
+  - sources/ai-coding-exec-summary/AI_Coding_Assistant_Automotive_Impact_Analysis.md
+narrative: |
+  v5 대비 2가지 변화:
+  1. 각주 중복 제거 — SPACE·Faros AI·EU AI Act 는 S2 에서만 해설. S3/S4 중복 각주 삭제.
+  2. S5 로드맵 → 자동차 업계 LLM/AI 활용 확장 사례로 교체.
+     코딩 어시스턴트 외의 AI 활용 영역 (차량 탑재 음성, R&D 생성형, 자율주행 End-to-End)
+     공식 발표 사례만 인용.
+
+  S1 (표지) → S2 (핵심 요약 + 각주)
+  → S3 (경쟁사 코딩 도입 상세) → S4 (영역별 효과)
+  → S5 (자동차 업계 LLM/AI 확장 활용 — 차량·R&D·자율주행)
+slides: [1, 2, 3, 4, 5]
+style_guide:
+  primary_accent: "#1F497D"
+  secondary_accents:
+    - "#4F81BD"
+    - "#2E8B57"
+    - "#D4A017"
+    - "#C0504D"
+    - "#2C7F94"
+constraints:
+  no_cost_speculation: true
+  no_internal_prediction: true
+  no_approval_section: true
+  cite_tool_and_measurement: true
+  footnote_glossary: true
+  footnote_no_duplicate: true   # 한번 해설한 용어는 다른 슬라이드에서 각주 생략

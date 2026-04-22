@@ -1,0 +1,20 @@
+{
+  "slide_idx": 3,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 3,
+    "color_consistency": 5,
+    "readability": 3
+  },
+  "actionable_feedback": [
+    "각 카드 내부 행 높이가 빠듯해 Mercedes-Benz scale('5,000명+ · 115k repos · 4,300 Enterprise orgs')·현대오토에버 tool('H-Chat (Azure OpenAI / Gemini / Claude 프록시)') 등 일부 행이 2줄로 줄바꿈되어 5행 구조의 시각적 리듬이 깨짐 — 긴 문자열을 '· '로 분리해 측정/결과 행과 동일한 1행 높이를 유지하거나, scale 행의 폰트를 9.5pt로 0.5pt만 낮춰 1줄에 맞출 것.",
+    "본문이 spec notes의 허용치(10pt)에 걸려 있어 rubric readability 기준(11pt+)과 충돌 — 카드 여백을 2mm 줄이고 본문 11pt로 상향, 라벨(도구/규모/측정/결과/출처)은 9pt bold로 차등화해 가독성과 계층을 동시에 확보.",
+    "5행 라벨(도구·규모·측정·결과·출처)이 모든 카드에서 일관된 위치에 있는지 시각적 그리드가 약함 — 라벨 컬럼(예: '도구 : ')을 고정 폭으로 좌측 정렬하면 사용자가 6개 카드를 횡단 비교하기 쉬워짐.",
+    "배지 색상이 Mercedes/BMW/Bosch(#1F497D 진남)와 현대모비스/오토에버/Geely(#2C7F94 청록)로 2 그룹 구분되는 의도는 좋으나 PNG에서 색 차이가 미묘 — 범례(글로벌 OEM vs 한국/중화권) 한 줄을 key_message 하단에 1줄 11pt로 추가하면 의미 전달 개선.",
+    "key_message '2027.08 EU AI Act 자동차 D-Day'가 경쟁사 도입 시점들과 같은 선상에 놓여 맥락 연결이 약함 — 우상단 강조 박스에 'D-Day' 카운트(잔여 개월)를 accent #4F81BD 배경+흰 글자로 배치해 긴급성 시각화."
+  ],
+  "passed": true,
+  "notes": "6개 카드 모두 도구·규모·측정·결과·출처 5행 모두 표시되며 배지 시점(2023.07~/2024/진행 중/2025.09/2024~/2025.07) 줄바꿈 없이 1줄 유지 — cite_tool_and_measurement: true 준수. '주당 30분+ 절감'은 도구(GitHub Copilot)·규모(5,000명+·115k repos)·측정(자체 설문+흐름 상태) 맥락과 함께 제시되어 단편 수치 감점 조건 회피. accent #4F81BD는 타이틀 바/카드 헤더에 일관 적용. 주요 감점은 텍스트 밀도와 10pt 본문 폰트에서 발생."
+}

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 코딩 어시스턴트 — 자동차 SW 공수 영향 분석 (요약)</title>
+<style>
+  :root{
+    --ink:#1a1f2e;
+    --muted:#5a6275;
+    --accent:#0b5394;
+    --accent-soft:#e7f0fa;
+    --border:#d8dde6;
+    --surface:#ffffff;
+    --bg:#f6f7fa;
+    --pos-strong:#1b7a3a;
+    --pos:#e8f5ec;
+    --neu:#fff7d9;
+    --neu-strong:#8a6d00;
+    --neg:#fce8e6;
+    --neg-strong:#a8261a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: "Pretendard","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-size:15px;
+    line-height:1.65;
+    color:var(--ink);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{
+    max-width:920px;
+    margin:28px auto;
+    padding:34px 44px 38px 44px;
+    background:var(--surface);
+    box-shadow:0 2px 14px rgba(0,0,0,0.05);
+    border-radius:8px;
+    position:relative;
+  }
+  .page-num{
+    position:absolute;
+    top:18px;
+    right:30px;
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:0.5px;
+  }
+  h1{
+    font-size:22px;
+    line-height:1.35;
+    margin:0 0 12px 0;
+    border-bottom:3px solid var(--accent);
+    padding-bottom:10px;
+    letter-spacing:-0.01em;
+  }
+  .meta{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:18px;
+    line-height:1.65;
+  }
+  h2{
+    font-size:17px;
+    margin:22px 0 9px 0;
+    color:var(--accent);
+    border-left:4px solid var(--accent);
+    padding-left:11px;
+    line-height:1.35;
+  }
+  p{margin:6px 0}
+  ol{padding-left:24px; margin:8px 0}
+  ol li{margin:5px 0}
+  ul{padding-left:22px; margin:6px 0}
+  ul li{margin:3px 0}
+  code{
+    font-family:"JetBrains Mono","D2Coding",Consolas,Monaco,monospace;
+    font-size:0.9em;
+    background:#f0f2f6;
+    padding:1px 6px;
+    border-radius:3px;
+  }
+  .callout{
+    border:1.5px solid var(--accent);
+    background:var(--accent-soft);
+    border-radius:6px;
+    padding:13px 18px;
+    margin:10px 0 6px 0;
+    font-size:15px;
+    line-height:1.65;
+  }
+  table{
+    border-collapse:collapse;
+    width:100%;
+    margin:9px 0 6px 0;
+    font-size:13.5px;
+  }
+  th,td{
+    border:1px solid var(--border);
+    padding:7px 10px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.55;
+  }
+  th{
+    background:#eef2f7;
+    font-weight:700;
+  }
+  tr:nth-child(even) td{background:#fafbfc}
+  .pos{background:var(--pos)}
+  .pos-s{background:var(--pos); font-weight:700; color:var(--pos-strong)}
+  .neu{background:var(--neu); color:var(--neu-strong)}
+  .neg{background:var(--neg); color:var(--neg-strong)}
+  .neg-s{background:var(--neg); font-weight:700; color:var(--neg-strong)}
+  .hl{
+    background:linear-gradient(transparent 55%, #fff3a8 55%);
+    font-weight:700;
+  }
+  .footnote{
+    font-size:13px;
+    color:var(--muted);
+    background:#f3f6fa;
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px 16px;
+    margin-top:14px;
+    line-height:1.65;
+  }
+  .footnote b{color:var(--ink)}
+  @media print{
+    body{background:#fff}
+    .page{
+      box-shadow:none;
+      margin:0;
+      padding:16mm 18mm;
+      max-width:none;
+      border-radius:0;
+      page-break-after:always;
+    }
+    .page:last-child{page-break-after:auto}
+    table{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<!-- ====================== PAGE 1 ====================== -->
+<div class="page">
+  <div class="page-num">상 (上)</div>
+
+  <h1>AI 코딩 어시스턴트가 자동차 OEM/벤더사 SW 설계자 공수에 미치는 영향 (요약)</h1>
+  <div class="meta">
+    <b>대상 도구</b> · GitHub Copilot(VSCode) · Cursor · Claude Code · Gemini Code Assist · GPT 기반 IDE 플러그인 &nbsp;|&nbsp;
+    <b>산업</b> · 자동차 OEM(BMW · Mercedes-Benz · 현대차 등) · Tier-1 벤더사(현대모비스 · Bosch · SL 등) 한정 &nbsp;|&nbsp;
+    <b>작성일</b> · 2026-04-20
+  </div>
+
+  <div class="callout">
+    <b>자동차 SW 양산 환경에서 AI 코딩 어시스턴트의 공수 영향은 일반 IT 주장치(30~55%)의 <span class="hl">1/3 ~ 1/2 수준</span>이며, 영역·역할별로 효과가 크게 엇갈린다. 일부 영역은 공수 증가(부(-) 효과)가 관측된다.</b>
+  </div>
+
+  <h2>① 영역별 순공수 영향 (핵심)</h2>
+  <table>
+    <thead>
+      <tr><th style="width:30%">영역</th><th style="width:18%">순효과</th><th>해석</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>선행 R&amp;D · 도구 · 테스트 자동화</td>
+        <td class="pos-s">+20 ~ +35%</td>
+        <td>일반 IT 상한선에 근접</td>
+      </tr>
+      <tr>
+        <td>양산 응용SW (비안전 Body / Infotainment)</td>
+        <td class="pos-s">+10 ~ +20%</td>
+        <td>일반 IT 정량 데이터를 자동차 양산 조건(학습데이터·추적성·리뷰 부담)으로 하향 조정한 추정</td>
+      </tr>
+      <tr>
+        <td>양산 BSW/MCAL · ASIL B+ 안전 코드</td>
+        <td class="neu">-5 ~ +10%</td>
+        <td>검증 부담이 절감 효과를 상쇄</td>
+      </tr>
+      <tr>
+        <td>검증 엔지니어 부담 (인력 관점)</td>
+        <td class="neg-s">-15 ~ -30%</td>
+        <td>병합 요청 · 코드량 증가로 리뷰 부담 ↑ (Faros +91%)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>② 역할별 상세 영향</h2>
+  <table>
+    <thead>
+      <tr><th style="width:40%">역할</th><th style="width:30%">양산 환경</th><th style="width:30%">선행 R&amp;D 환경</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>App SW 개발자 (비안전)</td><td class="pos">+10 ~ +20%</td><td class="pos-s">+25 ~ +35%</td></tr>
+      <tr><td>BSW / MCAL / Driver (안전)</td><td class="neu">-5 ~ +10%</td><td class="pos">+5 ~ +15%</td></tr>
+      <tr><td>검증 · 테스트 엔지니어</td><td class="neu">-10 ~ +10%</td><td class="pos">+5 ~ +20%</td></tr>
+      <tr><td>도구 · 인프라 엔지니어</td><td class="pos-s">+25 ~ +40%</td><td class="pos-s">+30 ~ +50%</td></tr>
+      <tr><td>SW Architect</td><td class="pos">+5 ~ +15%</td><td class="pos">+10 ~ +20%</td></tr>
+    </tbody>
+  </table>
+
+  <h2>③ 왜 이런 차이가 발생하는가 — 자동차 SW 특수 제약 6가지</h2>
+  <ol>
+    <li><b>학습 데이터 부족</b> — AUTOSAR · MCAL · BSW 코드는 공개 OSS에 거의 없음 → AI 제안 정확도 · 수락률 급감 (&lt; 15% 추정)</li>
+    <li><b>중첩된 규정 준수 요건</b> — ASPICE CL2/CL3 + ISO 26262 + MISRA C:2025 + AUTOSAR C++14 중첩. AI 생성 코드도 동일 규칙 준수 요구</li>
+    <li><b>Target HW 제약</b> — ROM/RAM · 인터럽트 안전성 · 실시간 데드라인. "컴파일되지만 양산 부적합" 코드 생성 위험</li>
+    <li><b>폐쇄망 · 오프라인 빌드 환경</b> — 외부 LLM API 직접 호출 금지. 사내 LLM 프록시(Azure OpenAI · H-Chat 등) 필수, 응답성 · 기능 제약 수반</li>
+    <li><b>추적성 · 회귀검증 부담</b> — 요구→설계→코드→테스트 양방향 추적 + HIL/SIL 회귀. 코드량 증가가 검증 부담으로 직결</li>
+    <li><b>도메인 지식 의존</b> — 차량 제어 · 파워트레인 · ADAS 등 고도 전문 영역. LLM 일반 학습 기반으로는 부적절한 제안 빈발</li>
+  </ol>
+
+</div>
+
+<!-- ====================== PAGE 2 ====================== -->
+<div class="page">
+  <div class="page-num">하 (下)</div>
+
+  <h2>④ 글로벌 경쟁사 도입 현황 (참고 자료)</h2>
+  <table>
+    <thead>
+      <tr><th style="width:20%">회사</th><th>도입 내용</th><th style="width:14%">시점</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Mercedes-Benz</b></td>
+        <td>GitHub Copilot 도입. <b>5,000+ 개발자</b>, 누적 <b>200만 라인 수락</b>, 개발자 1인당 주당 30분+ 절감 자체 보고</td>
+        <td>2023.07~</td>
+      </tr>
+      <tr>
+        <td><b>BMW Group</b></td>
+        <td>Copilot 사내 파일럿. SPACE 프레임워크 5축(Satisfaction·Performance·Activity·Communication·Efficiency) 전 항목 개선, 결함 감소 (AMCIS 2024 논문 공개)</td>
+        <td>2024~</td>
+      </tr>
+      <tr>
+        <td><b>Bosch</b></td>
+        <td>GitHub <code>bosch-copilot</code> 사내 org 운영 (액세스 관리 및 단계적 확산)</td>
+        <td>진행 중</td>
+      </tr>
+      <tr>
+        <td><b>Hyundai Mobis</b></td>
+        <td>Wind River 협업 → AI 기반 <b>Mobis Development Studio</b> 구축. 웹 기반 통합 SDV 개발환경, CI/CD/CT 자동화 및 shift-left 테스팅</td>
+        <td>2025.09</td>
+      </tr>
+      <tr>
+        <td><b>Hyundai AutoEver</b></td>
+        <td><b>H-Chat</b> (Azure OpenAI · Gemini · Claude 사내 LLM 프록시) 그룹사 전사 배포. 보안 환경 내 코드 보조·문서 작성 지원</td>
+        <td>2024~</td>
+      </tr>
+      <tr>
+        <td><b>Geely Auto</b></td>
+        <td>세계 최초 <b>ISO/PAS 8800:2024</b> AI 안전 프로세스 인증 (SGS-TÜV Saar 발행). AI 기반 차량 기능 안전표준 선제 대응</td>
+        <td>2025.07</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>⑤ 일반 IT vs 자동차 양산 — 보정 근거 3개 데이터</h2>
+  <table>
+    <thead>
+      <tr><th style="width:26%">연구 · 출처</th><th style="width:22%">핵심 수치</th><th>자동차 양산 시사점</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>GitHub 자체 통제 연구<br>(단순 HTTP 서버 구현 과제)</td>
+        <td class="pos-s">시간 55% 단축<br>완료율 78% → 100%</td>
+        <td>자동차 양산 적용 시 절반 이하로 감쇠 — <b>①표의 상한 기준점</b> (단순·정형화·신규 작업의 이상적 상한선)</td>
+      </tr>
+      <tr>
+        <td>METR 2025<br>(시니어 OSS 개발자 246 이슈 RCT)</td>
+        <td class="neg-s">19% 더 느림<br>(체감 +20% 빠름)</td>
+        <td>양산 BSW · 복잡 · 레거시 코드가 이 시나리오에 가장 근접 — <b>①표의 하한 기준점</b></td>
+      </tr>
+      <tr>
+        <td>Faros AI 2025<br>(엔터프라이즈 분석)</td>
+        <td class="neg">리뷰 시간 +91%<br>병합 요청 수 +98%</td>
+        <td>검증 부담 증가의 직접 근거 — <b>①표 검증 행의 -15~-30% 산출 근거</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footnote">
+    <b>⑥ 데이터 한계</b><br>
+    자동차 양산 적용 정량치 공개는 거의 없음 (영업비밀 · 고객사 NDA). ①② 수치는 사내 파일럿 공개(Mercedes · BMW) + 일반 IT 정량 데이터를 자동차 양산 조건(학습데이터 · 추적성 · 리뷰 부담 등 §③ 6가지 제약)으로 하향 조정한 <b>추정치</b>이며, 표시된 % 범위는 <b>±50% 수준의 신뢰구간</b>으로 해석해야 함. 정밀치 도출을 위해서는 사내 A/B 파일럿 실측이 필요함.
+  </div>
+
+</div>
+
+</body>
+</html>
