@@ -113,7 +113,7 @@ Phase 5 코드 레퍼런스가 PPT 슬라이드에 직접 매핑된다. 작성 �
 
 ### 템플릿 규칙
 1. 회사 지정 PPT 템플릿을 반드시 사용하라
-   - 템플릿 경로: /home/ubuntu/Share/ppt-generator/ref/
+   - 템플릿 경로: /home/user/Share/ppt-generator/ref/
    - 표지 슬라이드: 템플릿의 표지 레이아웃을 유지하고 제목/발표자/날짜만 교체
    - 로고: 템플릿에 포함된 회사 로고 위치와 크기를 변경하지 말 것
    - 슬라이드 마스터: 템플릿의 마스터 레이아웃(폰트, 색상, 배경)을 그대로 따를 것
@@ -319,7 +319,10 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 ## 금지 사항
 - **가짜 그림자(오프셋 사각형) 금지**. `add_shadow()` 사용
 - **모든 다이어그램에서 사각형만 사용 금지**. 의미 도형 활용 (CAN, CLOUD, CUBE, GEAR_6 등)
-- **통계 데이터를 텍스트 숫자만으로 나열 금지**. 3개+ 수치 → 차트 활용
+- **통계 데이터를 텍스트 숫자만으로 나열 금지**. 3개+ 수치 → `add_chart()` 활용
+- **정렬된 격자형/표형 데이터를 독립 도형으로 흩뿌려 '가짜 테이블' 만들기 금지**. `calc_grid`로 좌표를 일일이 찍어 표를 흉내 내지 말고 `add_grid_table()` (네이티브 표, 셀별 서식·병합)를 사용한다. 행·열 정렬이 OOXML 차원에서 보장되어 정렬·밀도가 우월하다
+- **실제 UI 캡처·스크린샷·로고를 도형으로 모사 금지**. `add_picture()`로 실물 임베드
+- **슬라이드 하단/측면에 큰 빈 영역 방치 금지**. CONTENT_SAFE를 정보로 채운다 (Evaluator density·visual_ambition 게이트)
 - **ppt_utils에 있는 함수를 직접 재구현 금지**. import하여 사용
 - **"반드시 N섹션" 같은 고정 구조 강제 금지**. 전체 구조는 데이터 볼륨과 성격이 결정
 - **콘텐츠 슬라이드에서 마스터 요소를 덮는 전면 배경 금지**. 로고, 구분선, 푸터가 가려짐 (표지 레이아웃은 예외)
@@ -438,7 +441,7 @@ setup_cover(slide, "제목",
 """[프레젠테이션 제목] - PPT 생성 스크립트"""
 
 import sys
-sys.path.insert(0, "/home/ubuntu/Share/ppt-generator")
+sys.path.insert(0, "/home/user/Share/ppt-generator")
 
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -458,10 +461,12 @@ from ppt_utils import (
     estimate_text_size, set_text_inset, calc_grid,
     calc_connector, add_smart_connector,
     add_code_block, add_styled_table,
+    add_grid_table, style_cell, set_cell_border, merge_cells,
+    add_picture, add_chart,
     add_state_machine,
     auto_shrink_text, add_routed_connector,
     VFlow, HFlow,
-    OUTPUT_DIR,
+    OUTPUT_DIR, ASSETS_DIR,
 )
 
 ensure_fonts()
@@ -579,6 +584,12 @@ print(f"생성 완료: {output_path}")
 | `parse_mermaid_metadata(mermaid_text)` | Mermaid 텍스트 구조 분석 → dict(type, participants, subgraphs, nodes, edges, has_loop, has_alt, suggested_strategy) |
 | `add_code_block(slide, x, y, w, h, code_text, ...)` | 코드 스니펫 블록 (어두운 배경 + 고정폭 폰트 + 라인 하이라이트) |
 | `add_styled_table(slide, x, y, w, rows, cols, data, ...)` | 헤더+zebra+border 스타일 테이블 |
+| `add_grid_table(slide, x, y, w, h, nrows, ncols, cells=..., ...)` | **전면 격자 레이아웃** — 셀별 배경/테두리/병합/rich-text 정밀 제어. 도형 흩뿌리기('가짜 테이블') 대신 사용 |
+| `style_cell(cell, text/segments, fill, font_color, border_edges, ...)` | 셀 하나 종합 서식 (add_grid_table의 cells 값) |
+| `set_cell_border(cell, edge, color, width_pt, dash)` | 셀 변별 테두리 (dash 지원) |
+| `merge_cells(table, r0, c0, r1, c1)` | 셀 범위 병합 |
+| `add_picture(slide, image_path, x, y, w=, h=, shadow=, line_color=)` | 이미지/스크린샷/차트 PNG 삽입 (시각 자산 1급 채널) |
+| `add_chart(slide, x, y, w, h, chart_type, categories, series, ...)` | 네이티브 차트 (수치 3+는 텍스트 나열 대신 차트) |
 | `add_state_machine(slide, states, transitions, ...)` | 상태 머신 다이어그램 (자동 그리드 + 커넥터 + 라벨) |
 | `auto_shrink_text(shape)` | 도형 텍스트 자동 축소 (normAutofit 설정) |
 | `add_routed_connector(slide, waypoints, ...)` | 다중 경유점 라우팅 커넥터 (freeform path, 중간 도형 우회) |

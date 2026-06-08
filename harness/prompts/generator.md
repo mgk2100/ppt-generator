@@ -68,6 +68,8 @@ from ppt_utils import (
     add_accent_bar, make_icon_circle, make_icon_badge,
     add_shadow, set_shape_opacity, add_gradient_stop,
     add_styled_table, calc_grid, set_body_anchor,
+    add_grid_table, style_cell, set_cell_border, merge_cells,  # 전면 격자표
+    add_chart, add_picture,                                    # 차트·이미지 채널
 )
 from template_contract import CONTENT_SAFE, LAYOUT_CONTENT
 
@@ -82,6 +84,18 @@ def build_slide_{IDX}(slide):
     # 본문 — spec.content_blocks에 따라
     # calc_grid(rows, cols, area=(...)) 로 영역 분할 권장
 ```
+
+## 시각 야심 (Evaluator의 visual_ambition·density 차원 — 평범함은 불합격)
+
+'결함 없는 평범함'은 통과하지 못한다. 다음을 적극 활용해 레퍼런스 수준 밀도를 낸다:
+
+- **정렬된 격자형/표형 데이터 → 독립 도형 흩뿌리기 금지. `add_grid_table` 사용.**
+  카드를 좌표로 늘어놓아 '가짜 테이블'을 만들지 말 것. 네이티브 표가 정렬·밀도에서 우월하다.
+  셀별 배경·테두리·병합·rich-text 는 `style_cell`/`set_cell_border`/`merge_cells`.
+- **수치 3개 이상 → 텍스트 나열 금지. `add_chart`** (COLUMN_CLUSTERED/LINE_MARKERS/PIE 등).
+- **실제 UI 캡처·스크린샷·로고 → `add_picture`** (경로: `assets/` 또는 `sources/{name}/assets/`).
+- **하단·측면 빈 영역 금지.** CONTENT_SAFE를 정보로 채운다. 카드 3개로 끝내고 하단 40%를
+  비우면 density 감점. 비교표/차트/보조 시각으로 채울 것.
 
 ## 출력
 

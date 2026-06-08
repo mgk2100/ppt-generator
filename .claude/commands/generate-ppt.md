@@ -1,5 +1,5 @@
 대상: $ARGUMENTS
-출력 경로: /home/ubuntu/Share/ppt-generator/output/
+출력 경로: /home/user/Share/ppt-generator/output/
 
 # Harness-Based PPT Generation (v2)
 
@@ -66,7 +66,19 @@ slides: [1, 2, 3, ..., N]
 style_guide:
   primary_accent: "#1F497D"
   secondary_accents: ["#4F81BD", "#9BBB59", "#C0504D", "#4BACC6"]
+  # 레퍼런스 앵커 — Evaluator가 "결함 없는가"가 아니라 "이 수준에 가까운가"로 평가.
+  # 기본값: 전면 격자표·색상코딩·셀 병합의 고밀도 기준 슬라이드. 덱 성격에 맞게 교체 가능.
+  reference_anchor: "ref/anchors/goal_slide.png"
+assets:                        # 시각 자산 인벤토리 (add_picture로 삽입할 캡처/차트/로고)
+  - path: ""                   # 예: "sources/{name}/assets/ui_capture.png"
+    use_on_slide: 0
 ```
+
+### 2b-1. 자산 수집 (1급 단계)
+
+분석 중 발견한 실제 UI 캡처·스크린샷·로고·외부 차트를 `assets/` 또는
+`sources/{name}/assets/`에 모으고 위 `assets:` 인벤토리에 등록한다.
+python-pptx 도형만으로 모든 것을 '그리지' 말고, 실물 자산은 `add_picture`로 삽입한다.
 
 ### 2c. slide_NN.spec.yaml 작성
 
@@ -84,8 +96,11 @@ content_blocks:
     body: "..."
 data_refs: ["analysis.yaml > Section X"]
 constraints:
-  max_shapes: 25
   min_nontext_elements: 1
+  # 시각 야심 — Evaluator의 visual_ambition/density 게이트 대비.
+  # 정렬된 격자형 데이터는 add_grid_table, 수치 3+는 add_chart, 실물은 add_picture.
+  # max_shapes 상한은 두지 않는다 (밀도 억제 금지). 빈 영역을 남기지 말 것.
+  visual_primitive: "grid_table"   # grid_table | chart | picture | cards | diagram
 ```
 
 ### 2d. ▶ Human Gate
@@ -93,6 +108,17 @@ constraints:
 생성한 plan·specs을 사용자에게 요약해서 보여주고 승인 대기. 사용자 승인 없이 Step 3 진행 금지.
 
 ## Step 3: 슬라이드별 루프
+
+### 3·0. 렌더 사전 점검 (필수 — blind 생성 방지)
+
+루프 진입 전 LibreOffice 가용 여부를 확인한다. 없으면 시각 피드백 루프(3c/3d)가
+작동하지 못하고 "눈 없이" 생성된다 — 반드시 먼저 설치한다.
+
+```bash
+Bash: which libreoffice soffice || echo "MISSING: sudo apt-get install -y libreoffice-impress 필요"
+```
+
+미설치 시 사용자에게 설치를 요청하고, 설치 완료까지 Evaluator 단계를 건너뛰지 말 것.
 
 각 슬라이드 `N = 1..total_slides`에 대해:
 
@@ -106,10 +132,10 @@ Agent(
 당신은 PPT 슬라이드 Generator다. Fresh context — 이전 대화 없음.
 
 ## 읽어야 할 파일
-1. /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
-2. /home/ubuntu/Share/ppt-generator/harness/prompts/generator.md  (엄격한 제약)
-3. /home/ubuntu/Share/ppt-generator/template_contract.py  (CONTENT_SAFE, LAYOUT 상수)
-4. /home/ubuntu/Share/ppt-generator/ppt_utils.py  (사용 가능한 헬퍼 시그니처 — 읽고 참조)
+1. /home/user/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
+2. /home/user/Share/ppt-generator/harness/prompts/generator.md  (엄격한 제약)
+3. /home/user/Share/ppt-generator/template_contract.py  (CONTENT_SAFE, LAYOUT 상수)
+4. /home/user/Share/ppt-generator/ppt_utils.py  (사용 가능한 헬퍼 시그니처 — 읽고 참조)
 
 ## 작업
 1. spec.yaml 읽기
@@ -119,7 +145,7 @@ Agent(
    - set_title(slide, ...) + clear_placeholders(slide, keep=[0])
    - spec.content_blocks 각 항목 반영
 3. Write tool 로 아래 경로에 저장:
-   /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.code.py
+   /home/user/Share/ppt-generator/input/{name}/slides/slide_NN.code.py
 4. 저장 완료 후 "Saved: <경로>" 만 짧게 보고. 코드 요약·설명 불필요.
 """
 )
@@ -143,15 +169,15 @@ Bash: python3 -m harness.loop {name} --action validate --slide N
 그 외:
 ```bash
 Bash: python3 -c "
-import sys; sys.path.insert(0, '/home/ubuntu/Share/ppt-generator')
+import sys; sys.path.insert(0, '/home/user/Share/ppt-generator')
 from harness.render import render_single_slide
 from harness.schemas import SlideSpec
 from pathlib import Path
-spec = SlideSpec.load(Path('/home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml'))
+spec = SlideSpec.load(Path('/home/user/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml'))
 render_single_slide(
-    code_path=Path('/home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.code.py'),
+    code_path=Path('/home/user/Share/ppt-generator/input/{name}/slides/slide_NN.code.py'),
     layout_name=spec.layout,
-    output_png=Path('/home/ubuntu/Share/ppt-generator/input/{name}/renders/slide_NN.png'),
+    output_png=Path('/home/user/Share/ppt-generator/input/{name}/renders/slide_NN.png'),
 )
 "
 ```
@@ -168,26 +194,31 @@ Agent(
 당신은 PPT 슬라이드 Evaluator다. Fresh context — Generator 대화 히스토리 없음.
 
 ## 읽어야 할 것만
-1. /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
-2. /home/ubuntu/Share/ppt-generator/input/{name}/renders/slide_NN.png  (Read tool로 이미지 인식)
-3. /home/ubuntu/Share/ppt-generator/harness/prompts/evaluator.md  (rubric 정의)
+1. /home/user/Share/ppt-generator/input/{name}/slides/slide_NN.spec.yaml
+2. /home/user/Share/ppt-generator/input/{name}/renders/slide_NN.png  (Read tool로 이미지 인식)
+3. /home/user/Share/ppt-generator/harness/prompts/evaluator.md  (rubric 정의)
+4. /home/user/Share/ppt-generator/input/{name}/plan.yaml 의 style_guide.reference_anchor
+   (있으면 그 PNG도 Read — 목표 품질 기준. "결함 없는가"가 아니라 "이 수준에 가까운가"로 평가)
 
 ## 금지
 - slide_NN.code.py 파일은 절대 읽지 마라. 있어도 무시.
 - 생성된 Python 코드 분석 금지. 오직 렌더된 이미지와 spec만으로 평가.
 
 ## 작업
-1. spec과 PNG 비교
-2. evaluator.md 의 5-차원 rubric 각 0~5 채점
-3. score = round(mean(rubric.values())), passed = score >= 4
+1. spec(+레퍼런스 앵커)과 PNG 비교
+2. evaluator.md 의 6-차원 rubric 각 0~5 채점 (visual_ambition·density 포함)
+3. score = round(mean(rubric.values()))
+   passed = (score >= 4) AND (visual_ambition >= 3) AND (density >= 3)
+   → 깔끔하지만 평범하고 빈 영역이 큰 슬라이드는 불합격. 레퍼런스 격차를 줄이는
+     구체 피드백(어떤 영역을 add_grid_table/add_chart/add_picture로 바꿀지)을 남긴다.
 4. Write tool 로 저장:
-   /home/ubuntu/Share/ppt-generator/input/{name}/slides/slide_NN.evaluation.json
+   /home/user/Share/ppt-generator/input/{name}/slides/slide_NN.evaluation.json
 
 JSON 스키마:
 {
   "slide_idx": N,
   "score": 0-5,
-  "rubric": {"spec_adherence":N, "visual_hierarchy":N, "density":N, "color_consistency":N, "readability":N},
+  "rubric": {"spec_adherence":N, "visual_hierarchy":N, "density":N, "visual_ambition":N, "color_consistency":N, "readability":N},
   "actionable_feedback": ["...", "..."],
   "passed": true/false
 }
@@ -227,7 +258,7 @@ Agent(
 2. input/{name}/slides/slide_NN.code.py      (기존 Generator 출력)
 3. input/{name}/slides/slide_NN.validation.json  (Validator 실패)
 4. input/{name}/slides/slide_NN.evaluation.json  (Evaluator 피드백 — 있으면)
-5. /home/ubuntu/Share/ppt-generator/harness/prompts/refiner.md  (원칙)
+5. /home/user/Share/ppt-generator/harness/prompts/refiner.md  (원칙)
 
 ## 작업
 1. 네 파일 읽고 실패 원인 파악
@@ -247,7 +278,7 @@ Bash: python3 -c "
 import json
 from pathlib import Path
 trace = {'attempt': ATTEMPT, 'spec_path': '...', 'validation': {...}, 'evaluation': {...}}
-p = Path('/home/ubuntu/Share/ppt-generator/input/{name}/traces/slide_NN_attempt_MM.json')
+p = Path('/home/user/Share/ppt-generator/input/{name}/traces/slide_NN_attempt_MM.json')
 p.parent.mkdir(parents=True, exist_ok=True)
 p.write_text(json.dumps(trace, ensure_ascii=False, indent=2))
 "
