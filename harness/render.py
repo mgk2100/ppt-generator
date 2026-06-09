@@ -23,6 +23,11 @@ def _have(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+def _soffice() -> str:
+    """설치된 LibreOffice 실행 파일 경로를 반환 (libreoffice 또는 soffice)."""
+    return shutil.which("libreoffice") or shutil.which("soffice")
+
+
 def render_single_slide(
     code_path: Path,
     layout_name: str,
@@ -56,7 +61,7 @@ def render_single_slide(
 
     # PPTX → PDF
     subprocess.run(
-        ["libreoffice", "--headless", "--convert-to", "pdf",
+        [_soffice(), "--headless", "--convert-to", "pdf",
          "--outdir", str(tmp_dir), str(tmp_pptx)],
         check=True, capture_output=True,
     )
@@ -99,7 +104,7 @@ def render_full_deck(
     tmp = output_dir / "_tmp.pdf"
 
     subprocess.run(
-        ["libreoffice", "--headless", "--convert-to", "pdf",
+        [_soffice(), "--headless", "--convert-to", "pdf",
          "--outdir", str(output_dir), str(pptx_path)],
         check=True, capture_output=True,
     )

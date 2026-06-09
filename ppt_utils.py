@@ -24,6 +24,7 @@ from pptx.oxml.ns import qn
 BASE_DIR = Path(__file__).parent
 REF_DIR = BASE_DIR / "ref"
 OUTPUT_DIR = BASE_DIR / "output"
+ASSETS_DIR = BASE_DIR / "assets"        # 이미지/스크린샷/차트 PNG 등 시각 자산 (1급 채널)
 DEFAULT_TEMPLATE = REF_DIR / "표지.pptx"
 FONTS_DIR = REF_DIR / "fonts"
 
@@ -1796,6 +1797,378 @@ def add_styled_table(slide, x, y, w, rows, cols, data,
             set_cell_anchor(cell, 'ctr')
 
     return table_shape
+
+
+# ---------------------------------------------------------------------------
+# 셀 단위 서식 테이블 — 전면 격자 레이아웃 (고품질 레퍼런스 덱 관용구)
+#
+# 독립 도형을 좌표로 흩뿌려 '가짜 테이블'을 만드는 대신, 슬라이드 영역을
+# 하나의 네이티브 a:tbl 로 격자 분할하고 셀별 배경·테두리·정렬·병합·
+# rich-text 를 정밀 제어한다. 행·열 정렬이 OOXML 차원에서 보장되므로
+# 빈틈없는 인상과 높은 정보 밀도를 얻는다.
+# ---------------------------------------------------------------------------
+
+_CELL_ALIGN = {
+    "l": PP_ALIGN.LEFT, "c": PP_ALIGN.CENTER,
+    "r": PP_ALIGN.RIGHT, "j": PP_ALIGN.JUSTIFY,
+}
+
+# CT_TableCellProperties 자식 순서 (OOXML 스키마). 위반 시 파일 손상.
+_TCPR_CHILD_ORDER = [
+    "lnL", "lnR", "lnT", "lnB", "lnTlToBr", "lnBlToTr", "cell3D",
+    "noFill", "solidFill", "gradFill", "blipFill", "pattFill", "grpFill",
+    "headers", "extLst",
+]
+
+
+def _tcpr_insert(tcPr, el):
+    """CT_TableCellProperties 자식 순서를 지키며 요소를 삽입한다."""
+    tag = el.tag.split("}")[-1]
+    order = _TCPR_CHILD_ORDER.index(tag) if tag in _TCPR_CHILD_ORDER else len(_TCPR_CHILD_ORDER)
+    idx = len(tcPr)
+    for i, child in enumerate(tcPr):
+        ctag = child.tag.split("}")[-1]
+        corder = _TCPR_CHILD_ORDER.index(ctag) if ctag in _TCPR_CHILD_ORDER else len(_TCPR_CHILD_ORDER)
+        if corder > order:
+            idx = i
+            break
+    tcPr.insert(idx, el)
+
+
+def set_cell_border(cell, edge, color=None, width_pt=0.5, dash=None):
+    """셀의 한 변(또는 여러 변)에 테두리를 설정한다. dash 패턴 지원.
+
+    Args:
+        cell: 테이블 셀
+        edge: 'l' | 'r' | 't' | 'b' (또는 'lrtb' 같은 조합 문자열)
+        color: RGBColor 또는 (r,g,b). None이면 #D0D0D0
+        width_pt: 두께 (pt)
+        dash: None | 'solid' | 'dash' | 'dot' | 'dashDot' | 'lgDash' | 'sysDash'
+    """
+    if len(edge) > 1:
+        for e in edge:
+            set_cell_border(cell, e, color=color, width_pt=width_pt, dash=dash)
+        return
+    if color is None:
+        color = RGBColor(0xD0, 0xD0, 0xD0)
+    edge_tag = {"l": "lnL", "r": "lnR", "t": "lnT", "b": "lnB"}[edge]
+    hexc = f"{color[0]:02X}{color[1]:02X}{color[2]:02X}"
+    tcPr = cell._tc.get_or_add_tcPr()
+    for old in tcPr.findall(qn(f"a:{edge_tag}")):
+        tcPr.remove(old)
+    ln = tcPr.makeelement(qn(f"a:{edge_tag}"),
+                          {"w": str(int(Pt(width_pt))), "cap": "flat"})
+    sf = ln.makeelement(qn("a:solidFill"), {})
+    sf.append(sf.makeelement(qn("a:srgbClr"), {"val": hexc}))
+    ln.append(sf)
+    if dash:
+        ln.append(ln.makeelement(qn("a:prstDash"), {"val": dash}))
+    _tcpr_insert(tcPr, ln)
+
+
+def style_cell(cell, text=None, segments=None, fill=None,
+               font_color=None, font_size=None, bold=None, italic=None,
+               align=None, anchor="ctr", font_name=None, wrap=True,
+               border_edges=None, border_color=None, border_width_pt=0.5,
+               border_dash=None, margins=None):
+    """테이블 셀 하나에 종합 서식을 적용한다 (전면 격자 레이아웃용).
+
+    Args:
+        text: 평문 텍스트 (segments 와 택일)
+        segments: add_rich_text 형식 세그먼트 (셀 내 혼합 서식)
+        fill: 배경 RGBColor
+        font_color/font_size/bold/italic/font_name: 폰트 서식
+        align: 'l'|'c'|'r'|'j' 또는 PP_ALIGN
+        anchor: 't'|'ctr'|'b' 세로정렬
+        border_edges: 'lrtb' 등 테두리 변. None이면 변경 없음
+        border_color/border_width_pt/border_dash: 테두리 스타일
+        margins: (left, top, right, bottom) Emu 셀 내부 여백
+    Returns:
+        cell
+    """
+    tf = cell.text_frame
+    tf.word_wrap = wrap
+
+    if segments is not None:
+        p = tf.paragraphs[0]
+        for r in list(p.runs):
+            r._r.getparent().remove(r._r)
+        for seg in segments:
+            run = p.add_run()
+            if isinstance(seg, str):
+                run.text = seg
+                if font_color is not None:
+                    run.font.color.rgb = font_color
+                if font_size is not None:
+                    run.font.size = Pt(font_size)
+                if bold is not None:
+                    run.font.bold = bold
+                if font_name:
+                    run.font.name = font_name
+            else:
+                run.text = str(seg.get("text", ""))
+                if "color" in seg:
+                    run.font.color.rgb = seg["color"]
+                elif font_color is not None:
+                    run.font.color.rgb = font_color
+                run.font.size = Pt(seg.get("font_size", font_size or 11))
+                run.font.bold = seg.get("bold", bool(bold))
+                if seg.get("italic"):
+                    run.font.italic = True
+                fn = seg.get("font_name", font_name)
+                if fn:
+                    run.font.name = fn
+    elif text is not None:
+        cell.text = str(text)
+
+    plain = segments is None
+    for p in tf.paragraphs:
+        if align is not None:
+            p.alignment = _CELL_ALIGN.get(align, align)
+        for run in p.runs:
+            if plain and font_size is not None:
+                run.font.size = Pt(font_size)
+            if plain and bold is not None:
+                run.font.bold = bold
+            if italic is not None:
+                run.font.italic = italic
+            if plain and font_name:
+                run.font.name = font_name
+            if plain and font_color is not None:
+                run.font.color.rgb = font_color
+
+    if fill is not None:
+        set_cell_fill(cell, fill)
+    if border_edges:
+        set_cell_border(cell, border_edges, color=border_color,
+                        width_pt=border_width_pt, dash=border_dash)
+    if anchor is not None:
+        set_cell_anchor(cell, anchor)
+    if margins is not None:
+        l, t, r, b = margins
+        tcPr = cell._tc.get_or_add_tcPr()
+        for k, v in (("marL", l), ("marT", t), ("marR", r), ("marB", b)):
+            if v is not None:
+                tcPr.set(k, str(int(v)))
+    return cell
+
+
+def merge_cells(table, r0, c0, r1, c1):
+    """(r0,c0)~(r1,c1) 직사각형 범위를 병합하고 origin 셀을 반환한다."""
+    table.cell(r0, c0).merge(table.cell(r1, c1))
+    return table.cell(r0, c0)
+
+
+def add_grid_table(slide, x, y, w, h, nrows, ncols, cells=None,
+                   col_widths=None, row_heights=None, font_name=None,
+                   default_fill=None, default_font_size=11,
+                   gridlines=True, gridline_color=None, gridline_width_pt=0.5):
+    """전면 격자 레이아웃용 셀 단위 서식 테이블.
+
+    고품질 레퍼런스 덱의 핵심 관용구. 슬라이드 영역을 하나의 네이티브 표로
+    격자 분할하고 셀별 배경·테두리·정렬·병합·rich-text 를 정밀 제어한다.
+
+    Args:
+        x, y, w, h: 표 전체 bbox (Emu/Inches)
+        nrows, ncols: 행/열 수
+        cells: dict[(row, col)] -> style_cell kwargs + 선택적 'span': (rowspan, colspan)
+               예: {(0,0): {"text":"항목", "bold":True, "fill":HEADER,
+                            "font_color":WHITE, "span":(1,2)}}
+        col_widths: 열 너비 비율 리스트 또는 None(균등)
+        row_heights: 행 높이 비율 리스트 또는 None(균등)
+        default_fill: 모든 셀 기본 배경 (None이면 채우지 않음)
+        gridlines: 모든 셀에 기본 테두리 적용 여부
+        gridline_color: 기본 테두리 색 (None이면 #D9D9D9)
+    Returns:
+        (table_shape, table)
+    """
+    if gridline_color is None:
+        gridline_color = RGBColor(0xD9, 0xD9, 0xD9)
+    table_shape = slide.shapes.add_table(nrows, ncols, int(x), int(y), int(w), int(h))
+    table = table_shape.table
+    table.first_row = False
+    table.horz_banding = False
+    # 기본 테마 스타일(파란 헤더/밴딩) 제거 → 셀 서식을 완전히 명시 제어.
+    # "No Style, No Grid" → 채우지 않은 셀은 투명(흰 배경), 테두리는 우리가 명시.
+    _tblPr = table._tbl.find(qn("a:tblPr"))
+    if _tblPr is not None:
+        for _sid in _tblPr.findall(qn("a:tableStyleId")):
+            _sid.text = "{2D5ABB26-0587-4C30-8999-92F81FD0307C}"
+
+    total_w = int(w)
+    if col_widths:
+        tot = sum(col_widths)
+        for ci in range(ncols):
+            cw = col_widths[ci] if ci < len(col_widths) else 1
+            table.columns[ci].width = int(total_w * cw / tot)
+    else:
+        cw = total_w // ncols
+        for ci in range(ncols):
+            table.columns[ci].width = cw
+
+    total_h = int(h)
+    if row_heights:
+        tot = sum(row_heights)
+        for ri in range(nrows):
+            rh = row_heights[ri] if ri < len(row_heights) else 1
+            table.rows[ri].height = int(total_h * rh / tot)
+    else:
+        rh = total_h // nrows
+        for ri in range(nrows):
+            table.rows[ri].height = rh
+
+    # 병합 먼저 (이후 서식은 origin 셀만 대상)
+    if cells:
+        for (r, c), st in cells.items():
+            span = st.get("span")
+            if span and (span[0] > 1 or span[1] > 1):
+                r1 = min(r + span[0] - 1, nrows - 1)
+                c1 = min(c + span[1] - 1, ncols - 1)
+                merge_cells(table, r, c, r1, c1)
+
+    # 기본 그리드/배경
+    for r in range(nrows):
+        for c in range(ncols):
+            cell = table.cell(r, c)
+            if cell.is_spanned:
+                continue
+            if default_fill is not None:
+                set_cell_fill(cell, default_fill)
+            if gridlines:
+                set_cell_border(cell, "lrtb", color=gridline_color,
+                                width_pt=gridline_width_pt)
+
+    # 셀별 명시 서식
+    if cells:
+        for (r, c), st in cells.items():
+            cell = table.cell(r, c)
+            if cell.is_spanned:
+                continue
+            kwargs = {k: v for k, v in st.items() if k != "span"}
+            kwargs.setdefault("font_name", font_name)
+            kwargs.setdefault("font_size", default_font_size)
+            style_cell(cell, **kwargs)
+
+    return table_shape, table
+
+
+# ---------------------------------------------------------------------------
+# 시각 자산 채널 — 이미지/스크린샷/차트 (1급 시민)
+#
+# python-pptx 도형만으로 모든 것을 '그리는' 대신, 실제 UI 캡처·matplotlib
+# 차트 PNG·로고·일러스트를 임베드하고, 수치는 네이티브 차트로 표현한다.
+# ---------------------------------------------------------------------------
+
+
+def add_picture(slide, image_path, x, y, w=None, h=None,
+                shadow=False, line_color=None, line_width_pt=1.0):
+    """이미지/스크린샷/차트 PNG 를 슬라이드에 삽입한다.
+
+    Args:
+        image_path: 파일 경로 (예: assets/screenshot.png, sources/{name}/assets/...)
+        x, y: 좌상단 위치 (Emu/Inches)
+        w, h: 너비/높이. 하나만 주면 비율 유지, 둘 다 None이면 원본 크기
+        shadow: 그림자 추가
+        line_color: 테두리 색 (RGBColor)
+        line_width_pt: 테두리 두께
+    Returns:
+        Picture shape
+    """
+    p = Path(image_path)
+    if not p.exists():
+        raise FileNotFoundError(f"이미지 파일 없음: {image_path}")
+    kw = {}
+    if w is not None:
+        kw["width"] = int(w)
+    if h is not None:
+        kw["height"] = int(h)
+    pic = slide.shapes.add_picture(str(p), int(x), int(y), **kw)
+    if line_color is not None:
+        pic.line.color.rgb = line_color
+        pic.line.width = Pt(line_width_pt)
+    if shadow:
+        add_shadow(pic, blur_pt=6, dist_pt=3, opacity_pct=35)
+    return pic
+
+
+def add_chart(slide, x, y, w, h, chart_type, categories, series,
+              legend=True, legend_position="BOTTOM", title=None,
+              number_format=None, data_labels=False, colors=None,
+              font_size=10):
+    """카테고리 차트(막대/선/원/도넛 등)를 추가한다.
+
+    3개 이상의 수치는 텍스트 나열 대신 차트로 표현 (CLAUDE.md 규칙).
+
+    Args:
+        chart_type: XL_CHART_TYPE enum 또는 문자열
+            ("COLUMN_CLUSTERED", "BAR_CLUSTERED", "LINE_MARKERS",
+             "PIE", "DOUGHNUT", "COLUMN_STACKED", ...)
+        categories: 카테고리 라벨 리스트
+        series: [(name, [values...]), ...]
+        legend_position: "BOTTOM"|"RIGHT"|"TOP"|"LEFT" 또는 XL_LEGEND_POSITION
+        colors: 시리즈(또는 PIE/DOUGHNUT 포인트) 색상 RGBColor 리스트
+    Returns:
+        chart 객체
+    """
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
+
+    cd = CategoryChartData()
+    cd.categories = list(categories)
+    for name, vals in series:
+        cd.add_series(str(name), tuple(vals))
+
+    ct = chart_type
+    if isinstance(ct, str):
+        ct = getattr(XL_CHART_TYPE, chart_type)
+    gframe = slide.shapes.add_chart(ct, int(x), int(y), int(w), int(h), cd)
+    chart = gframe.chart
+
+    chart.has_legend = bool(legend)
+    if legend and legend_position is not None:
+        pos = legend_position
+        if isinstance(pos, str):
+            pos = getattr(XL_LEGEND_POSITION, legend_position)
+        chart.legend.position = pos
+        chart.legend.include_in_layout = False
+        chart.legend.font.size = Pt(font_size)
+
+    if title:
+        chart.has_title = True
+        chart.chart_title.text_frame.text = str(title)
+    else:
+        chart.has_title = False
+
+    plot = chart.plots[0]
+    if data_labels:
+        plot.has_data_labels = True
+        if number_format:
+            plot.data_labels.number_format = number_format
+            plot.data_labels.number_format_is_linked = False
+        plot.data_labels.font.size = Pt(font_size)
+
+    try:
+        chart.category_axis.tick_labels.font.size = Pt(font_size)
+        chart.value_axis.tick_labels.font.size = Pt(font_size)
+        if number_format:
+            chart.value_axis.tick_labels.number_format = number_format
+            chart.value_axis.tick_labels.number_format_is_linked = False
+    except Exception:
+        pass  # PIE/DOUGHNUT 은 축 없음
+
+    if colors:
+        if ct in (XL_CHART_TYPE.PIE, XL_CHART_TYPE.DOUGHNUT):
+            ser = plot.series[0]
+            for i, pt in enumerate(ser.points):
+                if i < len(colors):
+                    pt.format.fill.solid()
+                    pt.format.fill.fore_color.rgb = colors[i]
+        else:
+            for i, s in enumerate(plot.series):
+                if i < len(colors):
+                    s.format.fill.solid()
+                    s.format.fill.fore_color.rgb = colors[i]
+    return chart
 
 
 # ---------------------------------------------------------------------------

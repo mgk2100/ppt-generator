@@ -151,7 +151,7 @@ def _cli():
     import argparse
     parser = argparse.ArgumentParser(description="Harness loop orchestrator.")
     parser.add_argument("project", help="Project name (input/{project}/ must exist)")
-    parser.add_argument("--root", default="/home/ubuntu/Share/ppt-generator")
+    parser.add_argument("--root", default=str(_PROJECT_ROOT))
     parser.add_argument("--action",
                         choices=["validate", "summary", "assemble"],
                         default="summary")

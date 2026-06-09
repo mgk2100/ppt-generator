@@ -26,12 +26,21 @@
 | `placeholder_idx_respected: false` | `set_title` 외 placeholder 사용 제거. `clear_placeholders(keep=[0])` 적용. |
 | `has_build_function: false` | 함수명을 `build_slide_{spec.idx}(slide)` 로 정확히. |
 | Evaluator `score < 4` | `actionable_feedback` 항목 하나씩 반영. |
+| `visual_ambition < 3` 또는 `density < 3` | **시각 도약 허용** — 텍스트 카드를 `add_grid_table` 비교표로 전환, 수치를 `add_chart`로, 빈 영역에 `add_picture`/추가 시각 요소 삽입. 레퍼런스 격차를 줄이는 방향으로 **요소를 추가**하라. |
 
 ## 안티패턴 (하지 말 것)
 
 - 실패 원인과 무관한 곳을 리팩토링하지 마라.
-- 새로운 shape를 추가해 "더 좋게" 만들려 하지 마라 — spec 범위 밖이면 Evaluator가 감점.
 - 주석으로 "// fixed issue X" 같은 메타데이터 남기지 마라.
+
+## 시각 격차 좁히기 (visual_ambition/density 실패 시)
+
+핀포인트 수정 원칙은 **결함 수정**에만 적용된다. Evaluator가 `visual_ambition`·
+`density`를 낮게 줬다면 그것은 "요소를 더 넣어 레퍼런스에 다가가라"는 신호다 —
+이때는 새 shape 추가가 **권장**된다 (단 CONTENT_SAFE·마스터 보호·import whitelist는 유지):
+- 텍스트 카드 N개 → `add_grid_table`로 한 장에 격자 비교표
+- 수치 3개+ 텍스트 나열 → `add_chart`
+- 하단/측면 빈 영역 → 보조 시각 요소(미니 차트·아이콘 행·이미지)로 채움
 
 ## 출력
 
