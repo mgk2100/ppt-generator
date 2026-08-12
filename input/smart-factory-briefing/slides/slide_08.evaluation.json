@@ -1,0 +1,17 @@
+{
+  "slide_idx": 7,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "좌측 차트 영역 우측(작은 막대 2개의 오른쪽, y≈3.8~5.9in)에 빈 공간 존재 — 30:1 격차 자체가 메시지이므로 막대 길이는 유지하되, 해당 공백에 '약 30배 차이' 브래킷 주석(add_accent_bar 세로 hairline + add_textbox 9.5pt GRAPHITE)을 넣으면 격차를 능동적으로 읽게 할 수 있음",
+    "막대 3개 사이 세로 간격이 넓어 좌측 패널 상하가 다소 성김 — 막대 행 간격을 VFlow gap 축소로 좁히고 확보된 하단 공간에 캡션을 끌어올리면 좌우 패널의 시각적 무게가 더 균형됨"
+  ],
+  "passed": true
+}

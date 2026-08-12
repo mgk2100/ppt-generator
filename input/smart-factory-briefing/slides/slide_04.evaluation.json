@@ -1,0 +1,18 @@
+{
+  "slide_idx": 3,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "컨테이너↕저장소 '검색 · 저장' 양방향 커넥터의 하단 끝점이 저장소 블록 상단에 닿지 않고 vault–MongoDB 블록 사이 빈틈 위에 떠 있음 → calc_connector 또는 add_smart_connector로 vault(또는 MongoDB) 블록 상단 edge에 스냅",
+    "사용자 밴드 우측(IDE 플러그인 오른쪽) 약 1.5~1.7\" 빈 영역 → 두 사용자 블록 폭 확대 또는 HFlow 재배치로 CONTENT_SAFE 폭 균형 사용",
+    "렌더 텍스트에 이중 공백 아티팩트 존재('웹  UI', '( 파싱 →', '3 개') → 문자열 내 불필요 공백 정리"
+  ],
+  "passed": true
+}

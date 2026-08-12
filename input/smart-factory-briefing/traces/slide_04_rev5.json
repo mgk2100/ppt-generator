@@ -1,0 +1,19 @@
+{
+  "attempt": "rev5",
+  "note": "layer-container-boxes+wording",
+  "validation": {
+    "slide_idx": 4,
+    "code_path": "/home/user/Share/ppt-generator/input/smart-factory-briefing/slides/slide_04.code.py",
+    "checks": {
+      "imports_whitelisted": true,
+      "no_direct_master_edit": true,
+      "import_succeeds": true,
+      "has_build_function": true,
+      "layout_allowed": true,
+      "master_and_safe_zone_intact": true,
+      "placeholder_idx_respected": true
+    },
+    "failures": [],
+    "passed": true
+  }
+}

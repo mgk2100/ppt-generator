@@ -1,0 +1,18 @@
+{
+  "slide_idx": 8,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "괄호·숫자 주변 과잉 공백 렌더 — '저희 경험 ( 실측 )', '( 예 : 7.68TB × 2~4)' 처럼 괄호 안팎에 불필요한 공백이 보임. add_grid_table 셀 텍스트의 원문 공백 제거 또는 한글-라틴 경계 폰트 fallback(Pretendard 지정 누락 run) 점검",
+    "4~5행(운영체제 · GPU 사용률 기록)은 양쪽 셀이 한 줄이라 셀 내부 상하 여백이 큼 — 행 높이를 estimate_container_height 기반으로 텍스트 실측에 맞춰 축소(계획 0.82in, 현재 ~0.95in)하고 확보된 공간만큼 본문을 9.5→10.5pt로 상향하면 가독·밀도 동시 개선",
+    "'구분' 열과 본문 열의 구분이 수평 hairline만으로 다소 약함 — 구분 열에만 CLOUD 옅은 배경 fill(zebra 아님, 열 단위)을 style_cell 로 적용하면 행 스캔성이 좋아짐 (선택 사항)"
+  ],
+  "passed": true
+}

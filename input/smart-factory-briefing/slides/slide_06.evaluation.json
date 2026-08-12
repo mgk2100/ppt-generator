@@ -1,0 +1,18 @@
+{
+  "slide_idx": 5,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "병합 행(네트워크·전원·관리·지원) 텍스트가 2열 좌측에 붙어 우측 절반이 비어 보임 → merge_cells 유지하되 병합 셀 정렬을 PP_ALIGN.CENTER 로 전환하거나 '공통' 라벨(GRAPHITE 9pt) 우측 보강",
+    "숫자·단위·괄호 주변 불규칙 공백 — '( 주 ) 아이웍스', '총 3 장', '2 대' — rich text run 분할(JetBrains Mono 혼용) 경계에서 발생 → run 구성 시 단위를 같은 run 에 포함하고 앞뒤 공백 제거",
+    "2열이 콘텐츠 대비 과폭이라 2·3열 사이 빈 여백이 넓음 → add_grid_table col_widths 를 [0.16, 0.44, 0.40] 수준으로 재배분해 3열 시작점을 앞당김"
+  ],
+  "passed": true
+}

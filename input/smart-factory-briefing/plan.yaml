@@ -1,0 +1,33 @@
+project_name: "smart-factory-briefing"
+total_slides: 9
+sources:
+  - "input/smart-factory-briefing/analysis.yaml"
+  - "input/smart-factory-briefing/design_system.md"
+  - "smart-factory/260727_AI서버_도입계획_검토의견_회신.md"
+narrative: |
+  생기센터(생산기술센터 스마트제조기술팀) 정보공유 브리핑 8장.
+  흐름(rev5, 9장): 표지 → [플랫폼 축] 현황① 코딩·취약점(S2) · 현황② 문서 생성(S3, v11 이식)
+       · 아키텍처(S4) · AI 활용 전략(S5)
+       → [인프라 축] 서버 스펙(S6)
+       → [실측 축] 후보 모델 실측(S7) · 동시 처리 / 프론티어 구동 조건(S8)
+       → 운영 경험 · 도입 시 참고(S9).
+  생기센터는 로컬 LLM 중심 자체 서버를 계획 중 — 우리도 같은 이유(보안·비용)로 로컬에서
+  출발했다가 실측 한계로 상용 전환한 경험(S4)이 S6·S7 실측의 복선이 된다.
+  톤: "판단에 참고하실 자료" — 상대 계획 부정 금지, 추정치 단정 금지.
+slides: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+style_guide:
+  primary_accent: "#024AD8"
+  secondary_accents: ["#296EF9", "#0E3191", "#C9E0FC"]
+  reference_anchor: ""
+  design_system: "input/smart-factory-briefing/design_system.md 전 슬라이드 강제"
+assets:
+  - {path: "sources/sl-sw-agent/mockups/mock_plugin.png", use_on_slide: 2}
+  - {path: "sources/sl-sw-agent/mockups/mock_docgen.png", use_on_slide: 3}
+  - {path: "sources/sl-sw-agent/assets/docgen_dynamic_behavior_sample.png", use_on_slide: 3}
+banned_details: |
+  - 이모지·그림자·파스텔 다색·CHEVRON/CAN/CUBE 등 의미 도형 금지 (design_system.md 4절)
+  - 포트 번호·호스트 IP·내부 프레임워크명(FastAPI·LangGraph·Celery 등) 노출 금지 — 통신 용어는 MCP·HTTPS 허용 (rev5)
+  - 명사형 간결체 ("~를 만든다" 구호형 서술 금지)
+  - 생기센터 계획서 수치(9,500만원·Threadripper 등)를 슬라이드에 직접 인용 금지 — 우리 경험만 서술
+  - 추정치는 "약", "산정 기준" 명시 — 단정 금지
+  - LLM 만능 수렴 구도 금지 — LLM 은 파이프라인의 한 단계

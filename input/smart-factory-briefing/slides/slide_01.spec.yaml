@@ -1,0 +1,21 @@
+idx: 1
+layout: "제목 슬라이드"
+title: "AI 플랫폼 개발 현황 및 AI 서버 운영 경험 공유"
+pattern: "cover"
+accent_color: "#024AD8"
+key_message: "표지"
+content_blocks:
+  - kind: cover
+    title: "AI 플랫폼 개발 현황 및 AI 서버 운영 경험 공유"
+    purpose: "정보공유"
+    author: "강민규 책임"
+    department: "SDP센터 알고리즘개발팀"
+    date: "2026.08.13"
+data_refs: ["analysis.yaml > meta"]
+constraints:
+  min_nontext_elements: 0
+  visual_primitive: "cover"
+notes: |
+  setup_cover(slide, title, purpose="정보공유", author="강민규 책임",
+  department="SDP센터 알고리즘개발팀", date="2026.08.13") 만 호출.
+  배경 Picture·마스터 요소 변경 금지. 추가 도형 금지.

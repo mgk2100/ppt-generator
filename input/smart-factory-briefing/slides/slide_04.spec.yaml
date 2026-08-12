@@ -1,0 +1,75 @@
+idx: 4
+layout: "제목 및 내용"
+title: "전체 아키텍처"
+pattern: "diagram"
+accent_color: "#024AD8"
+key_message: "3개 서비스가 하나의 SL SW Agent — 저장소 · LLM 을 역할별로 분담"
+design_language: "input/smart-factory-briefing/design_system.md 강제 (2절 맑은 고딕 + 2-1 제목·리드 표준 + force_font 의무) + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "3개 서비스가 하나의 SL SW Agent — 저장소 · LLM 을 역할별로 분담"
+    style: "표준 리드 규격 (y=0.72\", 15pt bold INK), 'SL SW Agent'·'역할별' PRIMARY"
+  - kind: users_band
+    desc: |
+      최상단 '사용자' 큰 컨테이너 박스 (rev5: SL SW Agent 박스와 동일 문법 — CLOUD 배경 + 좌상단 라벨
+      '사용자') — 내부 블록 2개: '웹 UI' / 'IDE 플러그인 (Claude Code)'.
+      컨테이너로 화살표 2개 — 웹 UI 라벨 'HTTPS', IDE 플러그인 라벨 'MCP'
+      (확인됨: FastAPI 는 통신 방식이 아닌 서버 프레임워크명 — 라벨 부적합. HTTPS 유지)
+  - kind: agent_container
+    desc: |
+      'SL SW Agent' 큰 컨테이너 박스 (CLOUD 배경 + 좌상단 라벨 — rev6: 라벨 좌측 파란 accent 바 없음) — 내부 서비스 블록 3개 나란히
+      (실제 3개 repo 기준, 2026-08-11 코드베이스 분석 확정):
+    services:   # rev3: 사용자 지시 — 부제 간략화 (괄호 상세 금지)
+      - name: "coding-assistant"
+        sub: "질의 · 코딩 지원"
+      - name: "doc-generator"
+        sub: "SW 설계 문서 생성"
+      - name: "ca-analysis-pipeline"
+        sub: "코드 분석 엔진"
+    internal_connectors:
+      - "coding-assistant → doc-generator : '문서 생성 요청' — 라벨 1행 표기 (rev6: 줄바꿈 금지)"
+      - "coding-assistant → ca-analysis-pipeline : '코드 분석 요청' (rev5: '분석 Job(zip)·리포트 회수' 대체)"
+  - kind: storage_band
+    desc: |
+      '지식 · 저장소' 큰 컨테이너 박스 (rev5: SL SW Agent 박스와 동일 문법 — CLOUD 배경 +
+      좌상단 라벨 '지식 · 저장소') — 내부 블록 4개. 각 블록 = 저장소명(bold) + 저장 내용
+      (코드베이스 확정 사실 — 임의 변경 금지)
+    stores:   # rev5: 파일 저장소 내용 쉬운 설명, MongoDB = 섹션별 중간 문서
+      - name: "PostgreSQL (pgvector)"
+        sub: "RAG 벡터 검색 · 대화 이력\n· 사용자 계정"
+      - name: "파일 저장소 (JSON · md)"
+        sub: "함수 · 변수 목록 · 호출 관계도\n· 모듈별 역할 요약"
+      - name: "MongoDB"
+        sub: "파싱된 소스 코드\n· 섹션별 중간 문서 (JSON)"
+      - name: "MinIO"
+        sub: "업로드 zip · 다이어그램 이미지\n· 최종 문서 파일 (DOCX)"
+    connector: "컨테이너 ↕ 저장소 박스 양방향 1개, 라벨 '검색 · 저장'"
+  - kind: llm_band
+    desc: "LLM 밴드 — 블록 2개. 상용 블록이 강조 (PRIMARY_SOFT + PRIMARY 보더)"
+    blocks:   # rev4: 역할 표현 명확화
+      - name: "상용 LLM — Claude · GPT"
+        sub: "사내 스킬 · 지식 연계 → SL SW 최적화 답변"
+        emphasized: true
+      - name: "사내 vLLM 서빙 (GPU 서버)"
+        sub: "Gemma-4-31B — 코드 분석 리포트 문구 작성\nQwen3-Embedding-8B — 검색용 임베딩 생성"
+    connectors:
+      - "저장소/컨테이너 → 상용 LLM (요청·데이터 흐름) 1~2개"
+      - "상용 ⇢ 사내 vLLM 점선 1개, 라벨 '지식증류 데이터'"
+data_refs: ["analysis.yaml > architecture_v2 (2026-08-11 실코드 분석)"]
+constraints:
+  min_nontext_elements: 12
+  visual_primitive: "diagram"
+footnotes:
+  - "pgvector: PostgreSQL 벡터 검색 확장 — RAG 임베딩 저장 · 유사도 검색"
+notes: |
+  ★ 2026-08-11 실코드베이스 분석으로 v11 구도를 대체 — 확정 사실:
+  - vault 는 MongoDB/PostgreSQL 이 아니라 **파일(git repo 형태) 저장소** (manifest.json + structure/*.json + modules/*.md)
+  - MongoDB 는 doc-generator 전용 (source_parse·document_content 등) — coding-assistant 는 MongoDB 미사용
+  - PostgreSQL 은 pgvector 로 RAG 벡터(HNSW)까지 담당 (coding-assistant)
+  - MinIO 는 양쪽 사용 (CA: 프로젝트 코드·첨부 / DG: 다이어그램·zip·export)
+  - 사내 vLLM 라이브 = Gemma-4-31B (Qwen3-Coder 표기는 구버전 — 사용 금지), 임베딩 = Qwen3-Embedding-8B
+  - ca-analysis-pipeline 은 별도 Job API 서비스 — CA 가 zip 전송, 리포트(report_md) 회수
+  레이어 배분: 사용자 0.5 / 컨테이너 1.5 / 저장소 1.3 / LLM 1.2 / 캡션+각주 (VFlow, 총 CONTENT_SAFE 내).
+  커넥터 총 8개 이하, 스타일 2종(실선 PRIMARY 1.5pt + 점선 STEEL 1pt). 블록 안 장문 금지 — 이름 + 2줄.
+  프레임워크명(FastAPI·LangGraph·Celery 등)·포트·IP 노출 금지. 도구·저장소명은 원문 유지.
+  build 함수 마지막에 force_font(slide, "맑은 고딕") 의무.

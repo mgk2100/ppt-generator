@@ -1,0 +1,58 @@
+idx: 8
+layout: "제목 및 내용"
+title: "로컬 LLM 실측 ② — 동시 처리 한계 · 프론티어급 구동 조건"
+pattern: "chart"
+accent_color: "#024AD8"
+key_message: "문서가 길수록 동시 사용자 급감 — 프론티어급 자체 구동은 데이터센터급 GPU 영역"
+design_language: "input/smart-factory-briefing/design_system.md 강제 + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "긴 문서일수록 동시 사용자 급감 — 프론티어급 자체 구동은 데이터센터급 GPU 영역"
+    style: "Pretendard SemiBold 15pt INK, '급감'·'데이터센터급' PRIMARY"
+  - kind: bar_visual
+    desc: |
+      좌측 (~48% 폭) '사용 형태별 동시 처리 인원' — 부제(10pt GRAPHITE)로 기준 명시:
+      "기준: Gemma-4-31B (4bit) · GPU 96GB 1장 서빙 실측" (rev4: '자사 라이브 모델' 문구 삭제)
+      — 수평 막대 3개를 ROUNDED_RECTANGLE(radius 소)로 직접 그린다 (단일 시리즈 수제 막대).
+      막대 길이 비례: 30 : 2 : 1 (최소 가시 폭 0.09in 보장). 모두 PRIMARY 단일색,
+      값 라벨은 막대 끝 우측 SemiBold 11pt INK, 카테고리 라벨은 막대 좌측 10pt CHARCOAL
+      (라벨 열 폭 ~1.7in, 2줄 허용 — 문서 분량 수치 병기), 기준선 FOG hairline 세로 1개.
+    bars:   # rev4: 문서 길이 대략 수치 병기 (KV 예산 35,525 토큰 실측 역산 — 16K→약 2건 · 32K→약 1건)
+      - {label: "짧은 질의응답 (챗봇)", value: 30, text: "30명 이상"}
+      - {label: "중간 길이 문서\n(약 1.6만 토큰 · A4 약 10장)", value: 2, text: "약 2명"}
+      - {label: "긴 문서 · 이력 분석\n(약 3.2만 토큰 · A4 약 20장)", value: 1, text: "약 1명"}
+    caption_below: |
+      "GPU 메모리에서 모델을 제외한 남은 공간에 대화 내용을 담는 구조 — 문서가 길수록
+      공간이 빠르게 소진 · GPU 4장이면 약 4배" (9.5pt GRAPHITE, 2줄)
+  - kind: frontier_table
+    desc: "우측 (~52% 폭) 'Kimi K3 (2.8조 파라미터) 자체 구동 산정' add_grid_table 2열 5행 + 헤더. 헤더 CLOUD, 값 열 SemiBold INK, 'GPU 약 58장' 행 값 PRIMARY"
+    title: "프론티어급 오픈 모델 자체 구동 산정 — Kimi K3 기준"
+    subtitle: "2.8조 파라미터 — 상용 프론티어(Claude · GPT)급 성능의 최상위 오픈 모델"
+    rows:
+      - ["모델 용량 (4bit 압축)", "약 1.4TB"]
+      - ["필요 GPU (96GB 기준)", "모델 적재 약 16장 → 대화 메모리 포함 약 20장"]
+      - ["서버 환산 (1대 = 4장)", "약 4~5대"]
+      - ["시스템 메모리", "서버당 512GB × 4~5대 = 총 2TB 이상"]
+      - ["압축 없이 (bf16) 구동", "GPU 약 58장"]
+  - kind: frontier_evidence_caption
+    desc: |
+      Kimi K3 산정표 바로 아래 실측 근거 캡션 2줄 (9.5pt GRAPHITE, '4.9 tok/s' 만 bold INK):
+      "실측 — 프론티어급 GLM-5.2(754B)를 1bit 극압축(217GB)으로 구동 시 4.9 tok/s,
+       1명 사용도 곤란 → 산정이 아닌 실측으로 확인된 한계"
+  - kind: conclusion_band
+    desc: "하단 전체 폭 다크 슬랩 (INK 배경 ~0.72in, 2줄)"
+    lines:
+      - "RTX PRO 6000 은 NVLink 미지원 — 4장 초과 분산 시 통신 병목, 프론티어급은 H200 / B200 등 데이터센터급 GPU 영역"
+      - "GPU 4장 규모의 현실적 운용 = 30B급 전후 오픈소스 모델"
+    style: "1줄째 ON_INK 10.5pt, 2줄째 SemiBold 12pt · '30B급 전후' PRIMARY_BRIGHT"
+data_refs: ["analysis.yaml > local_llm_concurrency", "analysis.yaml > frontier_selfhost"]
+constraints:
+  min_nontext_elements: 7
+  visual_primitive: "chart"
+footnotes:
+  - "NVLink: GPU 간 고속 직결 인터커넥트 — PCIe 대비 수 배 대역폭"
+notes: |
+  배분: 리드 ~0.35 / 본문 2열 ~4.2 / 다크 슬랩 ~0.72 / 각주.
+  막대 시각화: 단일 시리즈이므로 범례 불요, 값은 직접 라벨. 30 대비 1·2가 극단적으로
+  짧은 것이 메시지 그 자체 — 스케일 왜곡(로그 등) 금지, 선형 비례 유지.
+  산정치는 "약" 표기 유지, 단정 금지.

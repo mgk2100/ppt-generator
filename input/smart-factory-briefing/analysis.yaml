@@ -1,0 +1,190 @@
+# smart-factory-briefing — 분석 인벤토리
+# 대상: 생산기술센터(생기센터) 스마트제조기술팀 정보공유 브리핑
+# 소스: output/SL AI 플랫폼 개발 현황 보고 자료.pptx · output/sl-sw-agent-v11.pptx ·
+#        smart-factory/260727_AI서버_도입계획_검토의견_회신.md · 사용자 제공 서버 스펙(2026-08-11)
+
+meta:
+  title: "AI 플랫폼 개발 현황 및 AI 서버 운영 경험 공유"
+  purpose: "정보공유"
+  author: "강민규 책임"
+  department: "SDP센터 알고리즘개발팀"
+  date: "2026.08.13"
+  audience: >
+    생기센터 스마트제조기술팀 — 자체 AI 서버(RTX PRO 6000 Blackwell x4, 9,500만원) 도입 계획 중.
+    상용 LLM 보안 우려로 로컬 LLM 중심 활용을 구상. ML/DL 연구 경험 있는 기술 청중.
+  tone: >
+    "판단에 참고하실 자료" 스탠스 — 상대 계획을 부정하지 않고 실측 경험을 공유.
+    추정치는 단정하지 않고 산정 기준을 명시.
+
+# ── 1. 통합 플랫폼 (SL SW Agent) ──────────────────────────────
+platform:
+  name: "SL SW Agent"
+  definition: "코딩 지원 · 취약점 분석 · SW 설계 문서 생성을 모두 제공하는 통합 agent"
+  axes:
+    - name: "AI 코딩 지원"
+      flow: ["질문 · 코드 입력", "사내 문서 · 코드 검색 (RAG · 코드 저장소)", "LLM 활용", "답변 · 리뷰 · 수정안"]
+      status_rows:
+        - ["코드 질의응답", "웹 라이브 동작", "사내 스킬 연계 고도화"]
+        - ["Claude Code 플러그인", "MCP 연동 구축", "skill 자동 실행 확대"]
+    - name: "코드 심층 분석 (취약점)"
+      flow: ["코드베이스 업로드", "코드 파싱 (tree-sitter)", "정적 검증 · 핵심 코드 분류", "LLM 활용 (취약점 진단 · 수정안)", "분석 보고서"]
+      status_rows:
+        - ["정적 검증", "컴파일 · MISRA 검증 구축 (cppcheck)", "다언어 확장 (tree-sitter)"]
+        - ["분석 자료 작성", "AI 진단 · 수정안 구현", "자료 자동 작성"]
+    - name: "SW 설계 문서 생성"
+      flow: ["소스코드 업로드", "코드 파싱 (함수 · 호출 관계)", "섹션별 문서 생성 (LLM — 본문 · 다이어그램)", "SAD · SDD DOCX 출력"]
+      status_rows:
+        - ["SAD 생성", "자동 생성 파이프라인 검증", "생성 품질 고도화"]
+        - ["SDD 생성", "생성 파이프라인 구축", "산출물 정식 적용"]
+  milestone: "12월 테스터 기반 1차 구축 완료 → 2027.1월 중순 SW 설계자 오픈"
+
+# ── 2. 전체 아키텍처 (v11 4p 사용자 확정 구조 — 변경 금지) ──────
+architecture:
+  reference_code: "input/sl-sw-agent-v11/slides/slide_04.code.py"
+  layers:
+    users: ["웹 UI", "IDE 플러그인"]
+    agent_container: "SL SW Agent = coding-assistant(agent · mcp_server, 코딩 지원 · 취약점 분석) + doc-generator(SW 설계 문서 생성)"
+    knowledge: ["RAG 지식 베이스 (pgvector · PostgreSQL)", "코드 저장소 (vault)", "MongoDB (파싱된 코드 · 문서 콘텐츠)", "MinIO (코드 압축파일 · 생성 문서 산출물)"]
+    llm: ["상용 LLM — Claude · GPT (Enterprise API), 사내 스킬 · 지식 연계 → SL SW 최적화 답변",
+          "사내 vLLM 서빙 — Gemma-4-31B · Qwen3-Embedding-8B (GPU 서버), 지식학습 지속 → 성능 확보 시 병행"]
+  connector_rule: "연결선 6개 고정: 사용자→컨테이너 2(MCP) · 컨테이너↕지식 1(검색·저장) · 지식→상용 2 · 상용⇢vLLM 점선 1(지식학습 데이터)"
+
+# ── 3. AI 활용 전략 3단계 (보고덱 3p) ─────────────────────────
+strategy:
+  phases:
+    - {label: "초기", when: "2026.04", body: "내부 DB 활용으로 상용 LLM급 성능 기대, 코드 유출 X · 비용 0원 → 로컬 sLLM 채택"}
+    - {label: "중간 — 현재", when: "2026.07", body: "로컬 sLLM 실측 한계 확인 → 상용 LLM 전환"}
+    - {label: "최종 목표", when: "2026 하반기", body: "3축 통합 SW 설계용 AI Agent — 문서 · 분석은 상용 + 로컬 병행"}
+  limit_callout:
+    title: "로컬 sLLM 의 한계 — HW 증축 비현실적"
+    items:
+      - "sLLM 모델 실측 결과, 상용 LLM 대비 성능 부족"
+      - "프론티어 오픈모델 필요 GPU — 50명 동시 사용 기준 (RTX PRO 6000 · 1,850만원/장)"
+      - "DeepSeek-V4: 12장 ≈ 2.2억 원 / Kimi K2.7: 9장 ≈ 1.7억 원"
+  reuse_callout:
+    title: "로컬 sLLM 활용 전략"
+    items:
+      - "① 초기: 최신 상용 모델로 AI Agent 성능 확보"
+      - "② 성능 확보 후: 지식증류로 로컬 sLLM 학습"
+      - "③ 로컬 성능 확보 시: 상용 + 로컬 병행 → 상용 비용 완화"
+  footnote: "지식증류: 고성능 AI(teacher)의 결과물로 소형 AI(student)를 학습시켜 성능을 근접시키는 기법"
+
+# ── 4. AI 서버 인프라 (사용자 제공 실스펙, 2026-08-11) ──────────
+servers:
+  vendor: "(주)아이웍스"
+  total_cost: "2대 합계 약 8,000만원"
+  gpu_total: "RTX PRO 6000 Blackwell 96GB × 3장 (VRAM 총 288GB)"
+  units:
+    - name: "Dell PowerEdge R770 (2-way GPU)"
+      role: "vLLM 서빙 (Gemma-4-31B · Qwen3-Embedding-8B)"
+      gpu: "NVIDIA RTX PRO 6000 Blackwell Server Edition 96GB PCIe × 2"
+      cpu: "Intel Xeon 6 6515P 2.4G 16C/32T × 2"
+      ram: "32GB RDIMM 6400MT/s × 8 = 256GB"
+      storage: "3.84TB SATA SSD RI × 2"
+      network: "Broadcom 57412 10GbE Base-T 쿼드 포트 (OCP 3.0)"
+      power: "3200W Titanium 이중화 (1+1 핫플러그)"
+      mgmt: "iDRAC10 Enterprise · ProSupport 익일 방문 36개월"
+    - name: "Dell PowerEdge R770 (1-way GPU)"
+      role: "학습 · 실험"
+      gpu: "NVIDIA RTX PRO 6000 Blackwell Server Edition 96GB PCIe × 1"
+      cpu: "Intel Xeon 6 6520P 2.4G 24C/48T × 2"
+      ram: "32GB RDIMM 6400MT/s × 16 = 512GB"
+      storage: "7.68TB NVMe RI U.2 × 2"
+      network: "Broadcom 57412 10GbE Base-T 쿼드 포트 (OCP 3.0)"
+      power: "3200W Titanium 이중화 (1+1 핫플러그)"
+      mgmt: "iDRAC10 Enterprise · ProSupport 익일 방문 36개월"
+
+# ── 5. 로컬 LLM 실측 결과 (회신 메일 260727) ───────────────────
+local_llm_quality:
+  scope: "30B급 ~ 230B급 오픈소스 모델 다수를 실서버 구동 테스트"
+  conclusion: "현업 즉시 적용에는 상용 프론티어급 모델과 격차가 큼"
+  mechanism: "대형 모델을 96GB GPU에 올리려면 4bit 강압축 필수 → 품질 손실이 모델 크기 효과를 상쇄"
+  cases:
+    - "압축한 대형 모델이 중형 모델보다 나은 결과를 주지 못한 사례"
+    - "일부 대형 모델은 간단한 질문에도 답을 정리하지 못해 사용 중단"
+  current_ops: "로컬 = 사내 코드 검색 등 한정 용도 / 실제 업무 = 상용 LLM"
+  footnote: "4bit 양자화: 모델 가중치 정밀도를 낮춰 용량을 약 1/4로 압축하는 기법 — 품질 손실 동반"
+
+local_llm_concurrency:
+  mechanism: "GPU 메모리에서 모델이 차지하고 남은 공간에 대화 내용(context)을 담는 구조 — 문서가 길수록 공간 급감"
+  table:
+    - {usage: "짧은 질의응답 (단답형 챗봇)", users: "30명 이상", value: 30}
+    - {usage: "중간 길이 문서", users: "약 2명", value: 2}
+    - {usage: "긴 문서 · 이력 데이터 분석", users: "약 1명", value: 1}
+  note: "GPU 1장 기준 — GPU 4장이면 약 4배. 활용 가치가 높은 방식(설비 이력 통째 분석)일수록 동시 사용자 급감"
+
+frontier_selfhost:
+  model: "Kimi K3 (Moonshot AI, 2026.07 공개, 2.8조 파라미터) — 현재 최상위 오픈 모델"
+  table:
+    - ["모델 용량 (4bit 압축)", "약 1.4TB"]
+    - ["필요 GPU (RTX PRO 6000 96GB)", "적재만 약 16장 · 실사용 약 20장"]
+    - ["서버 환산 (1대 = GPU 4장)", "약 4~5대"]
+    - ["시스템 메모리", "서버당 512GB × 4~5대 = 총 2TB 이상"]
+    - ["압축 없이 (bf16) 구동", "GPU 약 58장"]
+  nvlink: "RTX PRO 6000은 NVLink 미지원 — 4장 초과 분산 시 카드 간 통신 병목, 장수 증가 대비 실효 성능 비례 상승 없음 → 이 등급은 H200/B200 등 데이터센터급 GPU 영역"
+  conclusion: "GPU 4장 규모의 현실적 운용 = 30B급 전후 오픈소스 모델"
+  footnote: "NVLink: GPU 간 고속 직결 인터커넥트 — PCIe 대비 수 배 대역폭"
+
+# ── 6. 운영 경험 5건 (회신 메일 260727) ────────────────────────
+ops_experience:
+  - topic: "저장 용량"
+    ours: "AI 모델 저장소만 1.4TB 사용 중 (실측). 30B급 20~60GB · 100B급+ 130~180GB, 비교용 모델 누적 빠름"
+    advice: "모델 1~2TB + 학습 데이터 감안 시 Data Lake 동거 여유 크지 않음. 초 단위 수년 축적이면 수십 TB. 1TB×10 보다 대용량 소수(7.68TB×2~4)가 슬롯 · 관리 유리"
+  - topic: "AI 서버 · 데이터 플랫폼 분리"
+    ours: "동거 시 AI 환경 업데이트 재부팅마다 DB 동반 다운, 학습 자원 점유 시 DB 응답 저하 → 분리 운영 (데이터 서버에는 GPU 없음)"
+    advice: "GPU 서버와 데이터 플랫폼 서버 분리 구성 권장"
+  - topic: "전원 · 발열"
+    ours: "RTX PRO 6000 은 제품군별 300W/600W 2배 차이. 600W × 4장 = GPU만 2,400W"
+    advice: "일반 사무실 콘센트 불가 — 전용 회로 필요. 발열 · 소음으로 전산실 설치 권장. 견적 시 제품군 · 소비전력 확인"
+  - topic: "운영체제"
+    ours: "Ubuntu 단일 운영 — AI 도구 대부분 Linux 기준"
+    advice: "듀얼부팅은 OS 전환 시 전원 차단 필요 → 공용 서버 부적합"
+  - topic: "GPU 사용률 기록"
+    ours: "초기 기록이 없어 배치를 여러 번 조정"
+    advice: "도입 초기부터 사용률 기록 → 이후 증설 판단 근거"
+
+# ── 2-v2. 아키텍처 실코드 확정 사실 (2026-08-11 repo 분석 — v11 구도 대체) ──
+architecture_v2:
+  services:
+    - "coding-assistant — 코딩 지원·코드 검증 (웹 대화·RAG 검색·MISRA 검증)"
+    - "doc-generator — SW 설계 문서 생성 (파싱→섹션별 생성→SAD·SDD DOCX)"
+    - "ca-analysis-pipeline — 코드 분석 Job 엔진 (정적분석+LLM→리뷰·취약점 리포트). CA가 zip 전송→리포트 회수"
+  storage_facts:
+    - "PostgreSQL(pgvector) = RAG 벡터 검색(HNSW)·대화·사용자 (coding-assistant)"
+    - "vault = DB 아님 — 파일(git 형태) 저장소: 코드 심볼·콜그래프·모듈 요약"
+    - "MongoDB = doc-generator 전용: 파싱 소스·생성 문서 콘텐츠"
+    - "MinIO = 코드 압축파일·첨부·다이어그램·문서 산출물 (양쪽 사용)"
+  llm_facts:
+    - "상용 LLM = Claude·GPT — 코딩 지원 대화·설계 문서 본문 생성"
+    - "사내 vLLM 라이브 = Gemma-4-31B (분석 파이프라인 서술) + Qwen3-Embedding-8B (RAG 임베딩). ※Qwen3-Coder 표기는 stale"
+  tools: "tree-sitter(코드 파싱) · cppcheck(MISRA) · clang-tidy · flawfinder · bandit(Python)"
+
+# ── 5-v2. 로컬 LLM 실측 상세 (coding-assistant docs/verification 실로그, 2026.06~07) ──
+local_llm_tested:   # [모델 | 규모 | 양자화·적재 | 속도 tok/s | 판정]
+  - ["Gemma-4-31B (QAT)", "31B", "4bit · 1장", "172", "채택 — 현 라이브 (보조 모델 결합 가속)"]
+  - ["gpt-oss-120b", "117B MoE", "4bit · 1장", "148~172", "채택 이력 → 교체"]
+  - ["Qwen3-Next-80B", "80B MoE", "4bit(AWQ) · 1장", "~160", "채택 이력 → 품질 열세로 교체"]
+  - ["Qwen2.5-Coder-32B", "32B", "bf16 / 4bit", "21 / 66", "채택 이력 → 교체"]
+  - ["Qwen3-Coder-30B", "30B MoE", "bf16 · 1장", "136", "탈락 — 다중 파일 일관성 부족"]
+  - ["Gemma-3-27B", "27B", "4bit(AWQ) · 1장", "65", "탈락 — 품질 미달"]
+  - ["Llama-3.3-70B", "70B", "4bit(AWQ) · 1장", "35", "탈락 — 코딩 비특화"]
+  - ["GLM-4.5-Air", "106B MoE", "4bit(AWQ) · 1장", "—", "탈락 — 품질 미달"]
+  - ["Devstral-2-123B", "123B", "4bit(AWQ) · 2장", "~31", "탈락 — 품질·속도 미달"]
+  - ["Qwen3.5-122B", "122B MoE", "4bit · 2장", "~103", "탈락 — 품질 최하위"]
+  - ["MiniMax-M2", "230B MoE", "4bit(AWQ) · 2장", "—", "탈락 — 추론 폭주 (코드 미생성)"]
+  - ["GLM-5.2", "754B MoE", "1bit · 217GB", "4.9", "탈락 — 속도·품질 모두 미달"]
+  glm52_detail:
+    what: "프론티어급 오픈 모델(GLM-5.2, 754B)을 1bit 극압축(217GB)으로 자체 서버에 적재 실험"
+    how: "GPU 96GB 1장 + 초과분 CPU 메모리 오프로드(~200GB 상주)"
+    speed: "~4.9 tok/s — 1명 사용도 곤란 (CPU 오프로드 병목)"
+    quality: "코딩 벤치 88.75% — 자사 채택 32B(95.0%) 대비 열세: 1bit 열화가 754B 잠재력을 상쇄"
+    verdict: "no-go 확정 (속도·품질 각각 단독으로도 탈락 사유)"
+  adopted: "채택 = Gemma-4-31B (30B급, 4bit QAT) — 보조 모델 결합 가속으로 p50 172 tok/s, 동시 32요청에도 121 tok/s"
+  takeaway: "15종+ 실서버 구동 결론 — 96GB급 GPU 의 현실적 채택은 30B급, 대형은 압축 품질 손실·자원 병목으로 상쇄"
+  tok_s_note: "tok/s: 초당 생성 토큰 수 ≈ 답변 속도. 대화형 실사용 기준 30~50 tok/s 이상 필요"
+
+# ── 상대측 맥락 (참고 — 슬라이드 직접 인용 금지, 톤 조정용) ─────
+counterpart_context:
+  plan: "AI 서버 1대 (Threadripper PRO 9995WX · RTX PRO 6000 ×4 · RAM 512GB · NVMe 1TB×10 · 3000W · Ubuntu/Windows) 약 9,500만원"
+  intent: "생성형 AI(LLM) 연구 + 제조 데이터 플랫폼(Data Lake · 벡터 · Graph DB)을 같은 서버에 구축"
+  vision: "SDF(Software Defined Factory) — 자율 운영 공장 OS(FOS), AI Agent 판단 체계"

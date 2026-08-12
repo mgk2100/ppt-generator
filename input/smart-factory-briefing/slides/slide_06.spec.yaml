@@ -1,0 +1,36 @@
+idx: 6
+layout: "제목 및 내용"
+title: "AI 서버 인프라 — Dell PowerEdge R770 × 2대"
+pattern: "table"
+accent_color: "#024AD8"
+key_message: "RTX PRO 6000 Blackwell 96GB 총 3장 — 서빙 · 학습 분리 2대 구성, 합계 약 8,000만원"
+design_language: "input/smart-factory-briefing/design_system.md 강제 + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "RTX PRO 6000 Blackwell 96GB 총 3장 — 서빙 · 학습 분리 2대 구성"
+    style: "Pretendard SemiBold 15pt INK, '총 3장'·'분리 2대' PRIMARY"
+  - kind: grid_table
+    desc: "메인 스펙 표 add_grid_table — 3열 [구성 항목 | R770 (2-way GPU) | R770 (1-way GPU)]. 헤더 행 CLOUD + SemiBold INK 10.5pt, 본문 CANVAS 9.5~10pt, 수평 hairline 위주. GPU 행 값은 SemiBold INK 강조. '용도' 행은 PRIMARY_SOFT 배경"
+    header: ["구성 항목", "R770 (2-way GPU)", "R770 (1-way GPU)"]
+    rows:
+      - ["용도", "vLLM 서빙 (Gemma-4-31B · Qwen3-Embedding-8B)", "학습 · 실험"]
+      - ["GPU", "RTX PRO 6000 Blackwell 96GB × 2", "RTX PRO 6000 Blackwell 96GB × 1"]
+      - ["CPU", "Xeon 6 6515P 16C/32T × 2", "Xeon 6 6520P 24C/48T × 2"]
+      - ["메모리", "32GB DDR5-6400 × 8 = 256GB", "32GB DDR5-6400 × 16 = 512GB"]
+      - ["스토리지", "3.84TB SATA SSD × 2", "7.68TB NVMe SSD × 2"]
+      - ["네트워크", "10GbE Base-T × 4 (OCP 3.0)", "10GbE Base-T × 4 (OCP 3.0)"]
+      - ["전원", "3200W Titanium 이중화 (1+1)", "3200W Titanium 이중화 (1+1)"]
+  - kind: summary_band
+    desc: "하단 다크 슬랩 (INK 배경, 높이 ~0.55in) — 3개 수치 나란히: '도입처 (주)아이웍스' / 'GPU 3장 · VRAM 총 288GB' / '2대 합계 약 8,000만원'. 값 ON_INK SemiBold 13pt, 라벨 9pt FOG, 금액만 PRIMARY_BRIGHT"
+data_refs: ["analysis.yaml > servers"]
+constraints:
+  min_nontext_elements: 2
+  visual_primitive: "grid_table"
+footnotes: []
+notes: |
+  ★ rev3 (2026-08-13): '관리·지원' 행(iDRAC·ProSupport)과 RI/Titanium 각주 삭제 (사용자 지시).
+  행이 줄어든 만큼 남는 세로 공간은 행 높이 배분으로 흡수.
+  배분: 리드 ~0.35 / 표 ~4.3 (9행×0.45) / 다크 슬랩 ~0.55 / 각주.
+  관리·지원 행처럼 양쪽 동일 값은 merge_cells 로 좌우 병합해 1칸 표기 권장.
+  숫자·모델명은 JetBrains Mono 혼용 가능 (셀 rich text), 과용 금지.
+  생기센터 계획 스펙과의 비교 열 금지 — 우리 구성만.

@@ -1,0 +1,70 @@
+idx: 7
+layout: "제목 및 내용"
+title: "로컬 LLM 실측 ① — 후보 모델 테스트 결과"
+pattern: "table"
+accent_color: "#024AD8"
+key_message: "15종+ 실서버 구동 — 96GB급 GPU 의 현실적 채택은 30B급, 대형은 압축 손실로 상쇄"
+design_language: "input/smart-factory-briefing/design_system.md 강제 (2절 맑은 고딕 + 2-1 제목·리드 표준 + force_font 의무) + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "30B급 ~ 754B급 15종 이상 테스트 — 보유 서버 구동 가능 모델은 상용 LLM 대비 성능 부족"
+    style: "표준 리드 규격 (y=0.72\", 15pt bold INK), '15종 이상'·'30B급' PRIMARY"
+  - kind: model_table
+    desc: |
+      좌측 (~62% 폭, x=CONTENT_SAFE.left, w≈6.4in) 메인 실측 표 add_grid_table —
+      5열 [모델 | 규모 | 압축(양자화) | 속도* | 판정], 헤더 + 12행, 9~9.5pt.
+      헤더 CLOUD + bold. '채택 — 현 라이브' 행(Gemma-4-31B)만 PRIMARY_SOFT 배경 강조 (rev11).
+      판정 열: 채택 행 bold PRIMARY, 탈락 사유는 CHARCOAL 간결체. 속도 단위 tok/s 는 헤더에 '*' 각주 연결.
+    header: ["모델", "규모", "압축", "속도 (tok/s)", "판정"]
+    rows:
+      - ["Gemma-4-31B", "31B", "4bit", "172", "채택 — 현 라이브"]
+      - ["gpt-oss-120b", "117B", "4bit", "148~172", "채택 이력 → 품질 열세로 교체"]
+      - ["Qwen3-Next-80B", "80B", "4bit", "~160", "채택 이력 → 품질 열세로 교체"]
+      - ["Qwen2.5-Coder-32B", "32B", "bf16", "21", "채택 이력 → 품질 우수하나 속도 한계로 교체"]
+      - ["Qwen3-Coder-30B", "30B", "bf16", "136", "탈락 — 품질 미달"]
+      - ["Gemma-3-27B", "27B", "4bit", "65", "탈락 — 품질 미달"]
+      - ["Llama-3.3-70B", "70B", "4bit", "35", "탈락 — 코딩 비특화"]
+      - ["GLM-4.5-Air", "106B", "4bit", "—", "탈락 — 품질 미달"]
+      - ["Devstral-2-123B", "123B", "4bit·GPU 2장", "~31", "탈락 — 품질·속도 미달"]
+      - ["Qwen3.5-122B", "122B", "4bit·GPU 2장", "~103", "탈락 — 범용(비전·언어) 모델 · 코딩 성능 미달"]
+      - ["MiniMax-M2", "230B", "4bit·GPU 2장", "—", "탈락 — 출력 불안정 (코드 미생성)"]
+      - ["GLM-5.2", "754B", "1bit·217GB", "4.9", "탈락 — 속도·품질 모두 미달"]
+  - kind: right_card_compression
+    desc: "우측 (~35% 폭) 상단 카드 — '4bit 압축의 한계' (CANVAS + STEEL 보더)"
+    title: "4bit 압축의 한계"
+    items:   # rev4: 자연스러운 문장으로 교정 (회신 메일 원문 톤)
+      - "대형 모델을 96GB GPU에 올리려면 강한 압축이 필수 — 이 과정의 품질 손실이 모델 크기를 키운 효과를 상쇄"
+      - "압축한 대형 모델이 중형(32B) 모델보다 나은 결과를 주지 못한 사례를 실측으로 확인"
+      - "일부 대형 모델은 간단한 질문에도 답을 정리하지 못해 사용 중단"
+  - kind: right_card_glm52
+    desc: "우측 하단 카드 — 'GLM-5.2 (754B) 1bit 압축 결과' (PRIMARY_SOFT 배경 + PRIMARY 보더, 표의 GLM-5.2 행과 호응)"
+    title: "GLM-5.2 (754B) 1bit 압축 결과"
+    items:   # rev4: 자연스러운 문장으로 교정
+      - "1bit로 압축해도 217GB — GPU 96GB 1장을 넘는 약 200GB는 CPU 메모리에 적재"
+      - "생성 속도 4.9 tok/s — 1명이 쓰기에도 느림 (CPU 적재 구간이 병목)"
+      - "코딩 벤치 88.75% — 사내 채택 32B 모델(95.0%)보다 낮은 품질"
+      - "극압축의 품질 저하가 754B 규모의 이점을 상쇄 → 도입 불가 판정"
+  - kind: bottom_band
+    desc: "하단 전체 폭 다크 슬랩 (INK 배경 ~0.5in)"
+    text: "현재 운영 — 로컬 = 분석 서술 · 검색 임베딩 등 한정 용도 / 실제 업무 = 상용 LLM"
+    style: "ON_INK 11pt, '상용 LLM' PRIMARY_BRIGHT bold"
+  - kind: table_caption
+    desc: |
+      모델 표 바로 아래 밀착 캡션 1줄 (9pt GRAPHITE) — '헤더*+하단 각주' 방식 대신
+      표 하단 캡션으로 단위 설명 (design_system 2-2):
+      "tok/s: 초당 생성 토큰 수 ≈ 답변 속도 — 대화형 실사용 기준 30~50 이상 필요"
+data_refs: ["analysis.yaml > local_llm_tested"]
+constraints:
+  min_nontext_elements: 4
+  visual_primitive: "grid_table"
+footnotes:
+  - "4bit/1bit 양자화: 모델 용량을 1/4~1/16로 압축하는 기법 (품질 손실 동반)"
+notes: |
+  ★ rev3 (2026-08-13): '속도*'+각주 방식 폐지 → 헤더에 단위 직접 표기 "속도 (tok/s)" +
+  표 하단 밀착 캡션으로 정의. 각주는 항목당 1줄. gpt-oss-120b·32B 교체 사유 구체화.
+  전부 실측 로그 기반 (coding-assistant docs/verification 2026.06~07) — 수치 임의 변경 금지.
+  표 12행 × ~0.34in ≈ 4.1in + 헤더. 열 폭 근사 [1.55, 0.55, 0.95, 0.65, 2.6]in.
+  모델명·양자화 표기는 영어 원문 유지. 세부 벤치 명칭(HumanEval-X·LCB 등)은 슬라이드에 노출하지
+  않고 '코딩 벤치'로 일반화 (청중 = 타 부서).
+  배분: 리드 0.72~1.07 / 본문 2열 1.18~5.8 / 다크 슬랩 ~6.35 / 각주.
+  build 함수 마지막 force_font(slide, "맑은 고딕") 의무. 이모지·그림자·CHEVRON 금지.

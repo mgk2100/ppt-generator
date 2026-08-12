@@ -1,0 +1,40 @@
+idx: 5
+layout: "제목 및 내용"
+title: "AI 활용 전략 — 3단계 전환"
+pattern: "diagram"
+accent_color: "#024AD8"
+key_message: "보안 · 비용으로 로컬 sLLM 출발 → 실측 한계 확인 후 상용 전환 → 지식증류로 병행 복귀"
+design_language: "input/smart-factory-briefing/design_system.md 강제 + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "로컬 sLLM 출발 → 실측 한계로 상용 LLM 전환 → 지식증류로 상용 + 로컬 병행"
+    style: "Pretendard SemiBold 15pt INK, '실측 한계'·'병행' 키워드 PRIMARY"
+  - kind: phase_flow
+    desc: "상단 3단계 블록 (ROUNDED_RECTANGLE 3개 + PRIMARY 1.5pt 화살표 2개, align_shapes 수평 정렬). 각 블록: 상단 라벨(시기 9pt GRAPHITE) + 단계명(SemiBold 12.5pt) + 요약 2줄(10.5pt CHARCOAL). 현재 단계(중간) 블록만 PRIMARY_SOFT 배경 + PRIMARY 1pt 보더 + '현재' 태그"
+    phases:
+      - {label: "초기", when: "2026.04", body: "코드 유출 차단 · 비용 0원 기대\n로컬 sLLM 채택"}
+      - {label: "중간 — 현재", when: "2026.07", body: "로컬 sLLM 실측 한계 확인\n상용 LLM 전환", current: true}
+      - {label: "최종 목표", when: "2026 하반기", body: "3축 통합 AI Agent\n문서 · 분석은 상용 + 로컬 병행"}
+  - kind: callout_left
+    title: "로컬 sLLM 의 한계 — HW 증축 비현실적"
+    items:
+      - "상용 수준 성능 확보에는 프론티어급 모델 자체 구동 필요"
+      - "프론티어 오픈모델(Kimi K3) 자체 구동 비용 — 적재 약 16장 ≈ 3.0억 / 실사용 약 20장 ≈ 3.7억 (1,850만원/장)"
+    style: "CANVAS 카드 + STEEL 1pt 보더, 헤더 SemiBold 12pt INK, 항목 ▸ 10.5pt CHARCOAL, 수치 SemiBold INK"
+  - kind: callout_right
+    title: "로컬 sLLM 전략 — 데이터 축적으로 성능 확보"   # rev6: 1행 표기 (축약)
+    items:
+      - "① 초기 : 최신 상용 모델로 AI Agent 성능 확보"
+      - "② 성능 확보 후 : 지식증류로 로컬 sLLM 학습"
+      - "③ 로컬 성능 확보 시 : 상용 + 로컬 병행 → 상용 비용 완화"
+    style: "PRIMARY_SOFT 옅은 배경 + PRIMARY 1pt 보더, 동일 타이포"
+data_refs: ["analysis.yaml > strategy"]
+constraints:
+  min_nontext_elements: 6
+  visual_primitive: "diagram"
+footnotes: []   # rev12 — 지식증류 각주는 3페이지(아키텍처)와 중복이라 삭제
+notes: |
+  배분: 리드 ~0.35 / 3단계 블록 밴드 ~1.7 / 하단 콜아웃 2열 (calc_grid 1×2) ~3.3 / 각주.
+  CHEVRON 금지 — 화살표는 STRAIGHT 커넥터 + add_arrowhead.
+  청중 맥락: 생기센터도 로컬 LLM 계획 중 — "같은 출발점이었다"가 전달 포인트.
+  다만 상대 계획 언급·평가 문구 금지, 우리 이력만 서술.

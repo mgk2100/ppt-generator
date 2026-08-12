@@ -1,0 +1,17 @@
+{
+  "slide_idx": 3,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 5,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "개발 내용 좌측 mock_docgen.png 가 셀 폭 대비 작아 좌우 흰 여백 발생 — 우측 이미지처럼 add_picture 폭을 셀 폭의 90%+ 로 확대해 좌우 균형 맞출 것",
+    "우측 시퀀스 다이어그램 상단 participant 헤더 행의 미세 텍스트는 투영 시 판독 불가 — 필요하면 crop 을 헤더 아래부터 시작해 확대율을 더 높일 것 (실제 산출물 증거 용도라면 현행 유지 가능)"
+  ],
+  "passed": true
+}

@@ -1,0 +1,33 @@
+idx: 3
+layout: "제목 및 내용"
+title: "통합 플랫폼 ② — SW 설계 문서 생성"
+pattern: "table"
+accent_color: "#024AD8"
+key_message: "소스코드에서 SAD · SDD 설계 문서를 자동 생성"
+design_language: "input/smart-factory-briefing/design_system.md 강제 (맑은 고딕 + 제목·리드 표준 + force_font + 각주 항목당 1줄)"
+content_blocks:
+  - kind: reference_reuse
+    desc: |
+      ★ rev5 — **v11 현황② (input/sl-sw-agent-v11/slides/slide_03.code.py) 이식** 이 원칙.
+      사용자 확정 구조: 좌측 라벨 열 + SL SW Agent 통합 밴드 + SW 설계 문서 생성 와이드 1열
+      (시스템 구성 파이프라인 + 개발 내용 이미지 2종 병치 + 개발 항목 소표) — 레이아웃·문안 유지.
+      이식 시 적용할 변경 (이 덱 표준):
+      1) 제목 = 이 spec 의 title, set_title(font_size=20, bold=True)
+      2) 표준 리드 추가 (y=0.72", h=0.35", 15pt bold): key_message 문구, 'SAD · SDD' PRIMARY
+         → 본문 시작 y≥1.18" 에 맞춰 행 높이 소폭 압축
+      3) 이미지 2종 유지: mock_docgen.png "▲ 문서 생성 진행 화면" +
+         docgen_dynamic_behavior_sample.png "▲ 자동 추출 시퀀스 다이어그램 — 조건 분기 구간 확대 (실제 산출물)"
+      4) 각주 = 항목당 1줄 (SAD/SDD · tree-sitter 각각 분리)
+      5) build_slide_03 + force_font(slide, "맑은 고딕") 마지막 호출
+assets:
+  - "sources/sl-sw-agent/mockups/mock_docgen.png"
+  - "sources/sl-sw-agent/assets/docgen_dynamic_behavior_sample.png"
+data_refs: ["analysis.yaml > platform", "input/sl-sw-agent-v11/slides/slide_03.spec.yaml"]
+constraints:
+  min_nontext_elements: 8
+  visual_primitive: "grid_table"
+footnotes:
+  - "SAD(Software Architecture Design Specification) / SDD(Software Detailed Design Specification): SW 아키텍처 설계서 / 상세 설계서"
+notes: |
+  rev5 (2026-08-13): v11 현황② 이식 — 텍스트 잘림·어색한 줄바꿈 없도록 검증.
+  rev6: '예상' 표기 삭제 (목업 캡션 "(예상 UI)" 제거) + 각주 약어 풀네임 병기.

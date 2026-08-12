@@ -1,0 +1,18 @@
+{
+  "slide_idx": 2,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 4,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "좌측 '개발 내용' CLOUD 안내 박스(약 4.5\"x2.3\")에 중앙 1줄만 있어 내부 여백 과다 — 박스 높이를 줄여 상세 소표/파이프라인에 여유를 배분하거나, 중앙 문구 아래 GRAPHITE 9pt 보조 캡션 1줄(시연 흐름: 질의 입력 → 근거 검색 → 답변)을 add_textbox 로 추가해 밀도 보강",
+    "괄호 안 공백이 어색 — '개발 항목 ( 상세 )', 'LLM 활용 ( 취약점 진단 · 수정안 )', '(RAG · 코드 저장소 )' → '(상세)', '(취약점 진단·수정안)', '(RAG·코드 저장소)' 로 문자열 정리 (set_text_inset/공백 제거)",
+    "리드와 통합 밴드가 모두 파랑 bold 로 위계가 근접 — 밴드 본문 중 강조는 'SL SW Agent' 와 '통합 agent' 키워드만 PRIMARY 로 남기고 나머지는 INK 로 낮춰 제목>리드>밴드 계층을 더 분명히"
+  ],
+  "passed": true
+}

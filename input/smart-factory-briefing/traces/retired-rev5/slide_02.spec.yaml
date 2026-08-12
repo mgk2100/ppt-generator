@@ -1,0 +1,49 @@
+idx: 2
+layout: "제목 및 내용"
+title: "통합 플랫폼 개요 — SL SW Agent"
+pattern: "cards"
+accent_color: "#024AD8"
+key_message: "코딩 지원 · 코드 심층 분석 · SW 설계 문서 생성 — 하나의 웹 플랫폼에서 통합 제공"
+design_language: "input/smart-factory-briefing/design_system.md 강제 + plan.yaml banned_details"
+content_blocks:
+  - kind: lead
+    text: "코딩 지원 · 코드 심층 분석 · SW 설계 문서 생성 — 하나의 웹 플랫폼에서 통합 제공"
+    style: "Pretendard SemiBold 15pt INK, '통합 제공' 키워드만 PRIMARY. 리드 아래 FOG hairline"
+  - kind: agent_banner
+    text: "SL SW Agent — SW 개발 핵심 영역을 통합 관리하는 사내 AI agent"
+    style: "PRIMARY_SOFT 배경 + PRIMARY_DEEP SemiBold 11.5pt, 폭 전체"
+  - kind: three_columns
+    desc: "3열 기능 카드 (calc_grid 1×3). 각 카드: 번호(01/02/03 Pretendard Bold 20pt PRIMARY) + 헤더(SemiBold 12.5pt INK) + 기능 흐름 요약 2줄(10.5pt CHARCOAL) + 하단 현황 소표"
+    cols:
+      - header: "AI 코딩 지원"
+        flow: "질문 · 코드 입력 → 사내 문서 · 코드 검색(RAG) → LLM 답변 · 리뷰 · 수정안"
+        rows:
+          - ["코드 질의응답", "웹 라이브 동작", "사내 스킬 연계 고도화"]
+          - ["Claude Code 플러그인", "MCP 연동 구축", "skill 자동 실행 확대"]
+      - header: "코드 심층 분석"
+        flow: "코드베이스 업로드 → 파싱 · 정적 검증(MISRA) → LLM 취약점 진단 · 수정안 → 보고서"
+        rows:
+          - ["정적 검증", "컴파일 · MISRA 구축", "다언어 확장"]
+          - ["분석 자료 작성", "AI 진단 · 수정안 구현", "자료 자동 작성"]
+      - header: "SW 설계 문서 생성"
+        flow: "소스코드 업로드 → 함수 · 호출 관계 파싱 → LLM 본문 · 다이어그램 → SAD · SDD 출력"
+        rows:
+          - ["SAD 생성", "파이프라인 검증", "생성 품질 고도화"]
+          - ["SDD 생성", "파이프라인 구축", "산출물 정식 적용"]
+    table_style: "add_grid_table 소표 [항목|현황|목표] 헤더 CLOUD + 본문 CANVAS, 9pt, 수평 hairline 위주"
+data_refs: ["analysis.yaml > platform"]
+constraints:
+  min_nontext_elements: 5
+  visual_primitive: "cards"
+footnotes:
+  - "RAG: 사내 문서·코드를 검색해 답변 근거로 활용"
+  - "MISRA: 차량 SW C 코딩 안전 규칙"
+  - "MCP: AI 도구가 사내 시스템 기능을 호출하는 표준 프로토콜"
+notes: |
+  ★ rev3 (2026-08-13): 웹 캡처 삭제 — 실서비스 라이브 시연으로 대체 (사용자 지시).
+  레이아웃 배분(위→아래, VFlow): 리드(표준 y=0.72) / 배너 ~0.32 / 3열 카드 —
+  캡처가 빠진 공간만큼 카드를 세로로 확장(현황 소표에 '목표' 열 복원 [항목|현황|목표]
+  하여 내용 보강 가능) / 최하단 전체 폭 마일스톤 다크 슬랩 / ※ 각주.
+  각주는 **항목당 1줄 — 3줄 분리** (design_system 2-2), 다크 슬랩과 겹침 금지.
+  카드 배경 CANVAS + FOG 1pt 보더, 그림자 금지. 이모지 금지.
+  build 함수 마지막 force_font(slide, "맑은 고딕") 유지.

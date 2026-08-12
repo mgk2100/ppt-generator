@@ -1,0 +1,37 @@
+idx: 2
+layout: "제목 및 내용"
+title: "통합 플랫폼 ① — 코딩 지원 · 취약점 분석"
+pattern: "table"
+accent_color: "#024AD8"
+key_message: "질문 · 코드에서 답변과 취약점 리포트를 자동 생성"
+design_language: "input/smart-factory-briefing/design_system.md 강제 (맑은 고딕 + 제목·리드 표준 + force_font + 각주 항목당 1줄)"
+content_blocks:
+  - kind: reference_reuse
+    desc: |
+      ★ rev5 — **v11 현황① (input/sl-sw-agent-v11/slides/slide_02.code.py) 이식** 이 원칙.
+      사용자 확정 구조: 좌측 라벨 열(프로젝트/시스템 구성/개발 내용/개발 항목(상세)) +
+      SL SW Agent 통합 밴드 + 2열(코딩 지원 | 취약점 분석) — 레이아웃·문안 유지.
+      이식 시 적용할 변경 (이 덱 표준):
+      1) 제목 = 이 spec 의 title, set_title(font_size=20, bold=True)
+      2) 표준 리드 추가 (y=0.72", h=0.35", 15pt bold): key_message 문구, '파이프라인'·'LLM' PRIMARY
+         → 본문 시작 y≥1.18" 에 맞춰 행 높이 소폭 압축 (내용 행 2.75→~2.3)
+      3) 코딩 지원 열 '개발 내용' = **웹 캡처 복원 (rev6)** — ca_web_assist_conv.png (3200×2000)
+         + 캡션 "▲ 웹 코드 질의응답 — 실제 동작 화면 (라이브)" (시연과 그림 병행)
+      4) 취약점 분석 열 '개발 내용' = **ca_code_analysis.png 실캡처 (rev9)** — /code/analysis 분석 결과 화면(품질 요약·위험 파일), 캡션 "▲ 코드 분석 결과 — 실제 동작 화면 (라이브)"
+      5) **'예상' 표기 전부 삭제 (rev6)** — "* 적재·분류·자료 작성 단계는 예상안" 캡션, "(예상 UI)", "(예상)" 제거
+      6) 각주 = 항목당 1줄 + 약어 풀네임 병기 (design_system 2-2)
+      7) build_slide_02 + force_font(slide, "맑은 고딕") 마지막 호출
+assets:
+  - "sources/sl-sw-agent/assets/ca_web_assist_conv.png"
+  - "sources/sl-sw-agent/assets/ca_code_analysis.png"
+data_refs: ["analysis.yaml > platform", "input/sl-sw-agent-v11/slides/slide_02.spec.yaml"]
+constraints:
+  min_nontext_elements: 8
+  visual_primitive: "grid_table"
+footnotes:
+  - "RAG(Retrieval-Augmented Generation): 사내 문서·코드를 검색해 답변 근거로 활용"
+  - "MISRA(Motor Industry Software Reliability Association): 차량 SW C 코딩 안전 규칙"
+  - "MCP(Model Context Protocol): AI 도구가 사내 시스템 기능을 호출하는 표준 프로토콜"
+notes: |
+  rev5 (2026-08-13): 기존 '통합 플랫폼 개요' 1장을 v11 현황①/② 기반 2장으로 확대 (사용자 지시).
+  텍스트 잘림·어색한 줄바꿈 없도록 estimate_text_size 로 검증 — 전체 다듬기 대상.

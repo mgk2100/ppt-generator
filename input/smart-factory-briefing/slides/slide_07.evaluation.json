@@ -1,0 +1,18 @@
+{
+  "slide_idx": 6,
+  "score": 4,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 4
+  },
+  "actionable_feedback": [
+    "우상단 '4bit 압축의 함정' 카드 하단 ~35%가 빈 공간 — estimate_container_height 로 카드 높이를 콘텐츠에 맞게 축소하고 하단 카드(GLM-5.2)를 위로 끌어올리거나, 요약 수치 1줄(예: '압축 대형 < 32B 실측')을 추가해 채울 것",
+    "GLM-5.2 카드의 줄바꿈 항목('메모리 (~200GB) 적재', '낮음')이 bullet 기호 밑까지 밀려 hanging indent 가 깨짐 — add_bullet_list 단락에 hanging indent(level indent) 를 설정해 wrap 줄이 텍스트 시작선에 정렬되게 할 것",
+    "표 본문 9~9.5pt 는 spec 명시값이라 수용하나 design_system 본문 하한(10.5pt) 미만 — 판정 열(핵심 결론)만이라도 9.5pt bold 유지로 투영 가독성을 보전할 것"
+  ],
+  "passed": true
+}

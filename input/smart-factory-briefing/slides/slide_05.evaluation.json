@@ -1,0 +1,17 @@
+{
+  "slide_idx": 4,
+  "score": 5,
+  "rubric": {
+    "spec_adherence": 5,
+    "visual_hierarchy": 5,
+    "density": 4,
+    "visual_ambition": 4,
+    "color_consistency": 5,
+    "readability": 5
+  },
+  "actionable_feedback": [
+    "좌측 콜아웃 spec 항목의 '프론티어 오픈모델' 문구가 GPU 표 전환 과정에서 생략됨 — 표 위 리드 항목('sLLM 실측 결과...') 아래 또는 하단 캡션에 '프론티어 오픈모델 기준' 문구를 style_cell/캡션 텍스트로 보강",
+    "1·3단계 전환 블록 내부 우측 여백이 중간(현재) 블록 대비 넓음 — 본문 2줄을 유지하되 블록 폭을 calc_grid 비율(col_widths)로 소폭 줄여 세 블록의 텍스트 채움 균형을 맞추면 density 상승 여지"
+  ],
+  "passed": true
+}

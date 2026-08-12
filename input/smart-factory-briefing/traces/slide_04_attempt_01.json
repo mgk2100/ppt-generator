@@ -1,0 +1,38 @@
+{
+  "attempt": 1,
+  "spec_path": "/home/user/Share/ppt-generator/input/smart-factory-briefing/slides/slide_04.spec.yaml",
+  "validation": {
+    "slide_idx": 4,
+    "code_path": "/home/user/Share/ppt-generator/input/smart-factory-briefing/slides/slide_04.code.py",
+    "checks": {
+      "imports_whitelisted": true,
+      "no_direct_master_edit": true,
+      "import_succeeds": true,
+      "has_build_function": true,
+      "layout_allowed": true,
+      "master_and_safe_zone_intact": true,
+      "placeholder_idx_respected": true
+    },
+    "failures": [],
+    "passed": true
+  },
+  "evaluation": {
+    "slide_idx": 4,
+    "score": 4,
+    "rubric": {
+      "spec_adherence": 5,
+      "visual_hierarchy": 4,
+      "density": 2,
+      "visual_ambition": 2,
+      "color_consistency": 5,
+      "readability": 4
+    },
+    "actionable_feedback": [
+      "좌측 콜아웃 카드 하단 ~45%가 빈 영역 — GPU 비용 수치(RTX PRO 6000 1,850만원/장, DeepSeek-V4 12장≈2.2억, Kimi K2.7 9장≈1.7억)를 불릿 텍스트 대신 add_grid_table 4×3 표(모델/필요 GPU/총 비용, 헤더 CLOUD 배경 + 수평 hairline)로 전환해 카드 하단을 채울 것",
+      "우측 콜아웃 카드 하단 ~40%가 빈 영역 — ①②③ 텍스트 나열을 VFlow 기반 세로 미니 플로우(ROUNDED_RECTANGLE 3블록 + PRIMARY 1.5pt STRAIGHT 커넥터 + add_arrowhead)로 전환하거나, '상용 비용 완화' 기대효과 캡션 행(GRAPHITE 9pt)을 추가해 채울 것",
+      "대안: 두 카드 높이를 estimate_container_height 기반으로 콘텐츠에 맞게 축소하고, 확보된 하단 밴드에 design_system의 다크 슬랩(INK 배경 + ON_INK + PRIMARY_BRIGHT 강조) 핵심 결론 1줄을 배치해 슬라이드 하단을 마감할 것",
+      "좌측 카드 2번째 항목 줄바꿈 시 'RTX PRO 6000'이 행 분리되고 이어지는 줄이 ▸ 마커 아래 좌측 끝에서 시작 — hanging indent 적용 또는 표 전환으로 해소할 것"
+    ],
+    "passed": false
+  }
+}
