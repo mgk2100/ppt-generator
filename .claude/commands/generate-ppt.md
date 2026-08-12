@@ -31,7 +31,7 @@
 - A) 분석 결과 폴더 (.analysis-meta.json 등)
 - B) 소스 코드 프로젝트
 - C) 텍스트/문서 파일 (.md, .txt, .pdf, .html)
-- D) 기업명 / 주제 등 텍스트
+- D) 기업명 / 주제 등 텍스트 → **웹 기업분석**. 입력 자료가 없으므로 Step 1-D(웹 수집)를 선행한다. 상세 계약은 `CLAUDE.md` "유형 D 입력 인터페이스 계약 (기업분석)" 참조
 
 프로젝트 식별자 `{name}` 결정 (예: `ai-coding-exec-summary`).
 
@@ -41,6 +41,30 @@
 ## Step 1: 분석 및 인벤토리 수집
 
 원본 자료를 읽고 `input/{name}/analysis.yaml` 생성 (v1과 동일 — 섹션·테이블·수치·다이어그램 인벤토리).
+
+## Step 1-D: 웹 기업분석 수집 (유형 D 전용 — 하네스 밖, 메인 Claude 선행)
+
+유형 D는 입력 자료가 없다. analysis.yaml을 만들기 전에 **메인 Claude가 직접** 웹에서 사실과 시각 자산을 수집한다.
+
+> **경계**: Generator의 `build_slide` 코드는 `locked_registry.yaml` import_whitelist로 네트워크(urllib/requests/http/socket)가 원천 차단된다. 따라서 웹 수집은 코드 생성 단계가 **아니라** 이 상위 메인 Claude 단계에서 선행하여 `sources/{name}/`에 파일로 떨어뜨린 뒤, 그 파일만 PPT가 소비한다.
+
+### 1-D.a 사실 수집 — `WebSearch` / `WebFetch`
+- 회사 홈페이지·IR·뉴스·공시에서 사실 수집
+- `sources/{name}/dossier.json`에 구조화 (`company_identity`·`business_areas`·`products`·`role_partnership`·`certifications_references`·`platform_tech`·`swot`·`conclusion`·**`citations`**)
+- **모든 핵심 사실에 출처 URL 기록**. 추정치는 "추정"으로 표기하고 단정하지 않는다
+
+### 1-D.b 시각 자산 캡처 — Playwright MCP
+- `browser_navigate` → `browser_take_screenshot`로 홈페이지·제품 UI 풀페이지 캡처
+- 로고·아키텍처 도식 다운로드 → `sources/{name}/assets/*.png` 저장
+- 도형으로 모사하지 말고 실물을 `add_picture`로 임베드 (CLAUDE.md 금지 사항)
+
+### 1-D.c 매핑
+- dossier 사실 → `slide_NN.spec.yaml`의 `content_blocks`
+- 캡처 자산 → `plan.yaml`의 `assets:` 인벤토리 (`use_on_slide` 지정)
+- 슬라이드 골격은 CLAUDE.md "유형 D 입력 인터페이스 계약 > 기업분석 슬라이드 골격"을 따른다 — **데이터 있는 항목만**
+- 전문용어 첫 등장 슬라이드마다 `add_footnote(※ 용어 정의)` 의무
+
+수집 산출물(`dossier.json` + `assets/`)이 준비되면 Step 1의 analysis.yaml을 이 자료로 채우고 Step 2(Planner)로 진행한다.
 
 ## Step 2: PLANNER (메인 Claude)
 
@@ -79,6 +103,7 @@ assets:                        # 시각 자산 인벤토리 (add_picture로 삽�
 분석 중 발견한 실제 UI 캡처·스크린샷·로고·외부 차트를 `assets/` 또는
 `sources/{name}/assets/`에 모으고 위 `assets:` 인벤토리에 등록한다.
 python-pptx 도형만으로 모든 것을 '그리지' 말고, 실물 자산은 `add_picture`로 삽입한다.
+유형 D(기업분석)는 Step 1-D.b에서 Playwright MCP로 홈페이지·제품 UI·아키텍처 도식을 미리 캡처해 이 인벤토리를 채운다.
 
 ### 2c. slide_NN.spec.yaml 작성
 
@@ -311,6 +336,7 @@ Bash: python3 -m harness.loop {name} --action assemble
 - [ ] 표지(slide 1) — setup_cover 사용, 배경 Picture 변경 없음
 - [ ] 각 content 슬라이드 비텍스트 시각 요소 1+
 - [ ] `input/{name}/traces/`에 refine attempt 기록
+- [ ] (유형 D) `sources/{name}/dossier.json` 존재 · 핵심 사실에 출처(citation) · 전문용어 ※ 각주 동반
 
 ## Step 6: 최종 보고
 

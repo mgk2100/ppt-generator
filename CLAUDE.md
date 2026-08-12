@@ -3,16 +3,21 @@
 ## 목적
 입력 자료를 분석하여 python-pptx 기반 PPT를 자동 생성한다.
 
+## 페이지 지칭 규약
+사용자가 말하는 "N페이지"는 **표시 페이지 번호 기준 — 표지 = 0페이지**로 센다.
+- 예: "1페이지" = 표지 다음 첫 콘텐츠 슬라이드 (내부 슬라이드 인덱스 slide_02)
+- 내부 산출물 파일명(slide_NN)·python-pptx 인덱스는 표지 = 1 이므로 항상 +1 보정하여 해석한다
+
 ## 작동 방식
 Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 고정 렌더러 없음. 매번 콘텐츠에 맞는 코드를 새로 작성한다.
 
 ## 지원 입력
 하나의 /generate-ppt 명령으로 다양한 입력을 자동 판단하여 처리한다.
-- 기존 분석 결과 폴더 (obsidian-notes/03_학습노트/ 내 분석 결과)
-- 소스 코드 프로젝트
-- 텍스트/문서 파일 (.md, .txt, .pdf 등)
-- 기업명, 주제 등 텍스트 입력
+- **유형 A** — 기존 분석 결과 폴더 (obsidian-notes/03_학습노트/ 내 분석 결과) → "Type A 입력 인터페이스 계약" 참조
+- **유형 B** — 소스 코드 프로젝트
+- **유형 C** — 텍스트/문서 파일 (.md, .txt, .pdf, .html 등)
+- **유형 D** — 기업명·주제 등 텍스트 (웹에서 자료를 수집해 생성) → "유형 D 입력 인터페이스 계약 (기업분석)" 참조
 
 ## Type A 입력 인터페이스 계약
 
@@ -96,10 +101,77 @@ Phase 5 코드 레퍼런스가 PPT 슬라이드에 직접 매핑된다. 작성 �
 
 ---
 
+## 유형 D 입력 인터페이스 계약 (기업분석)
+
+기업명·주제만 주어진 입력(유형 D)을 PPT로 변환할 때의 요구사항.
+유형 A가 "분석기가 만든 마크다운"을 입력으로 받는다면, 유형 D는 **입력 자료 자체가 없다** — 웹에서 사실과 시각 자산을 직접 수집하는 단계가 선행되어야 한다. 실행 절차는 `generate-ppt.md` "Step 1-D" 참조.
+
+> **핵심 경계 — 수집은 하네스 밖(메인 Claude)에서 한다.**
+> Generator의 `build_slide` 코드는 `ref/locked_registry.yaml` import_whitelist로 네트워크(urllib/requests/http/socket)가 원천 차단된다. 따라서 웹 수집은 코드 생성 단계가 아니라 **상위 메인 Claude의 `WebSearch`/`WebFetch`·Playwright MCP**로 선행하여 `sources/{name}/`에 파일로 떨어뜨린 뒤, 그 파일만 PPT가 소비한다.
+
+### 수집 파이프라인 (3단계, 하네스 밖 선행)
+
+| 단계 | 도구 | 산출물 | 비고 |
+|------|------|--------|------|
+| 1. 사실 수집 | `WebSearch` / `WebFetch` | `sources/{name}/dossier.json` | 회사 홈페이지·IR·뉴스·공시에서 사실 추출. **출처 URL 동반 기록** |
+| 2. 구조화 | 메인 Claude | 위 dossier.json | 회사개요·사업영역·제품·역할/파트너십·인증/레퍼런스·기술플랫폼·SWOT/리스크·결론으로 분류. 사실/추정 구분 표기 |
+| 3. 시각 자산 캡처 | Playwright MCP (`browser_navigate`→`browser_take_screenshot`) | `sources/{name}/assets/*.png` | 홈페이지·제품 UI 풀페이지 스크린샷, 로고·아키텍처 도식 다운로드. plan.yaml `assets:` 인벤토리에 등록 |
+
+수집 후 dossier의 사실을 `slide_NN.spec.yaml`의 `content_blocks`로, 캡처 자산을 `assets:`로 매핑한다.
+
+### 필수 수집 산출물 구조
+
+| 파일 | PPT 활용 |
+|------|---------|
+| `sources/{name}/dossier.json` | 전 슬라이드 콘텐츠 근거 (회사개요·제품·역할분담·인증·기술플랫폼·SWOT). 출처 URL 포함 |
+| `sources/{name}/assets/*.png` | 아키텍처 도식·제품 UI 스크린샷·로고 → `add_picture` 임베드 |
+
+dossier.json 권장 키: `company_identity`, `business_areas`, `products`, `role_partnership`, `certifications_references`, `platform_tech`(아키텍처 포함), `swot`, `conclusion`, `citations`.
+
+### 기업분석 슬라이드 골격 + 필수 데이터 매핑
+
+유형 A의 Phase 골격에 대응하는 기업분석 전용 표준 골격. **데이터가 있는 항목만** 슬라이드로 만든다(빈 골격 금지). 순서·분량은 dossier 볼륨에 비례해 적응형으로 조절.
+
+| 슬라이드 | 필수 데이터 (dossier 키) | PPT 변환 결과 | 권장 visual_primitive |
+|---------|------------------------|--------------|----------------------|
+| 회사 개요 | `company_identity` (설립·규모·핵심 한 줄) | label/value 2열 개요표 + 핵심 수치 카드 | `grid_table` |
+| 사업 영역 / 제품 | `business_areas`, `products` | 제품 라인업 카드 + 도메인 분류 | `cards` |
+| 역할 분담 / 파트너십 | `role_partnership` | 2열 매핑표 (자사 ↔ 상대) | `grid_table` |
+| 인증 / 레퍼런스 | `certifications_references` | 배지/칩 그리드 + 레퍼런스 카드 | `cards` |
+| 기술 플랫폼 / 아키텍처 | `platform_tech` + `assets/` 도식 | 아키텍처 다이어그램 (실물 캡처 `add_picture` 우선, 없으면 의미 도형) | `picture` / `diagram` |
+| 수치 / 시장 | 매출·점유율·시장규모 (수치 3+) | 차트 | `chart` |
+| SWOT / 리스크 | `swot` | 2×2 그리드 또는 Before/After식 비교 | `grid_table` |
+| 결론 | `conclusion` | 핵심 메시지 + 다음 단계 | `cards` |
+
+### 용어 각주 의무
+
+기업분석은 도메인 전문용어(영문 약어·기술명)가 많다. **전문용어 첫 등장 시 `add_footnote(slide, "용어: 풀이")`를 의무 적용**한다.
+- 슬라이드당 3-4개 권장, ※ 접두어(기본값), CONTENT_SAFE 하단 자동 배치
+- 기술명·코드 원문은 유지하되, 청중이 모를 약어(ReID, PoC, GS 1등급 등)는 반드시 풀어준다
+
+### 출처 신뢰성 규칙
+
+웹 수집 정보와 "있는 데이터만, 임의 추가 금지" 원칙의 정합:
+- **dossier.json에 근거(출처)가 있는 사실만** 슬라이드에 싣는다. 추론·과장 금지
+- 추정치·미확인 정보는 명시 표기("추정", "공개 자료 기준")하고 단정하지 않는다
+- 핵심 수치·인증·레퍼런스에는 `add_footnote(..., prefix="")`로 "출처: ..." 각주를 단다
+
+### 기업분석 호환성 체크리스트
+
+- [ ] 수집이 하네스 밖(메인 Claude `WebSearch`/`WebFetch`·Playwright)에서 선행되어 `sources/{name}/dossier.json`이 존재하는가
+- [ ] dossier의 모든 핵심 사실에 출처(citation)가 있는가
+- [ ] 아키텍처/제품 UI가 도형 모사가 아니라 실물 캡처 `add_picture`로 임베드되는가
+- [ ] 전문용어 첫 등장 슬라이드마다 ※ 각주가 동반되는가
+- [ ] 추정치·미확인 정보가 단정 없이 표기되는가
+- [ ] 표지는 setup_cover로 고정, 마스터 요소가 보존되는가 (유형 공통)
+
+---
+
 ## 핵심 원칙
 - 있는 데이터만 슬라이드로 만든다. 데이터 없으면 해당 슬라이드 생성 안 함.
 - 카드 개수 = 실제 데이터 항목 수. 빈 카드 금지.
 - 슬라이드 타입은 데이터 성격으로 결정한다.
+- **약어 각주는 풀네임 병기 (2026-08-13 사용자 지시, 전 덱 공통)**: 영문 약어를 각주로 풀이할 때 `MCP(Model Context Protocol): 설명` 형식으로 정식 명칭을 괄호 병기한다. 예: `RAG(Retrieval-Augmented Generation)`, `MISRA(Motor Industry Software Reliability Association)`, `SAD(Software Architecture Document)`. 제품·브랜드명(NVLink, pgvector 등)은 대상 아님.
 
 ---
 
