@@ -2389,4 +2389,46 @@ def apply_page_total(prs, total=None):
                         changed = True
     return changed
 
-    return shape
+
+def force_font(slide, name, bold_convert=True):
+    """슬라이드 내 모든 텍스트 run 폰트를 name 으로 일괄 교체 (라틴+EA+CS 동시 지정).
+
+    한글은 rPr 의 latin 이 아니라 ea(동아시아) 폰트를 따르므로, PowerPoint 에서
+    한글이 테마 폰트로 빠지지 않게 ea/cs 까지 함께 지정한다.
+    bold_convert=True 이면 기존 폰트명에 'SemiBold'/'Bold' 가 포함된 run 은
+    bold=True 로 변환해 weight 위계를 보존한다.
+    테이블 셀·그룹 도형 내부까지 재귀 적용. 차트 내부 텍스트는 대상 외.
+    """
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+    def _apply_run(run):
+        prev = run.font.name or ""
+        if bold_convert and ("SemiBold" in prev or "Bold" in prev):
+            run.font.bold = True
+        run.font.name = name  # latin (rPr 생성 보장)
+        rPr = run.font._rPr
+        for tag in ("a:ea", "a:cs"):
+            el = rPr.find(qn(tag))
+            if el is None:
+                el = rPr.makeelement(qn(tag), {})
+                rPr.append(el)
+            el.set("typeface", name)
+
+    def _apply_tf(tf):
+        for para in tf.paragraphs:
+            for run in para.runs:
+                _apply_run(run)
+
+    def _walk(shapes):
+        for sh in shapes:
+            if sh.shape_type == MSO_SHAPE_TYPE.GROUP:
+                _walk(sh.shapes)
+                continue
+            if getattr(sh, "has_text_frame", False):
+                _apply_tf(sh.text_frame)
+            if getattr(sh, "has_table", False):
+                for row in sh.table.rows:
+                    for cell in row.cells:
+                        _apply_tf(cell.text_frame)
+
+    _walk(slide.shapes)
