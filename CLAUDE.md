@@ -416,6 +416,16 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 - 설치된 폰트 중에서만 선택한다
 - 커스텀 폰트 경로: ref/fonts/
 
+## Claude · Codex 병행 운영 규칙 (2026-09-03 사용자 확정)
+
+근거 = `input/sw-dev-ai-llm/docs/claude-vs-codex.md` 실측 (삽화 17종: Codex imagegen ≈ 87만 토큰·22분 / Claude SVG 코드 ≈ 1~2만 토큰·수 초. 사물 삽화 품질은 Codex 우세, 신경망·선화 일관성은 Claude 우세).
+
+1. **역할 분담 — 같은 일을 양쪽에 시켜 고르지 않는다.** 레이아웃·python-pptx 코드·문서·수치 정리·검수 = Claude 단독. 교차 검증은 임원 보고 수치처럼 사실 오류 비용이 큰 항목에만, 짧은 프롬프트로.
+2. **Codex 는 "능력 보완"에만 쓴다.** 래스터 삽화·사진풍 그림이 필요할 때만 Codex imagegen 호출. 신경망·선화 계열 아이콘은 Claude 가 SVG 코드로 그린다(`input/sw-dev-ai-llm/claude_icons/make_icons.py` 패턴, rsvg-convert 로 PNG). 사물 삽화(서버·문서·방패·말풍선 등)는 Codex. 혼합 사용이 기본.
+3. **Codex 호출은 `tools/codex_imagegen.sh` 로만.** 옵션 고정(`--skip-git-repo-check --sandbox danger-full-access`, 프롬프트 stdin, 참고 이미지 `-i`). 프롬프트는 `tools/codex_imagegen_prompt_template.txt` 를 채워 쓴다 — 투명 배경·체커보드 금지·글자 금지·팔레트·선 굵기·정사각 600px+ 필수. 결과는 `tools/icon_postprocess.py` 로 배경을 투명화한 뒤에만 슬라이드에 넣는다.
+4. **섞어 쓴 삽화의 선 굵기·팔레트 일관성 검수는 Claude 몫.** 렌더(soffice → png) 후 대비 표(contact sheet)로 확인.
+5. Codex 삽화는 1건당 1~1.5분·비결정적이므로 "필요할 때 소량". 옵션 실수로 재실행하면 수십만 토큰이 낭비된다(2026-09-03 실사고 65만).
+
 ---
 
 ## 슬라이드 마스터 템플릿
