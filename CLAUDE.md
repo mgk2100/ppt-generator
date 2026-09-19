@@ -12,6 +12,22 @@
 Claude가 python-pptx 코드를 직접 작성 → 실행 → PPT 생성.
 고정 렌더러 없음. 매번 콘텐츠에 맞는 코드를 새로 작성한다.
 
+## 규칙 우선순위 (충돌 시 이 순서로 판정한다)
+
+이 문서 · 덱별 `design_system.md` · `plan.yaml`의 `banned_details` 가 서로 다른 것을 지시할 때, 위에 있는 항목이 아래를 이긴다.
+
+1. **주어진 사실** — 입력 자료의 수치·단위·기간·모집단·출처·단서를 바꾸거나 빼지 않는다.
+2. **템플릿 계약** — 마스터 요소(로고·상하 구분선·푸터·페이지 번호), CONTENT_SAFE, 레이아웃 3종, import 화이트리스트.
+3. **덱 규칙** — `input/{name}/design_system.md` 와 `plan.yaml`의 `banned_details` 는 **이 문서의 디자인 기본값을 이긴다.** 덱이 금지한 표현은 이 문서가 권장해도 쓰지 않는다.
+4. **청중이 찾는 것** — 그 슬라이드에서 청중이 알아야 할 결론과 그 근거가 먼저 보이게 한다.
+5. **그 자료에 맞는 구성** — 뻔한 틀을 그대로 쓰지 않는다 ("적응형 슬라이드 구조" 참조).
+6. **세부 다듬기** — 정렬·간격·색조.
+
+- 덱 규칙 파일 위치 = `input/{name}/design_system.md`. `plan.yaml` 의 `sources:` 또는 `style_guide.design_system` 이 가리킨다. **덱 작업을 시작할 때 이 파일이 있으면 먼저 읽는다.**
+  - 여러 덱이 같은 규칙을 쓰면 본문은 `ref/design_systems/{계열}.md` 하나에 두고, 덱 폴더의 파일은 그것을 가리키는 포인터로 둔다. **포인터 파일의 "이 덱의 예외" 절이 공용 규칙을 이긴다.**
+- 덱 규칙이 없으면 이 문서의 디자인 기본값(이모지·그림자·파스텔 팔레트·의미 도형)을 쓴다.
+- 3번이 4~6번까지 이기는 것은 아니다. 덱이 어떤 표현을 금지했으면 **다른 방법으로** 위계와 밀도를 만든다 — 금지를 이유로 빈 슬라이드를 내지 않는다. 색을 못 쓰면 크기·간격·정렬·타이포 대비로, 그림자를 못 쓰면 1pt hairline 보더로, 의미 도형을 못 쓰면 위치·연결·라벨로 구분한다.
+
 ## 지원 입력
 하나의 /generate-ppt 명령으로 다양한 입력을 자동 판단하여 처리한다.
 - **유형 A** — 기존 분석 결과 폴더 (obsidian-notes/03_학습노트/ 내 분석 결과) → "Type A 입력 인터페이스 계약" 참조
@@ -139,7 +155,7 @@ dossier.json 권장 키: `company_identity`, `business_areas`, `products`, `role
 | 역할 분담 / 파트너십 | `role_partnership` | 2열 매핑표 (자사 ↔ 상대) | `grid_table` |
 | 인증 / 레퍼런스 | `certifications_references` | 배지/칩 그리드 + 레퍼런스 카드 | `cards` |
 | 기술 플랫폼 / 아키텍처 | `platform_tech` + `assets/` 도식 | 아키텍처 다이어그램 (실물 캡처 `add_picture` 우선, 없으면 의미 도형) | `picture` / `diagram` |
-| 수치 / 시장 | 매출·점유율·시장규모 (수치 3+) | 차트 | `chart` |
+| 수치 / 시장 | 매출·점유율·시장규모 (비교·추세·구성비가 있을 때) | 차트 | `chart` |
 | SWOT / 리스크 | `swot` | 2×2 그리드 또는 Before/After식 비교 | `grid_table` |
 | 결론 | `conclusion` | 핵심 메시지 + 다음 단계 | `cards` |
 
@@ -171,6 +187,14 @@ dossier.json 권장 키: `company_identity`, `business_areas`, `products`, `role
 - 있는 데이터만 슬라이드로 만든다. 데이터 없으면 해당 슬라이드 생성 안 함.
 - 카드 개수 = 실제 데이터 항목 수. 빈 카드 금지.
 - 슬라이드 타입은 데이터 성격으로 결정한다.
+- **장식용 색상 줄(세로·가로 바) 금지 (2026-09-03 사용자 지시, 전 덱 공통)**: 제목 밑줄, 카드 좌측 세로 바, 수치 사이 세로 구분선, 표 첫 열의 색상 바 같은 얇은 색 막대를 장식으로 쓰지 않는다. "AI 가 그려주는 기본 디자인" 으로 읽혀 완성도가 떨어진다. 구분이 필요하면 여백·정렬·글자 굵기로 만든다.
+- **같은 각주를 두 번 쓰지 않는다 (2026-09-03 사용자 지시, 전 덱 공통)**: 한 용어의 풀이는 **덱 전체에서 한 번만** 단다. 본 덱과 첨부처럼 파일이 갈려도 마찬가지다 — 첨부에 이미 본 덱에 있는 각주를 되풀이하지 않는다. 각주는 그 슬라이드에서 **처음 나오는** 용어만 단다.
+- **각주는 항목당 한 줄로 분리한다 (2026-09-03 사용자 지시, 전 덱 공통 기본 포맷)**: 여러 용어를 `·` 로 이어 한 줄에 몰아 쓰지 않는다. 항목마다 `※` 를 새로 달아 줄을 바꾼다.
+  ```
+  ※ SW Agent : 질문을 받아 사내 자료를 찾아보고 답을 만들어 주는 AI
+  ※ 지식 유닛 : 긴 문서 · 대화를 검색되게 짧게 잘라 놓은 지식 한 조각
+  ```
+  한 줄에 붙여 쓰면 어디서 끊어 읽어야 하는지 보이지 않아 각주가 읽히지 않는다. `add_footnote` 를 여러 번 호출하거나 줄 단위 run 리스트로 넘긴다.
 - **약어 각주는 풀네임 병기 (2026-08-13 사용자 지시, 전 덱 공통)**: 영문 약어를 각주로 풀이할 때 `MCP(Model Context Protocol): 설명` 형식으로 정식 명칭을 괄호 병기한다. 예: `RAG(Retrieval-Augmented Generation)`, `MISRA(Motor Industry Software Reliability Association)`, `SAD(Software Architecture Document)`. 제품·브랜드명(NVLink, pgvector 등)은 대상 아님.
 
 ---
@@ -253,6 +277,68 @@ dossier.json 권장 키: `company_identity`, `business_areas`, `products`, `role
 3. 기술 스택명은 번역하지 말 것 (예: "작업 큐" ✗ → "Celery" ✓)
 4. 한국어로 작성하면 한국어로 응답할 것
 
+### 문장 규칙
+
+시각 규칙이 "어떻게 보이는가" 를 정한다면, 이 절은 **슬라이드에 적히는 말이 사실을 정확히 옮기는가** 를 정한다.
+아래 예시는 형태를 보이기 위한 것이고, 실제 문장은 그 덱의 자료에서 가져온다.
+
+#### 1) 읽는 속도가 두 가지다 — 결론만 보는 사람과 근거를 따지는 사람
+
+같은 한 장을 두 종류의 독자가 본다. 발표 중에 제목·큰 수치·한 줄 결론만 보는 사람과, 나중에 파일을 받아 근거를 확인하는 사람이다.
+
+| 누가 보나 | 어디에 적나 | 무엇을 적나 |
+|---|---|---|
+| 발표 중에 결론만 보는 사람 | 제목 · Key Message Bar · 큰 수치 · 카드 헤더 · 마무리 | 결론과 그 결정적 근거 하나. 그 분야를 모르는 사람이 읽고 그대로 옮겨 말할 수 있는 평이한 말 |
+| 나중에 근거를 따지는 사람 | 표 본문 · 각주 · 부록 슬라이드 | 정확한 지표명 · 단위 · 기간 · 모집단 · 산정 기준 · 출처 |
+
+- **"글을 줄여 달라" 는 지우라는 뜻이 아니라 옮기라는 뜻이다.** 본문에서 뺀 수치·조건·출처는 각주나 부록으로 내린다. 그냥 지우면 근거가 사라진다.
+- 낯선 용어는 처음 나올 때 평이한 말로 한 번 풀고, 그 뒤로는 정확한 용어를 일관되게 쓴다 (약어 각주 형식은 "핵심 원칙" 참조).
+
+#### 2) 말은 쉽게, 주장은 그대로
+
+문장을 짧게 만들면서 주장의 범위를 넓히지 않는다. 다음은 줄이는 과정에서 **지우면 안 되는 것**이다 — 단서 · 모집단 · 기간 · 단위 · 비교 기준 · 불확실성.
+
+- "응답이 3배 빨라졌다" ✗ → "같은 질문 50건 기준, 평균 응답 12초 → 4초" ✓
+- "로컬 모델로 충분하다" ✗ → "코드 요약 작업에서는 상용 모델과 차이가 없었다 (다른 작업은 측정하지 않음)" ✓
+- 측정 조건을 사람 일반의 이야기로 바꾸지 않는다. "측정 오차 안" 은 "같다" 가 아니고, "제한을 풀었을 때" 는 "보통 환경에서" 가 아니다.
+- 추정치·미확인 정보는 "약", "추정", "공개 자료 기준" 을 붙이고 단정하지 않는다.
+- 관측한 것 · 계산한 것 · 전망 · 권고를 한 문장에 섞지 않는다. 슬라이드에서 이 넷은 서로 다른 말이다.
+
+#### 3) 평가어 대신 근거
+
+"빠르다 · 크다 · 안전하다 · 우수하다 · 대폭 · 획기적" 같은 평가어는 근거 있는 구체적 진술로 바꾼다.
+
+- "대폭 개선" ✗ → "재작업 18건 → 4건" ✓
+- "높은 정확도" ✗ → "100건 중 92건 일치" ✓
+- 근거가 없어서 평가어를 쓰게 되는 문장이라면 그 문장은 넣지 않는다. 근거 없는 칭찬보다 빈 자리가 낫다.
+
+#### 4) 제목은 장르 이름이 아니다
+
+슬라이드 제목은 **무슨 일이 일어났는지 · 무엇이 바뀌는지 · 어떤 결정이 필요한지**를 말한다. 그 장이 어떤 종류의 자료인지를 말하지 않는다.
+
+- "아키텍처" ✗ → "입력부터 결과물까지 기존 파이프라인을 거치고 LLM 은 한 단계만 맡는다" ✓
+- "기술 스택" ✗ → "코드가 사내망을 벗어나지 않도록 서버를 안에 둔다" ✓
+- "현황" ✗ → "두 기능은 운영 중, 나머지 하나는 시범 적용 단계" ✓
+- 제목이 길면 명사형으로 줄이되 **주장은 남긴다.** 줄이다가 "아키텍처" 로 되돌아가지 않는다.
+- 예외: 섹션 구분 슬라이드와 부록 표지는 이름표가 맞다.
+
+#### 5) 넣지 않는 말
+
+- **만든 과정 서술 금지** — "본 자료는 ~ 순으로 구성했다", "~ 기준으로 항목을 정리했다". 청중이 알아야 할 것은 내용이지 만드는 과정이 아니다.
+- **같은 말 세 번 금지** — 요약 · 핵심 메시지 · 결론이 같은 문장을 반복하지 않는다. 각 자리는 서로 다른 질문에 답해야 한다.
+- **구호형 서술 금지** — "~ 를 만든다", "~ 로 도약한다" 류. 명사형 간결체로 사실을 적는다.
+- **구어체 금지 — 슬라이드 문장은 명사형으로 끝낸다 (2026-09-17 사용자 지시, 전 덱 공통)**: 말하듯 쓴 서술형 종결("~ 쌓인다" · "~ 달지 않는다" · "~ 만들어야 생긴다" · "~ 고친다")을 쓰지 않는다. 사실을 명사구로 적는다.
+  - "일하는 동안 저절로 쌓인다" ✗ → "업무 수행 중 자동 축적" ✓
+  - "사람이 정답을 달지 않는다" ✗ → "사람의 정답 부여 없음" ✓
+  - "시뮬레이터를 먼저 만들어야 생긴다" ✗ → "시뮬레이터 구축 선행" ✓
+  - 적용 범위 = 카드 제목 · 설명문 · 결론 밴드 · 각주 · 표 셀 **전부**. 제목·부제도 같다.
+  - **두 문장 이상 이어지는 근거 · 난이도 설명도 예외가 아니다 (2026-09-18 재지적).** 문장이 길어지면
+    서술형으로 되돌아가기 쉽다. 길어도 명사형으로 끝낸다.
+    - "촬영 계획 · 장비 · 인력이 선행되는 별도 공정이다. 상황별 데이터를 채우려면 재촬영이 반복된다" ✗
+    - "촬영 계획 · 장비 · 인력이 선행되는 별도 공정. 상황별 데이터 확보를 위한 재촬영 반복" ✓
+  - 이 규칙이 위의 "말은 쉽게" 를 이기지는 않는다 — 명사형으로 줄이다가 단서 · 기간 · 모집단 · 단위를 지우지 않고, 한자어를 겹쳐 더 어려워지게 만들지 않는다.
+- **덱 규칙 우선** — `plan.yaml` 의 `banned_details` 가 이 절보다 우선한다 ("규칙 우선순위" 3번).
+
 ### 구성 흐름
 1. 프로젝트별로 "왜 이 기술을 선택했는가 → 어떻게 구현했는가 → 무엇을 배웠는가" 순서로 전개
 2. 섹션 전환 시 구분 슬라이드(Section Divider)를 삽입하라
@@ -317,6 +403,12 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 6. 모든 다이어그램의 화살표 방향이 데이터 흐름과 일치하는가
 7. 코드 스니펫 슬라이드에 핵심 포인트 설명이 포함되어 있는가
 8. 텍스트만으로 구성된 슬라이드가 연속되지 않는가
+9. 슬라이드 제목이 장르 이름("아키텍처", "기술 스택")이 아니라 주장·질문·결정을 말하는가
+10. 평가어("빠르다·우수하다·대폭") 대신 근거 있는 수치·사실로 적었는가
+11. 문장을 줄이면서 단서·기간·모집단·단위를 함께 지우지 않았는가
+12. 본문에서 뺀 근거가 각주·부록에 남아 있는가 (지운 게 아니라 옮긴 게 맞는가)
+13. 요약·핵심 메시지·결론이 같은 말을 반복하지 않는가
+14. 카드 제목·설명·결론·각주가 서술형 종결이 아니라 명사형으로 끝나는가 ("구어체 금지")
 
 ---
 
@@ -389,9 +481,9 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 ---
 
 ## 금지 사항
-- **가짜 그림자(오프셋 사각형) 금지**. `add_shadow()` 사용
-- **모든 다이어그램에서 사각형만 사용 금지**. 의미 도형 활용 (CAN, CLOUD, CUBE, GEAR_6 등)
-- **통계 데이터를 텍스트 숫자만으로 나열 금지**. 3개+ 수치 → `add_chart()` 활용
+- **가짜 그림자(오프셋 사각형) 금지**. 그림자가 필요하면 `add_shadow()` 로 낸다 — 단 덱이 그림자를 금지했으면 그림자 없이 1pt hairline 보더로 카드를 띄운다
+- **한 종류 도형으로 모든 것을 표현 금지**. 의미 도형(`CAN`·`CLOUD`·`CUBE`·`GEAR_6`)은 **선택지이지 의무가 아니다** — 덱이 의미 도형을 금지하면 사각형 계열로 통일하되 위치·크기·연결·라벨로 종류를 구분한다
+- **통계 데이터를 문단 안에 흩어 적기 금지**. 표(`add_grid_table`)나 차트(`add_chart`)의 정렬된 자리에 놓는다. 표인지 차트인지는 "시각적 인코딩" 2단계로 정한다 — 개수로 자동 결정하지 않는다
 - **정렬된 격자형/표형 데이터를 독립 도형으로 흩뿌려 '가짜 테이블' 만들기 금지**. `calc_grid`로 좌표를 일일이 찍어 표를 흉내 내지 말고 `add_grid_table()` (네이티브 표, 셀별 서식·병합)를 사용한다. 행·열 정렬이 OOXML 차원에서 보장되어 정렬·밀도가 우월하다
 - **실제 UI 캡처·스크린샷·로고를 도형으로 모사 금지**. `add_picture()`로 실물 임베드
 - **슬라이드 하단/측면에 큰 빈 영역 방치 금지**. CONTENT_SAFE를 정보로 채운다 (Evaluator density·visual_ambition 게이트)
@@ -405,10 +497,66 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 
 ---
 
+## AI가 만든 티 — 이름 붙여 피하는 것들
+
+패턴에 이름이 붙어 있으면 훨씬 잘 피한다. 아래는 **덱마다 따로 적어 오던 금지 항목을 한곳에 모은 것**이다
+(출처: `input/*/design_system.md` 4절 "기존 덱의 'AI스러움' 제거", `plan.yaml` 의 `banned_details`).
+
+각 항목은 "무엇을 하지 마라" 가 아니라 **"대신 무엇으로 하라"** 까지 적는다. 금지만 남으면 덱이 납작해진다.
+
+| 이름 | 무엇이 문제인가 | 대신 |
+|---|---|---|
+| **이모지 배지 뿌리기** | 장마다 이모지 배지·플로우 라벨을 깔아 시각 앵커를 대신함. 프로젝터에서 구분이 안 되고 문서 격이 떨어진다 | 번호(01/02/03) · 타이포 위계 · 색 도형. 이모지를 쓸 거면 "이모지 활용 가이드" 의 네 자리에서 절제해 쓰고, 덱이 금지했으면 전면 금지 |
+| **그림자·그라디언트로 깊이 흉내내기** | 카드마다 그림자를 두르고 배경에 그라디언트를 깖. 정보가 아니라 질감이 늘어난다 | 그림자는 정말 떠 있어야 하는 한 층에만. 나머지는 여백과 보더로. 덱이 그림자를 금지했으면 1pt hairline 보더 |
+| **파스텔 다색 카드** | 항목마다 다른 연한 배경(`#FFF5F5`·`#F0FFF4` 류)을 돌려 씀 — 색이 분류가 아니라 무늬가 된다 | 표면색 하나 + 강조 하나. 파스텔 세트는 그 색이 뜻을 가질 때만("확장 파스텔 팔레트" 참조) |
+| **뜻 없는 기능별 색 구분** | 기능 A는 초록, B는 빨강, C는 보라 — 색이 아무 의미도 전달하지 않는다 | 색은 상태·경고처럼 뜻이 있을 때만. 분류는 번호·위치·라벨로 |
+| **장식성 의미 도형** | `CHEVRON`·`GEAR_6`·`CAN`·`CUBE` 를 **뜻 없이** 씀. DB 를 `CAN` 으로 그리는 것은 뜻이 있고, 단계 상자를 `CHEVRON` 으로 만드는 것은 장식이다 | 그 도형이 무엇을 뜻하는지 한 줄로 말할 수 없으면 사각형. 덱이 의미 도형을 금지했으면 전부 사각형 계열로 통일하고 종류는 위치·연결·라벨로 |
+| **도형 안 장문** | 블록 안에 설명 문단이 들어가 도형이 글상자가 된다 | 블록 안에는 라벨 1~2줄, 설명은 블록 밖 캡션으로 |
+| **만능 LLM 구도** | 모든 화살표가 LLM 상자 하나로 수렴하는 그림. 실제 처리 순서를 감춘다 | 실제 순서대로 — 입력 → 기존 파이프라인(검색·검증·파싱) → LLM 활용 → 결과물 |
+| **모든 구역을 카드로 감싸기** | 묶음마다 테두리 상자, 상자 안에 또 상자 | 여백과 정렬로 묶는다. 상자는 선택·경고·진짜 그룹일 때만 |
+| **약한 위계를 테두리로 때우기** | 구분이 안 되니까 선을 긋는다 | 크기·굵기·간격으로 위계를 먼저 만든다. 그래도 안 되면 그때 선 |
+| **다른 것을 균등 칸에 밀어넣기** | 항목이 3개니까 1×3 균등 분할. 무게가 다른 것이 같은 크기를 갖는다 | 진짜 동급일 때만 균등. 아니면 중요한 것에 더 큰 자리를 준다 |
+| **브랜드성 장식 모티프** | 특정 회사를 연상시키는 사선·워드마크 흉내 | 장식 없이 타이포만 |
+
+말에 관한 것(구호형 서술, 같은 말 세 번 반복, 만든 과정 서술)은 "문장 규칙" 5절에 있다.
+
+### 그렇다고 무균으로 만들지 말 것
+
+**위 목록을 피한다고 흰 바탕에 검은 글씨와 얇은 선만 남은 덱을 만들면 그건 더 나쁘다.**
+절제란 정확한 위계 · 좋은 타이포 · 명확한 근거 · 강한 정렬 · 의도된 대비이지, 아무것도 없는 상태가 아니다.
+
+- 장식을 뺀 자리는 **정보로 채운다.** "슬라이드 하단/측면에 큰 빈 영역 방치 금지" 는 그대로 유효하다.
+- 덱이 색을 못 쓰게 하면 크기·간격·정렬·굵기 대비로 위계를 만든다. 위계를 포기하는 게 아니다.
+- 화면이 정리가 안 될 때는 **두 가지를 따로 진단한다.** 내용이 많아서 번잡한 것이면 항목을 빼거나 합치거나 순서를 바꾼다. 요소가 서로 경쟁해서 시끄러운 것이면 색·크기·굵기·테두리·표면을 줄인다. 이 둘을 섞어 다루면 멀쩡한 정보를 지우게 된다.
+- 의도한 앵커 하나는 반드시 남긴다. 전부 같은 무게가 되면 위계가 없는 것이다.
+
+덱의 `design_system.md` 가 이 목록과 다르게 정하면 **덱이 이긴다** ("규칙 우선순위" 3번).
+
+---
+
 ## 실행 방법
+- **완성된 덱은 디자인 검사를 돌린다**: `python3 -m harness.design_check output/{name}.pptx --project {name}`
+  — 팔레트 이탈·최소 글자 크기·표 폭·도형 겹침 4종을 LLM 없이 결정적으로 잡는다.
+  `high` 는 고치고, `low`(다이어그램 라벨 크기 등)는 사람이 판단한다.
+  `plan.yaml` 이 없는 덱은 `--palette-from <파일> --min-font-pt <pt>` 로 토큰과 하한을 직접 준다.
 - 생성 스크립트는 `/tmp/`에 작성하고, 실행 후 삭제한다
 - output/ 디렉토리에는 .pptx 파일만 남긴다 (.py 파일 금지)
 - 테스트용 파일(test_*.pptx 등)은 검증 완료 후 즉시 삭제한다
+
+## 규칙을 바꿀 때 · 지적을 받았을 때
+
+이 문서의 규칙은 고쳐 쓰라고 있는 것이다. 다만 **고친 뒤에 확인하고, 왜 고쳤는지 남긴다.**
+
+1. **지적을 받으면 먼저 어디에 넣을지 정한다.** 판단이 걸린 것 → 이 문서(전역) · 그 덱에만 해당 →
+   `design_system.md`·`banned_details` · 기계로 확인 가능 → `harness/design_check.py` 의 검사 ·
+   반복되는 코드 → `ppt_utils` 함수. 가장 좁게 강제할 수 있는 자리에 넣는다.
+2. **한 줄 남긴다** — `python3 -m feedback.log add ...`. `complaint` 는 **사용자가 쓴 말 그대로**.
+   상세는 `feedback/README.md`.
+3. **전역 규칙을 고쳤으면 고정 시나리오를 다시 돌린다** — `python3 -m evals.run measure <시나리오>`.
+   한 덱에서 좋아진 변경이 다른 덱을 조용히 망칠 수 있다. 상세는 `evals/README.md`.
+4. **효과는 빈도로 본다** — `python3 -m feedback.log count --after <규칙 올린 날>`.
+   그 분류의 지적이 줄지 않으면 고친 방법이 틀린 것이다 (규칙이 불명확 · 필요할 때 안 실림 ·
+   `ppt_utils` 에 표현할 함수 없음 · 산문이 아니라 검사여야 함).
 
 ## 폰트
 - 주제와 분위기에 맞는 폰트를 자유롭게 선택한다
@@ -422,9 +570,22 @@ PPT 생성 완료 후 다음을 스스로 검증하라:
 
 1. **역할 분담 — 같은 일을 양쪽에 시켜 고르지 않는다.** 레이아웃·python-pptx 코드·문서·수치 정리·검수 = Claude 단독. 교차 검증은 임원 보고 수치처럼 사실 오류 비용이 큰 항목에만, 짧은 프롬프트로.
 2. **Codex 는 "능력 보완"에만 쓴다.** 래스터 삽화·사진풍 그림이 필요할 때만 Codex imagegen 호출. 신경망·선화 계열 아이콘은 Claude 가 SVG 코드로 그린다(`input/sw-dev-ai-llm/claude_icons/make_icons.py` 패턴, rsvg-convert 로 PNG). 사물 삽화(서버·문서·방패·말풍선 등)는 Codex. 혼합 사용이 기본.
-3. **Codex 호출은 `tools/codex_imagegen.sh` 로만.** 옵션 고정(`--skip-git-repo-check --sandbox danger-full-access`, 프롬프트 stdin, 참고 이미지 `-i`). 프롬프트는 `tools/codex_imagegen_prompt_template.txt` 를 채워 쓴다 — 투명 배경·체커보드 금지·글자 금지·팔레트·선 굵기·정사각 600px+ 필수. 결과는 `tools/icon_postprocess.py` 로 배경을 투명화한 뒤에만 슬라이드에 넣는다.
-4. **섞어 쓴 삽화의 선 굵기·팔레트 일관성 검수는 Claude 몫.** 렌더(soffice → png) 후 대비 표(contact sheet)로 확인.
-5. Codex 삽화는 1건당 1~1.5분·비결정적이므로 "필요할 때 소량". 옵션 실수로 재실행하면 수십만 토큰이 낭비된다(2026-09-03 실사고 65만).
+3. **추론 수준(`model_reasoning_effort`)은 건별로 준다.** 기본 모델은 `~/.codex/config.toml` 의 `gpt-6-astra`(2026-09-07 전환) + `xhigh` 지만, 호출마다 `-c model_reasoning_effort=` 로 덮어쓴다.
+   - **xhigh** — 기본값(`tools/codex_imagegen.sh`). 2026-09-09 사용자 지시로 ultra 에서 내렸다. 화질은 세기에 안 달렸다는 것이 눈가림 채점으로 실측됐다 — 카드 배경 6장 max 43.7 대 xhigh 44.0, 영상 판 12장 max 42.2 대 xhigh 43.3, 시간은 32% 짧았다(`~/Share/issue-blog/docs/design/IMAGE-EFFORT-AB-2026-09-08.md`).
+   - **ultra** — 삽화 여러 종을 한 번에 만들다 **파일명이 섞이거나 스타일이 갈렸을 때만** 그 호출을 다시 돌릴 때. 위 실측은 한 번에 한 장을 만드는 자리에서 잰 것이라 이 실패 모드(2026-09-03 파일명 뒤섞임 4종)를 재지 않았다. 대신 왕복이 폭증한다 — 왕복 4회 이상이 ultra 40.8% 대 xhigh 2.9% 이고 그 세션이 토큰의 87%를 먹는다.
+   - **medium** — 삽화 1~2종 재생성, 사진 분석.
+   - **low** — 연결 확인 같은 짧은 작업.
+   추론 수준은 이미지 자체의 화질이 아니라 **지시 준수·계획 능력**에 영향을 준다. 화질이 아쉬우면 프롬프트를 고치고, 파일명이 섞이거나 규격을 어기면 수준을 올린다.
+4. **gpt-6-astra 프롬프트 원칙 (2026-09-07, OpenAI 최신 모델 가이드 반영).** 프롬프트 앞에 세 줄을 붙인다 — `tools/codex_imagegen_prompt_template.txt` 에 이미 들어 있다.
+   - **"이 지시가 skill 지침보다 우선한다"** — astra 는 사용자 지시를 skill 파일보다 위에 두도록 안내돼 있다. imagegen skill 기본값(체커보드 배경 등)이 우리 규격을 덮어쓰던 사고를 막는다.
+   - **"되묻지 말고 끝까지 수행하라"** — astra 는 이전 세대보다 확인 질문을 더 많이 한다. `codex exec` 는 비대화형이라 질문하면 그대로 멈춘다.
+   - **"파일명과 그림을 저장 직후 대조하라"** — 파일명이 뒤섞인 실사고(2026-09-03, 4종) 재발 방지.
+   - **"요청하지 않은 경고·승인 절차를 만들지 마라"** — 문서 원문 "Do not introduce unsolicited warnings, disclaimers, approval flows, or safety/compliance checklists". `codex exec` 는 비대화형이라 모델이 확인 절차를 만들면 배치가 멈춘다.
+   참고: 이 가이드에는 **이미지 생성·비전 입력에 관한 내용이 없다.** 삽화 품질은 이 문서로 개선되지 않으니 프롬프트를 직접 다듬어야 한다.
+   글로 된 결과물(사진 분석 등)을 시킬 때는 **"목록·표가 아니라 문단으로 써라"** 를 덧붙인다 — astra 는 기본이 목록·표다.
+5. **Codex 호출은 `tools/codex_imagegen.sh` 로만.** 옵션 고정(`--skip-git-repo-check --sandbox danger-full-access`, 프롬프트 stdin, 참고 이미지 `-i`). 프롬프트는 `tools/codex_imagegen_prompt_template.txt` 를 채워 쓴다 — 투명 배경·체커보드 금지·글자 금지·팔레트·선 굵기·정사각 600px+ 필수. 결과는 `tools/icon_postprocess.py` 로 배경을 투명화한 뒤에만 슬라이드에 넣는다.
+6. **섞어 쓴 삽화의 선 굵기·팔레트 일관성 검수는 Claude 몫.** 렌더(soffice → png) 후 대비 표(contact sheet)로 확인.
+7. Codex 삽화는 1건당 1~1.5분·비결정적이므로 "필요할 때 소량". 옵션 실수로 재실행하면 수십만 토큰이 낭비된다(2026-09-03 실사고 65만).
 
 ---
 
@@ -515,339 +676,31 @@ setup_cover(slide, "제목",
 
 ---
 
-## 생성 스크립트 관례
+## python-pptx 사용 — 상세는 `ref/ppt_api.md`
 
-### 스크립트 구조
-```python
-#!/usr/bin/env python3
-"""[프레젠테이션 제목] - PPT 생성 스크립트"""
+코드 작성에 필요한 것(스크립트 골격 · 필수 관례 · `ppt_utils` 함수 시그니처 · python-pptx 능력)은
+**`ref/ppt_api.md`** 에 있다. Generator·Refiner 서브에이전트가 그 파일을 읽는다.
+여기(CLAUDE.md)에는 무엇을 만들지만 두고, 어떻게 만드는지는 옮겼다 — 매 세션 컨텍스트를 아끼기 위해서다.
 
-import sys
-sys.path.insert(0, "/home/user/Share/ppt-generator")
+쓸 수 있는 것의 이름만 적어 둔다. **이 목록 밖의 이름을 지어내지 말 것.**
 
-from pptx.util import Inches, Pt, Emu
-from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
-from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
-from pptx.oxml.ns import qn
+| 갈래 | 함수 |
+|---|---|
+| 뼈대 | `load_template` · `get_layout` · `clear_placeholders` · `ensure_fonts` · `set_title` · `setup_cover` · `add_section_divider` |
+| 텍스트 | `add_textbox` · `add_para` · `add_rich_text` · `add_bullet_list` · `add_footnote` · `auto_shrink_text` · `set_text_inset` · `set_body_anchor` |
+| 표 | `add_grid_table` · `add_styled_table` · `style_cell` · `set_cell_border` · `set_cell_fill` · `set_cell_anchor` · `merge_cells` |
+| 그림·차트·코드 | `add_picture` · `add_chart` · `add_code_block` |
+| 도형·꾸밈 | `make_icon_circle` · `make_icon_badge` · `add_accent_bar` · `add_shadow` · `set_shape_opacity` · `add_gradient_stop` · `brightness_check` |
+| 연결 | `add_smart_connector` · `calc_connector` · `add_routed_connector` · `add_arrowhead` · `add_state_machine` |
+| 배치 | `calc_grid` · `VFlow` · `HFlow` · `align_shapes` · `estimate_text_size` · `estimate_container_height` |
+| 기타 | `parse_mermaid_metadata` · `force_font` |
+| 상수 | `CONTENT_SAFE` · `OUTPUT_DIR` · `ASSETS_DIR` |
 
-from ppt_utils import (
-    load_template, get_layout, clear_placeholders,
-    ensure_fonts, set_cell_anchor, add_arrowhead,
-    add_shadow, add_accent_bar, set_shape_opacity, add_gradient_stop,
-    make_icon_circle, make_icon_badge, brightness_check,
-    add_textbox, add_para, add_rich_text,
-    add_bullet_list, add_footnote, set_body_anchor,
-    set_title, setup_cover, add_section_divider,
-    CONTENT_SAFE,
-    estimate_text_size, set_text_inset, calc_grid,
-    calc_connector, add_smart_connector,
-    add_code_block, add_styled_table,
-    add_grid_table, style_cell, set_cell_border, merge_cells,
-    add_picture, add_chart,
-    add_state_machine,
-    auto_shrink_text, add_routed_connector,
-    VFlow, HFlow,
-    OUTPUT_DIR, ASSETS_DIR,
-)
+놓치기 쉬운 것 세 가지만 여기 남긴다 (상세는 `ref/ppt_api.md`):
 
-ensure_fonts()
-prs = load_template()
-
-# 슬라이드 크기 변수
-SLIDE_W = prs.slide_width
-SLIDE_H = prs.slide_height
-
-# 색상 팔레트 — 이 프레젠테이션 전용
-PRIMARY = RGBColor(...)
-
-# --- 슬라이드 1: 표지 ---
-layout = get_layout(prs, "제목 슬라이드")
-slide = prs.slides.add_slide(layout)
-setup_cover(slide, "프레젠테이션 제목")
-
-# --- 슬라이드 2: 콘텐츠 ---
-layout = get_layout(prs, "제목 및 내용")
-slide = prs.slides.add_slide(layout)
-set_title(slide, "슬라이드 제목")
-clear_placeholders(slide, keep=[0])
-# (콘텐츠는 CONTENT_SAFE 영역 안에 배치)
-
-# 저장
-output_path = OUTPUT_DIR / "파일명.pptx"
-prs.save(str(output_path))
-print(f"생성 완료: {output_path}")
-```
-
-### 필수 관례
-- 슬라이드 크기: `SLIDE_W`, `SLIDE_H` 변수명 통일
-- 도형에 텍스트 넣을 때 `tf.word_wrap = True` 필수
-- 한글 문자 폭 ≈ 라틴 1.5배 — 박스 너비 계산 시 반영
-- 레이아웃: `get_layout(prs, "제목 슬라이드")`, `get_layout(prs, "제목 및 내용")`, `get_layout(prs, "제목 및 내용 (페이지 번호 삭제)")`
-- 콘텐츠 슬라이드 제목: `set_title(slide, "...")` 사용 — `add_textbox()`로 제목 금지
-- 슬라이드 추가 후 `clear_placeholders(slide, keep=[0])` 으로 유령 텍스트 제거
-- 콘텐츠 배치: `CONTENT_SAFE` 영역(y=0.68"~7.02") 안에 배치
-- 마스터 요소(로고, 구분선, 푸터) 보호: 콘텐츠 슬라이드에서 전면 배경으로 덮지 말 것
-- 텍스트 컨테이너 높이: `estimate_container_height(text, font_size, max_width=w)`로 동적 계산. 복합 카드 내부 요소 위치도 이전 요소의 실제 높이 기반으로 산출
-  ```python
-  # BAD — 높이 하드코딩
-  add_textbox(slide, x, y, w, Inches(0.5), label, font_size=12)
-  # GOOD — 동적 계산
-  label_h = estimate_container_height(label, 12, max_width=w)
-  add_textbox(slide, x, y, w, label_h, label, font_size=12)
-  ```
-- 같은 열에 2개+ 요소를 세로로 배치할 때 `VFlow`를 사용하여 y좌표를 관리할 것. 절대 y좌표 하드코딩 금지
-  ```python
-  # BAD — y좌표 하드코딩 → 요소 겹침 위험
-  add_code_block(slide, x, Inches(1.2), w, Inches(2.3), code)
-  add_table(slide, x, Inches(3.7), w, 6, 3, data)           # 겹침!
-  add_textbox(slide, x, Inches(5.6), w, Inches(0.4), text)  # 겹침!
-
-  # GOOD — VFlow가 y 관리
-  flow = VFlow(x=x, w=w, y_start=Inches(1.2))
-  rect = flow.reserve(Inches(2.3))
-  add_code_block(slide, rect.left, rect.top, rect.width, rect.height, code)
-  rect = flow.reserve(Inches(0.35) * 6)
-  add_table(slide, rect.left, rect.top, rect.width, 6, 3, data)
-  flow.textbox(slide, text, font_size=11)
-  ```
-- 커넥터 평행 보장: 수평 커넥터로 연결되는 도형은 같은 center_y, 수직 커넥터로 연결되는 도형은 같은 center_x를 가져야 한다. 도형 배치 후 커넥터 생성 전에 `align_shapes()` 호출
-  ```python
-  # BAD — 높이가 달라 대각선 커넥터
-  a = add_shape_box(slide, x1, y, w, Inches(0.7), ...)
-  b = add_shape_box(slide, x2, y, w, Inches(0.8), ...)
-  add_arrow_connector(slide, a, b)  # 비스듬함
-  # GOOD — 정렬 후 연결
-  a = add_shape_box(slide, x1, y, w, Inches(0.7), ...)
-  b = add_shape_box(slide, x2, y, w, Inches(0.8), ...)
-  align_shapes(a, b, axis='h')     # 높이 통일 + center_y 정렬
-  add_arrow_connector(slide, a, b)  # 완벽한 수평
-  ```
-
----
-
-## python-pptx 능력 레퍼런스
-
-### ppt_utils 함수 목록
-| 함수 | 용도 |
-|------|------|
-| `load_template()` | 표지.pptx 로드, 빈 프레젠테이션 반환 |
-| `get_layout(prs, name)` | 이름으로 슬라이드 레이아웃 검색 |
-| `clear_placeholders(slide, keep=[])` | 유령 플레이스홀더 제거 |
-| `ensure_fonts()` | ref/fonts/ 폰트 시스템 설치 |
-| `add_textbox(slide, x, y, w, h, text, ...)` | 텍스트박스 추가 (font_name, font_size, color, bold, align) |
-| `add_para(text_frame, text, ...)` | 기존 text_frame에 단락 추가 (font_name, font_size, color, bold, align, space_before, space_after) |
-| `add_rich_text(text_frame, segments, ...)` | 혼합 서식 단락 (accent 색상 키워드, bold 대비) |
-| `add_bullet_list(slide, x, y, w, items, ...)` | 구조화된 글머리 리스트 (단일 text_frame) |
-| `set_cell_anchor(cell, 'ctr')` | 테이블 셀 세로정렬 |
-| `set_cell_fill(cell, color)` | 테이블 셀 배경색 안전 설정 (중복 fill 방지 + OOXML 순서 준수) |
-| `set_body_anchor(shape, 'ctr')` | 도형 텍스트 세로정렬 |
-| `add_arrowhead(connector)` | 커넥터에 화살표 머리 추가 |
-| `add_shadow(shape, blur_pt, dist_pt, direction, opacity_pct, color)` | 도형에 그림자 추가 |
-| `set_shape_opacity(shape, opacity_pct)` | 도형 채우기 투명도 |
-| `add_gradient_stop(shape, position, r, g, b)` | 그라디언트 3번째+ stop 추가 |
-| `make_icon_circle(slide, x, y, size, fill_color, text, font_size)` | 원형 아이콘/배지 |
-| `make_icon_badge(slide, x, y, w, h, text, fill_color, ...)` | 사각형 아이콘/배지 (ROUNDED_RECTANGLE, 이모지/텍스트/번호) |
-| `add_accent_bar(slide, x, y, w, h, color)` | 얇은 색상 바 (카드 accent, 칼럼 구분선 등) |
-| `brightness_check(r, g, b)` | 밝기 판단 (True=밝음→어두운 텍스트) |
-| `set_title(slide, text, ...)` | TITLE 플레이스홀더에 텍스트 설정 (font_name, font_size, color, bold) |
-| `setup_cover(slide, title, ...)` | 표지 표준 포맷 (purpose, author, department, date) |
-| `add_section_divider(prs, section_title, ...)` | 섹션 구분 슬라이드 (제목 중복 방지) |
-| `CONTENT_SAFE` | 콘텐츠 안전 영역 (.left, .top, .width, .height, .right, .bottom) |
-| `estimate_text_size(text, font_size_pt, ...)` | 텍스트 크기 추정 (한글/라틴 혼합, 줄바꿈 고려) |
-| `set_text_inset(shape, ...)` | 도형 텍스트 내부 여백 설정 (한글 친화적 기본값) |
-| `calc_grid(rows, cols, ...)` | 그리드 셀 좌표 계산 (균등/비율 분할) |
-| `calc_connector(shape_a, shape_b, ...)` | 두 도형 간 커넥터 좌표/cxn 인덱스 계산 |
-| `add_smart_connector(slide, shape_a, shape_b, ...)` | 스마트 커넥터 생성 (방향/타입 자동) |
-| `align_shapes(*shapes, axis)` | 같은 행/열 도형 정렬 (높이/너비 통일 + 중심 맞춤) |
-| `estimate_container_height(text, font_size_pt, max_width, ...)` | 텍스트+여백 포함 컨테이너 높이 계산 |
-| `VFlow(x, w, y_start, y_max, gap)` | 수직 요소 배치 트래커 — y좌표 자동 관리, 겹침 방지 |
-| `HFlow(y, h, x_start, x_max, gap)` | 수평 요소 배치 트래커 — x좌표 자동 관리 |
-| `parse_mermaid_metadata(mermaid_text)` | Mermaid 텍스트 구조 분석 → dict(type, participants, subgraphs, nodes, edges, has_loop, has_alt, suggested_strategy) |
-| `add_code_block(slide, x, y, w, h, code_text, ...)` | 코드 스니펫 블록 (어두운 배경 + 고정폭 폰트 + 라인 하이라이트) |
-| `add_styled_table(slide, x, y, w, rows, cols, data, ...)` | 헤더+zebra+border 스타일 테이블 |
-| `add_grid_table(slide, x, y, w, h, nrows, ncols, cells=..., ...)` | **전면 격자 레이아웃** — 셀별 배경/테두리/병합/rich-text 정밀 제어. 도형 흩뿌리기('가짜 테이블') 대신 사용 |
-| `style_cell(cell, text/segments, fill, font_color, border_edges, ...)` | 셀 하나 종합 서식 (add_grid_table의 cells 값) |
-| `set_cell_border(cell, edge, color, width_pt, dash)` | 셀 변별 테두리 (dash 지원) |
-| `merge_cells(table, r0, c0, r1, c1)` | 셀 범위 병합 |
-| `add_picture(slide, image_path, x, y, w=, h=, shadow=, line_color=)` | 이미지/스크린샷/차트 PNG 삽입 (시각 자산 1급 채널) |
-| `add_chart(slide, x, y, w, h, chart_type, categories, series, ...)` | 네이티브 차트 (수치 3+는 텍스트 나열 대신 차트) |
-| `add_state_machine(slide, states, transitions, ...)` | 상태 머신 다이어그램 (자동 그리드 + 커넥터 + 라벨) |
-| `auto_shrink_text(shape)` | 도형 텍스트 자동 축소 (normAutofit 설정) |
-| `add_routed_connector(slide, waypoints, ...)` | 다중 경유점 라우팅 커넥터 (freeform path, 중간 도형 우회) |
-| `add_footnote(slide, text, ...)` | 슬라이드 하단 각주 (CONTENT_SAFE 하단 자동 배치, ※ 접두어) |
-| `OUTPUT_DIR` | 출력 디렉토리 경로 (`output/`) |
-
-### 그림자 (Shadow)
-```python
-add_shadow(card, blur_pt=6, dist_pt=3, direction=2700000, opacity_pct=35)
-```
-- direction: 2700000=아래, 5400000=오른쪽아래
-- blur_pt 4~8, dist_pt 2~4, opacity_pct 30~50이 자연스러움
-
-### 그라디언트 (Gradient Fill)
-```python
-shape.fill.gradient()
-shape.fill.gradient_stops[0].color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-shape.fill.gradient_stops[0].position = 0.0
-shape.fill.gradient_stops[1].color.rgb = RGBColor(0x16, 0x21, 0x3E)
-shape.fill.gradient_stops[1].position = 1.0
-shape.fill.gradient_angle = 270.0  # 위→아래
-add_gradient_stop(shape, position=0.5, r=0x20, g=0x30, b=0x50)  # 3-stop
-```
-- **gradient_angle 단위: 도(degrees)**. 0=좌→우, 90=하→상, 180=우→좌, 270=상→하
-- **절대 1/60000도 단위(16200000 등)를 쓰지 말 것** — 파일 손상됨
-
-### 투명도 (Opacity)
-```python
-overlay.fill.solid()
-overlay.fill.fore_color.rgb = RGBColor(0x00, 0x00, 0x00)
-set_shape_opacity(overlay, opacity_pct=30)
-overlay.line.fill.background()
-```
-
-### 차트 (Charts)
-`slide.shapes.add_chart(chart_type, x, y, w, h, chart_data)` 사용.
-- 비율/비중 → `DOUGHNUT`, `PIE`
-- 비교 → `COLUMN_CLUSTERED`, `BAR_CLUSTERED`
-- 추세 → `LINE`, `LINE_MARKERS`
-- 분포 → `SCATTER`, `BUBBLE`
-- 누적 → `COLUMN_STACKED`, `BAR_STACKED`
-
-### 도형 종류
-`MSO_SHAPE` enum으로 193종 도형 사용 가능. 사각형만 쓰지 말 것.
-
-| 용도 | 도형 |
-|------|------|
-| 다이어그램 | `HEXAGON`, `CHEVRON`, `PENTAGON`, `DIAMOND` |
-| 플로차트 | `FLOWCHART_PROCESS`, `FLOWCHART_DECISION`, `FLOWCHART_DATA`, `FLOWCHART_TERMINATOR` |
-| 인프라 | `CUBE`(서버), `CAN`(DB), `CLOUD`(클라우드), `GEAR_6`(서비스), `FUNNEL`(깔때기) |
-| 화살표 | `RIGHT_ARROW`, `CHEVRON`, `NOTCHED_RIGHT_ARROW`, `CURVED_RIGHT_ARROW` |
-| 사각형 변형 | `ROUNDED_RECTANGLE`, `SNIP_1_RECTANGLE`, `ROUND_1_RECTANGLE` |
-| 콜아웃 | `RECTANGULAR_CALLOUT`, `ROUNDED_RECTANGULAR_CALLOUT`, `CLOUD_CALLOUT` |
-
-### 커넥터 유형
-```python
-connector = slide.shapes.add_connector(MSO_CONNECTOR.ELBOW, x1, y1, x2, y2)
-add_arrowhead(connector)
-```
-- `STRAIGHT`: 직선, `ELBOW`: 꺾인선 (아키텍처용), `CURVE`: 곡선
-
-#### 커넥터 스타일 가이드
-
-| 용도 | 두께 | 색상 | 타입 |
-|------|------|------|------|
-| 주 데이터 흐름 | 1.5-2pt | PRIMARY/#444444 | ELBOW+화살표 |
-| 보조 관계 | 1pt | #999999 | STRAIGHT+화살표 |
-| 양방향 | 1pt | #666666 | STRAIGHT 화살표 없음 |
-| 강조 흐름 | 2pt | accent | STRAIGHT+큰 화살표 |
-
-다이어그램당 커넥터 스타일 최대 2종
-
-### 레이아웃 계산 헬퍼
-
-#### 텍스트 크기 추정
-```python
-size = estimate_text_size("한글 텍스트", font_size_pt=14)
-# size.width, size.height (Emu)
-
-# 줄바꿈 고려
-size = estimate_text_size("긴 텍스트...", 12, max_width=Inches(3))
-# → 3인치 안에서 줄바꿈된 높이 반환
-```
-
-#### 도형 텍스트 여백
-```python
-shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, ...)
-set_text_inset(shape)  # 한글 친화적 기본값 (0.12"/0.06")
-set_text_inset(shape, left=Inches(0.2), right=Inches(0.2))  # 커스텀
-```
-
-#### 그리드 레이아웃
-```python
-# CONTENT_SAFE를 2×3 균등 분할
-grid = calc_grid(2, 3)
-for cell in grid.flat:
-    shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-        cell.left, cell.top, cell.width, cell.height)
-    set_text_inset(shape)
-
-# 비율 분할 + 커스텀 영역
-grid = calc_grid(1, 3, col_widths=[1, 2, 1], gap=Inches(0.2))
-sidebar = grid[0][0]   # 좁은 좌측
-main = grid[0][1]      # 넓은 중앙
-```
-
-#### 스마트 커넥터
-```python
-# 방향/타입 자동 감지
-add_smart_connector(slide, shape_a, shape_b)
-
-# 명시적 방향 지정
-add_smart_connector(slide, shape_a, shape_b, direction='TB')
-
-# 화살표 없이
-add_smart_connector(slide, shape_a, shape_b, arrow=False)
-
-# 좌표만 계산 (커넥터 직접 생성 시)
-pts = calc_connector(shape_a, shape_b, direction='LR')
-# pts.begin_x, pts.begin_y, pts.end_x, pts.end_y, pts.begin_cxn_idx, pts.end_cxn_idx
-```
-
-#### 수직 흐름 (VFlow)
-```python
-# 슬라이드 우측 열에 코드+테이블+텍스트 순서 배치
-flow = VFlow(x=Inches(5.5), w=Inches(5.0), y_start=Inches(1.2))
-rect = flow.reserve(Inches(2.3))
-add_code_block(slide, rect.left, rect.top, rect.width, rect.height, code)
-rect = flow.reserve(Inches(0.35) * 5)
-add_table(slide, rect.left, rect.top, rect.width, 5, 3, data)
-flow.textbox(slide, "요약 텍스트", font_size=11, bold=True)
-print(f"남은 공간: {flow.remaining}")  # 경계 확인
-
-# 카드 내부 서브플로우 (복합 요소 내부 배치)
-card_flow = VFlow(x=cx, w=cw, y_start=cy+Inches(0.1), y_max=cy+ch, gap=Inches(0.05))
-card_flow.textbox(slide, "42", font_size=28, bold=True)
-card_flow.textbox(slide, "라벨 텍스트", font_size=12)
-```
-
-#### 수평 흐름 (HFlow)
-```python
-# 같은 행에 키워드 pills 수평 배치
-hflow = HFlow(y=Inches(2), h=Inches(0.4), x_start=Inches(1), x_max=Inches(10))
-for kw in ["FastAPI", "Celery", "Redis"]:
-    rect = hflow.reserve(Inches(1.5))
-    shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
-        rect.left, rect.top, rect.width, rect.height)
-    # ...
-print(f"남은 공간: {hflow.remaining}")
-```
-
-#### 도형 행/열 정렬
-```python
-# 같은 행 → 높이 통일 + center_y 정렬
-a = add_shape_box(slide, Inches(0.3), y, w, Inches(0.7), ...)
-b = add_shape_box(slide, Inches(2.6), y, w, Inches(0.8), ...)
-align_shapes(a, b, axis='h')  # 둘 다 h=0.8", 같은 center_y
-
-# 같은 열 → 너비 통일 + center_x 정렬
-align_shapes(a, b, axis='v')
-
-# 3개 이상도 가능
-align_shapes(box_a, box_b, box_c, axis='h')
-```
-
-#### 텍스트 컨테이너 높이
-```python
-label_h = estimate_container_height("PG Tables\n+ Mongo Collections", 12, max_width=Inches(1.5))
-add_textbox(slide, x, y, Inches(1.5), label_h, "PG Tables\n+ Mongo Collections", font_size=12)
-```
-
-### 기타 기능
-- **그룹 도형**: `slide.shapes.add_group_shape()` — 관련 컴포넌트 묶기
-- **프리폼**: `slide.shapes.build_freeform(x, y)` — 커스텀 도형
-- **이미지**: `slide.shapes.add_picture(path, x, y, w, h)`
-- **회전**: `shape.rotation = 45.0`
+- 제목은 `set_title(slide, ...)`. `add_textbox` 로 제목을 만들지 않는다.
+- 같은 열에 요소를 2개 이상 세로로 놓을 때는 `VFlow`. y좌표를 손으로 찍지 않는다.
+- 수평 커넥터로 이을 도형은 먼저 `align_shapes(a, b, axis='h')`.
 
 ---
 
@@ -911,16 +764,50 @@ DANGER    = RGBColor(...)   # 리스크, 에러 전용
 - 항상 같은 그리드 아닌, 콘텐츠에 맞는 레이아웃 선택
 - 비대칭, 엇갈림, 흐름형 등 다양한 패턴 활용
 
-### 시각적 인코딩 원칙
-- **숫자/통계** → 차트. 3개+ 수치 → 반드시 차트 고려
-- **우선순위/심각도** → 색상 도형(`OVAL`/`make_icon_circle()`) 또는 이모지 배지(`make_icon_badge()`)
-- **프로세스 흐름** → 플로차트 도형 또는 이모지 플로우 (아래 참조)
-- **아키텍처** → 의미 도형: DB=`CAN`, 클라우드=`CLOUD`, 서버=`CUBE`, 서비스=`GEAR_6`
-- **파이프라인** → `CHEVRON` 도형 연결 또는 이모지+화살표 플로우
-- **계층/단계** → 크기와 위치로 중요도 표현
-- **비교/변화** → Before/After 비교 패턴 (❌/✅ + 색상 배경)
+### 시각적 인코딩 — 컴포넌트보다 기하가 먼저
+
+> **기본값** — 덱 `design_system.md` 가 있으면 그 문서가 이긴다("규칙 우선순위" 3번). 덱이 금지한 것은 아래에 있어도 쓰지 않는다.
+
+**도형부터 고르지 않는다.** 도형을 먼저 정하면 자료가 도형에 맞춰 잘린다. 순서는 셋이다.
+
+1. **이 자료가 말하는 관계가 무엇인가** — 크기 비교인가, 시간 변화인가, 구성비인가, 절차인가, 정확한 값 조회인가.
+2. **그 관계를 어떤 시각 변수로 나타낼까** — 길이인가 위치인가 비율인가 연결인가.
+3. **그제서야 어떤 도형·헬퍼를 쓸까.**
+
+#### 1단계 — 관계를 시각 변수에 매핑한다
+
+| 자료가 말하는 관계 | 시각 변수 | PPT 에서 |
+|---|---|---|
+| 크기·순위 (무엇이 더 큰가) | 공통 척도 위의 길이 또는 위치 | `add_chart(COLUMN_CLUSTERED/BAR_CLUSTERED)`. 모든 막대가 같은 척도를 쓰고 길이가 값을 나타내야 한다 |
+| 시간에 따른 변화 | 가로 순서 + 정렬된 세로 위치 | `add_chart(LINE_MARKERS)`. 시점 간격이 불규칙하면 가로 간격도 그만큼 벌린다 |
+| 구성비 (전체 중 얼마) | 면적·각도의 비율 | `add_chart(DOUGHNUT/PIE)` — 항목 5개 이하일 때만. 더 많으면 100% 누적 막대나 표 |
+| 기준선 대비 (넘었나 못 넘었나) | 경계선으로부터의 거리 | 차트에 기준선을 긋고 넘은 것만 강조. 색만으로 표시하지 않는다 |
+| 절차·의존 (무엇 다음에 무엇) | 연결과 순서 | 블록 + `add_smart_connector`. 화살표 방향이 실제 흐름과 같아야 한다 |
+| 질적 대안 비교 (A안 vs B안) | 정렬된 행 / 대비시킨 열 | `add_grid_table` — 비교축을 행 이름으로, 대안을 열로 |
+| 정확한 값 조회 (얼마인지 알아야 함) | 정렬된 숫자 | `add_grid_table`. 숫자 열은 오른쪽 정렬, **머리글도 같은 정렬** |
+| 위계·소속 (무엇이 무엇에 속하나) | 포함과 들여쓰기 | 배경 영역 안에 블록 배치. 소속을 색만 다르게 해서 나타내지 않는다 |
+| 변화 전후 (무엇이 바뀌었나) | 같은 자리·같은 축의 대비 | Before/After 2열 — 같은 항목이 같은 행에 오게 한다 ("비교 슬라이드 패턴" 참조) |
+
+#### 2단계 — 표인가, 차트인가, 문장인가
+
+- **정확한 값을 봐야 하면 표. 관계를 봐야 하면 차트. 결론 하나면 문장.**
+- **수치가 3개라고 자동으로 차트를 쓰지 않는다.** 값 셋을 정확히 알아야 하는 자리면 표가 맞다.
+  (이전 규칙 "3개+ 수치 → 반드시 차트" 를 대체한다 — 그 규칙이 조회용 숫자까지 차트로 만들었다.)
+- 다만 **수치를 문단 안에 흩어 적는 것은 여전히 금지다.** 표든 차트든 정렬된 자리에 놓는다.
+- 표와 차트를 같은 값으로 두 번 보여주지 않는다. 차트가 관계를 보이면 정확한 값은 각주나 부록으로.
+- 차트를 쓸 때: 길이로 나타내는 값은 **0에서 시작**한다. 범례보다 직접 라벨. 캡션에 "이 차트에서 무엇을 봐야 하는지" 를 적는다.
+
+#### 3단계 — 그다음에 도형
+
+- **의미 도형은 그 도형이 무엇을 뜻하는지 한 줄로 말할 수 있을 때만** 쓴다: DB=`CAN`, 클라우드=`CLOUD`, 서버=`CUBE`, 서비스=`GEAR_6`. 말할 수 없으면 사각형이다 ("AI가 만든 티" 참조).
+- 우선순위·심각도 → 색 도형(`OVAL` / `make_icon_circle()`). 색만으로 구분하지 말고 위치·크기·라벨을 함께 쓴다 (프로젝터에서 색 구분이 무너진다).
+- 프로세스 흐름 → `FLOWCHART_PROCESS` · `FLOWCHART_DECISION`. 파이프라인 → `CHEVRON` 연결.
+- 계층·단계 → 크기와 위치로 중요도를 표현한다.
+- 이모지를 앵커로 쓰는 변형은 "이모지 활용 가이드" 에 있다. 덱이 금지했으면 쓰지 않는다.
 
 ### 이모지 활용 가이드
+
+> **기본값** — 덱 `design_system.md` 가 있으면 그 문서가 이긴다("규칙 우선순위" 3번). 덱이 금지한 것은 아래에 있어도 쓰지 않는다. **덱이 이모지를 금지하면 배지·헤더·플로우 라벨을 포함해 전면 금지다** — 현행 덱 규칙(`sl-sw-agent` v9 이후·`smart-factory-briefing`)이 그렇다.
 
 이모지는 시각적 앵커로 사용할 수 있다. 단, 남용 금지.
 
@@ -939,6 +826,8 @@ DANGER    = RGBColor(...)   # 리스크, 에러 전용
 ### 시각 패턴 카탈로그
 
 도구 상자 — 선택지이지 체크리스트가 아님. 콘텐츠에 맞는 최적의 표현을 자유롭게 선택한다.
+
+> **기본값** — 덱 `design_system.md` 가 있으면 그 문서가 이긴다("규칙 우선순위" 3번). 덱이 금지한 것은 아래에 있어도 쓰지 않는다. 이모지 배지·이모지 플로우·파스텔 비교 배경은 덱이 금지하면 제외한다.
 
 #### 이모지 배지
 
@@ -1019,6 +908,8 @@ add_footnote(slide, "출처: 2026 산업 보고서", prefix="")
 
 ### 확장 파스텔 팔레트 (선택 옵션)
 
+> **기본값** — 덱 `design_system.md` 가 있으면 그 문서가 이긴다("규칙 우선순위" 3번). 덱이 금지한 것은 아래에 있어도 쓰지 않는다. 단일 accent 를 쓰는 덱은 이 다색 세트를 쓰지 않는다.
+
 프레젠테이션 색상 팔레트 수립 시 참고할 수 있는 파스텔 배경색 세트.
 
 | 용도 | 색상코드 | 계열 |
@@ -1053,12 +944,14 @@ add_footnote(slide, "출처: 2026 산업 보고서", prefix="")
 마스터 요소를 보호하면서 시각적 풍부함을 유지하는 기법:
 
 - **색상 영역 분할**: CONTENT_SAFE 내부를 ROUNDED_RECTANGLE로 분할하여 각 영역에 accent 색상 배경 (opacity 5-15%) 적용
-- **카드 기반 디자인**: 정보를 카드에 담고 그림자 + 상단/좌측 accent 바 적용. 카드 배경은 WHITE 또는 연한 색상
+- **카드 기반 디자인**: 정보를 카드에 담고 그림자(덱이 금지하면 1pt hairline 보더) + 상단/좌측 accent 바 적용. 카드 배경은 WHITE 또는 연한 색상
 - **시각적 앵커**: 각 슬라이드에 최소 1개 비텍스트 요소 (도형, 차트, 다이어그램, 아이콘) 포함
 - **색상 전환**: 같은 섹션 내 슬라이드도 accent 색상을 단계적으로 변화시켜 단조로움 방지
 - **데이터 밀도**: 슬라이드당 2-3개 시각 유형 혼합 (수치 카드 + 차트, 텍스트 + 다이어그램 등)
 
 ### 카드 컴포넌트 표준
+
+> **기본값** — 덱 `design_system.md` 가 있으면 그 문서가 이긴다("규칙 우선순위" 3번). 덱이 금지한 것은 아래에 있어도 쓰지 않는다.
 
 ```
 ┌──────────────────────┐
@@ -1069,9 +962,9 @@ add_footnote(slide, "출처: 2026 산업 보고서", prefix="")
 └──────────────────────┘ + shadow
 ```
 - 배경: WHITE/#F5F5F5 ROUNDED_RECTANGLE
-- 그림자: `add_shadow(blur_pt=4, dist_pt=2, opacity_pct=25)`
+- 그림자: `add_shadow(blur_pt=4, dist_pt=2, opacity_pct=25)` — 덱이 그림자를 금지하면 1pt hairline 보더(연회색)로 대체
 - 내부: VFlow로 순서 관리
-- 정렬: `calc_grid()`로 균등 분할
+- 정렬: `calc_grid()`로 균등 분할 — 단 카드들이 진짜 동급일 때만 ("AI가 만든 티" 참조)
 
 ## WORKLOG 규칙
 - LLM은 WORKLOG.md를 직접 수정하지 않는다
